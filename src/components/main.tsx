@@ -93,6 +93,7 @@ const Main = () => {
 			<div>
 				<details open>
 					<summary className="cursor-pointer">Debug Info</summary>
+					<div>Current Section to be translated:</div>
 					<pre>{JSON.stringify(currentSentenceObject, null, 2)}</pre>
 				</details>
 			</div>
