@@ -6,6 +6,7 @@ interface DataStore {
 	lessons: Lesson[]
 	currentLessonIndex: number
 	currentSentenceIndex: number
+
 	// sentences: Sentence[]
 	startNewLesson: (index: number) => void
 }
