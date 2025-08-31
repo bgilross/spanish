@@ -1,12 +1,7 @@
-// maybe change to prounoun.eso or conjunction.y conjuction.que
 "use client"
 
-import type { Lesson } from "@/types/types"
-
-// import { sendError } from "next/dist/server/api-utils"
+import type { Lesson } from "@/data/types"
 import words from "./spanishWords"
-// import { data } from "autoprefixer"
-// import { EditCalendar } from "@mui/icons-material"
 
 const { conj, pron, prep, advrb, noun, verb, artcl, dObj } = words
 

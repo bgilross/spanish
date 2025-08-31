@@ -1,4 +1,4 @@
-import { WordGroup, VerbGroup } from "../types/types"
+import { WordGroup, VerbGroup } from "../data/types"
 
 interface SpanishWords {
 	artcl: WordGroup
