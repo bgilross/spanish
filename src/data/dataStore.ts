@@ -45,7 +45,9 @@ type LessonSummary = {
 	incorrectCount: number
 	totalSubmissions: number
 	correct: SubmissionLog[]
-	incorrect: Array<SubmissionLog & { expected?: string[] }>
+	incorrect: Array<
+		SubmissionLog & { expected?: string[]; references?: string[] }
+	>
 	references: string[]
 }
 
@@ -220,7 +222,19 @@ export const useDataStore = create<DataStore>((set, get) => ({
 		const correct = subs.filter((s) => s.isCorrect)
 		const incorrect = subs
 			.filter((s) => !s.isCorrect)
-			.map((s) => ({ ...s, expected: expectedAnswers(s.section) }))
+			.map((s) => {
+				const refs = (
+					s.section as {
+						reference?: Record<string, (number | string)[]>
+					}
+				).reference
+				const refKeys = refs ? Object.keys(refs) : []
+				return {
+					...s,
+					expected: expectedAnswers(s.section),
+					references: refKeys,
+				}
+			})
 		const refs = Array.from(new Set(errs.flatMap((e) => e.references)))
 		return {
 			lessonNumber: lessonNum,

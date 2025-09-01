@@ -3,8 +3,13 @@
 import React from "react"
 import { useDataStore } from "@/data/dataStore"
 import { approxChWidth, splitWordAndPunct } from "@/lib/text"
-import { spanishTarget, spanishWordCount } from "@/lib/translation"
+import {
+	spanishTarget,
+	spanishWordCount,
+	expectedAnswers,
+} from "@/lib/translation"
 import type { SentenceDataEntry } from "@/data/types"
+import { resolveReference, resolveReferenceList } from "@/lib/refs"
 
 const Main = () => {
 	const lessons = useDataStore((state) => state.lessons)
@@ -24,6 +29,9 @@ const Main = () => {
 	const getLessonSummary = useDataStore((state) => state.getLessonSummary)
 
 	const [showSummary, setShowSummary] = React.useState(false)
+	const [flash, setFlash] = React.useState<"none" | "green" | "red">("none")
+	const inputRef = React.useRef<HTMLInputElement>(null)
+	const [simulating, setSimulating] = React.useState(false)
 
 	const [input, setInput] = React.useState("")
 
@@ -61,6 +69,43 @@ const Main = () => {
 		return next ? next.index : null
 	}, [currentSentenceProgress])
 
+	// Keep the input focused whenever we have something to translate
+	React.useEffect(() => {
+		if (showSummary) return
+		if (activeSectionOriginalIndex == null) return
+		const el = inputRef.current
+		if (!el) return
+		// Delay slightly to ensure the input is mounted/enabled after state updates
+		const t = window.setTimeout(() => {
+			el.focus()
+			// Optionally select text if any remains
+			if (el.value) el.select()
+		}, 0)
+		return () => window.clearTimeout(t)
+	}, [
+		showSummary,
+		currentLessonIndex,
+		currentSentenceIndex,
+		activeSectionOriginalIndex,
+	])
+
+	// Apply a quick flash to the input only for feedback
+	React.useEffect(() => {
+		if (flash === "none") return
+		const cls = flash === "green" ? "flash-green" : "flash-red"
+		const el = inputRef.current
+		if (!el) return
+		el.classList.add(cls)
+		const t = window.setTimeout(() => {
+			el.classList.remove(cls)
+			setFlash("none")
+		}, 450)
+		return () => {
+			el.classList.remove(cls)
+			window.clearTimeout(t)
+		}
+	}, [flash])
+
 	// Pretty print phraseTranslation for debug
 	function formatPhraseTranslation(entry: SentenceDataEntry): string | null {
 		const pt = (entry as { phraseTranslation?: unknown }).phraseTranslation
@@ -77,7 +122,57 @@ const Main = () => {
 		if (!currentSentenceObject || activeSectionOriginalIndex == null) return
 
 		const { correct } = checkCurrentAnswer(input)
-		if (correct) setInput("")
+		setInput("")
+		setFlash(correct ? "green" : "red")
+	}
+
+	// Simulate running through the lesson: one incorrect, then one correct per section
+	const simulateLesson = async () => {
+		if (simulating) return
+		setShowSummary(false)
+		setSimulating(true)
+		try {
+			let guard = 0
+			// Initialize once if needed (in case UI effect hasn't yet)
+			if (!useDataStore.getState().currentSentenceProgress) {
+				initializeSentenceProgress()
+				await new Promise((r) => setTimeout(r, 0))
+			}
+			while (!isLessonComplete() && guard < 10000) {
+				const state = useDataStore.getState()
+				const lesson = state.lessons[state.currentLessonIndex]
+				const sentenceObj = lesson.sentences?.[state.currentSentenceIndex]
+				const sections =
+					state.currentSentenceProgress?.translationSections ?? []
+				const next = sections.find((s) => !s.isTranslated)
+
+				if (!sentenceObj) break
+
+				// If no active section, either the sentence finished or init pending.
+				if (!next) {
+					if (!useDataStore.getState().currentSentenceProgress) {
+						initializeSentenceProgress()
+					}
+					await new Promise((r) => setTimeout(r, 0))
+					guard++
+					continue
+				}
+
+				const entry = sentenceObj.data[next.index]
+				const answers = expectedAnswers(entry)
+				const correctAns = answers[0] ?? "si"
+
+				// One wrong attempt
+				useDataStore.getState().checkCurrentAnswer("__wrong__")
+				await new Promise((r) => setTimeout(r, 0))
+				// One correct attempt
+				useDataStore.getState().checkCurrentAnswer(correctAns)
+				await new Promise((r) => setTimeout(r, 0))
+				guard++
+			}
+		} finally {
+			setSimulating(false)
+		}
 	}
 
 	return (
@@ -124,9 +219,21 @@ const Main = () => {
 											Common references to review
 										</div>
 										<ul className="list-disc ml-5 text-sm">
-											{summary.references.map((r, idx) => (
-												<li key={idx}>{r}</li>
-											))}
+											{summary.references.map((r, idx) => {
+												const rr = resolveReference(r)
+												return (
+													<li key={idx}>
+														<div>{rr.label}</div>
+														{rr.info && rr.info.length > 0 && (
+															<ul className="list-disc ml-5">
+																{rr.info.map((line, i) => (
+																	<li key={i}>{line}</li>
+																))}
+															</ul>
+														)}
+													</li>
+												)
+											})}
 										</ul>
 									</div>
 								)}
@@ -148,6 +255,36 @@ const Main = () => {
 													<div>Phrase: {s.section.phrase}</div>
 													<div>Your input: “{s.userInput}”</div>
 													<div>Expected: {s.expected?.join(" | ")}</div>
+													{s.references && s.references.length > 0 && (
+														<div className="text-xs text-zinc-600 mt-1">
+															<div className="font-semibold text-[0.8rem] mb-0.5">
+																References
+															</div>
+															<ul className="list-disc ml-5">
+																{resolveReferenceList(
+																	(
+																		s.section as {
+																			reference?: Record<
+																				string,
+																				(number | string)[]
+																			>
+																		}
+																	).reference
+																)?.map((rr, k) => (
+																	<li key={k}>
+																		<div>{rr.label}</div>
+																		{rr.info && rr.info.length > 0 && (
+																			<ul className="list-disc ml-5">
+																				{rr.info.map((line, i) => (
+																					<li key={i}>{line}</li>
+																				))}
+																			</ul>
+																		)}
+																	</li>
+																))}
+															</ul>
+														</div>
+													)}
 												</li>
 											))}
 										</ul>
@@ -191,6 +328,14 @@ const Main = () => {
 					</option>
 				))}
 			</select>
+			<button
+				onClick={simulateLesson}
+				disabled={simulating}
+				className="ml-2 px-2 py-1 border rounded disabled:opacity-50"
+				title="Simulate one wrong and one right answer per section"
+			>
+				{simulating ? "Simulating…" : "Simulate lesson (wrong+right)"}
+			</button>
 
 			<div className="mt-4">
 				<p>Current Lesson: {currentLesson.name}</p>
@@ -252,6 +397,8 @@ const Main = () => {
 				<div className="mt-3 flex items-center gap-2">
 					<input
 						type="text"
+						ref={inputRef}
+						autoFocus
 						className="px-2 py-1 border rounded min-w-[16ch]"
 						placeholder={(() => {
 							if (activeSectionOriginalIndex == null)
