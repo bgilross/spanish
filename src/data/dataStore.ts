@@ -1,5 +1,7 @@
 import { create } from "zustand"
 import spanishData from "./spanishData"
+import { normalizeText } from "@/lib/text"
+import { expectedAnswers } from "@/lib/translation"
 import type {
 	Lesson,
 	SentenceDataEntry,
@@ -19,6 +21,8 @@ interface DataStore {
 	initializeSentenceProgress: () => void
 	setSectionTranslated: (sectionIndex: number, translated?: boolean) => void
 	nextSentence: () => void
+	getActiveSectionIndex: () => number | null
+	checkCurrentAnswer: (input: string) => { correct: boolean; advanced: boolean }
 }
 
 const lessons = spanishData.lessons
@@ -78,5 +82,60 @@ export const useDataStore = create<DataStore>((set, get) => ({
 		if (next < sentences.length) {
 			set({ currentSentenceIndex: next, currentSentenceProgress: null })
 		}
+	},
+
+	getActiveSectionIndex: () => {
+		const { currentSentenceProgress } = get()
+		const next = currentSentenceProgress?.translationSections.find(
+			(s) => !s.isTranslated
+		)
+		return next ? next.index : null
+	},
+
+	checkCurrentAnswer: (input: string) => {
+		const {
+			lessons,
+			currentLessonIndex,
+			currentSentenceIndex,
+			currentSentenceProgress,
+		} = get()
+		const lesson = lessons[currentLessonIndex]
+		const sentence = lesson.sentences?.[currentSentenceIndex]
+		if (!sentence || !currentSentenceProgress)
+			return { correct: false, advanced: false }
+
+		const next = currentSentenceProgress.translationSections.find(
+			(s) => !s.isTranslated
+		)
+		if (!next) return { correct: false, advanced: false }
+
+		const entry = sentence.data[next.index]
+		const answers = expectedAnswers(entry)
+		if (answers.length === 0) return { correct: false, advanced: false }
+
+		const normalized = normalizeText(input)
+		if (!answers.includes(normalized))
+			return { correct: false, advanced: false }
+
+		// Mark translated
+		set((state) => {
+			if (!state.currentSentenceProgress) return {}
+			const updated = state.currentSentenceProgress.translationSections.map(
+				(s) => (s.index === next.index ? { ...s, isTranslated: true } : s)
+			)
+			return { currentSentenceProgress: { translationSections: updated } }
+		})
+
+		// Check if all done
+		const remaining = get().currentSentenceProgress!.translationSections.some(
+			(s) => !s.isTranslated
+		)
+		if (!remaining) {
+			// advance to next sentence; progress will be re-initialized by the UI effect
+			get().nextSentence()
+			return { correct: true, advanced: true }
+		}
+
+		return { correct: true, advanced: false }
 	},
 }))

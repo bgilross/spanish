@@ -2,7 +2,9 @@
 
 import React from "react"
 import { useDataStore } from "@/data/dataStore"
-import type { SentenceDataEntry, WordObject } from "@/data/types"
+import { approxChWidth, splitWordAndPunct } from "@/lib/text"
+import { spanishTarget, spanishWordCount } from "@/lib/translation"
+import type { SentenceDataEntry } from "@/data/types"
 
 const Main = () => {
 	const lessons = useDataStore((state) => state.lessons)
@@ -17,10 +19,7 @@ const Main = () => {
 	const currentSentenceProgress = useDataStore(
 		(state) => state.currentSentenceProgress
 	)
-	const setSectionTranslated = useDataStore(
-		(state) => state.setSectionTranslated
-	)
-	const nextSentence = useDataStore((state) => state.nextSentence)
+	const checkCurrentAnswer = useDataStore((state) => state.checkCurrentAnswer)
 
 	const [input, setInput] = React.useState("")
 
@@ -41,18 +40,6 @@ const Main = () => {
 		setInput("")
 	}, [initializeSentenceProgress, currentLessonIndex, currentSentenceIndex])
 
-	function splitWordAndPunct(text: string): { base: string; punct: string } {
-		const m = text.match(/^([\s\S]*?)([.,!?:;…]+)$/)
-		if (!m) return { base: text, punct: "" }
-		return { base: m[1], punct: m[2] }
-	}
-
-	function approxChWidth(text: string, minCh = 3, maxCh = 20): number {
-		const clean = text.replace(/[^A-Za-z0-9'áéíóúüñÁÉÍÓÚÜÑ]+/g, "")
-		const len = clean.length || minCh
-		return Math.max(minCh, Math.min(len, maxCh))
-	}
-
 	// Determine the next un-translated section index (original data index), if any
 	const activeSectionOriginalIndex: number | null = React.useMemo(() => {
 		const sections = currentSentenceProgress?.translationSections ?? []
@@ -60,88 +47,23 @@ const Main = () => {
 		return next ? next.index : null
 	}, [currentSentenceProgress])
 
-	function normalize(s: string) {
-		return s
-			.toLowerCase()
-			.normalize("NFD")
-			.replace(/\p{Diacritic}/gu, "")
-			.replace(/[^a-z0-9']+/g, " ")
-			.trim()
-	}
-
-	function isWordObject(val: unknown): val is WordObject {
-		return (
-			typeof val === "object" &&
-			val !== null &&
-			"word" in (val as Record<string, unknown>) &&
-			typeof (val as { word: unknown }).word === "string"
-		)
-	}
-
-	// Build a Spanish-only target from the translation field
-	function spanishTarget(entry: SentenceDataEntry): string | null {
-		const t = (entry as { translation?: unknown }).translation
-		if (!t) return null
-		if (typeof t === "string") return t
-		if (isWordObject(t)) return t.word
-		if (Array.isArray(t)) {
-			const parts: string[] = []
-			for (const item of t) {
-				if (typeof item === "string") parts.push(item)
-				else if (isWordObject(item)) parts.push(item.word)
-			}
-			return parts.length ? parts.join(" ") : null
+	// Pretty print phraseTranslation for debug
+	function formatPhraseTranslation(entry: SentenceDataEntry): string | null {
+		const pt = (entry as { phraseTranslation?: unknown }).phraseTranslation
+		if (typeof pt === "string") return pt
+		if (Array.isArray(pt)) {
+			const vals = pt.filter((x): x is string => typeof x === "string")
+			return vals.length ? vals.join(" | ") : null
 		}
 		return null
-	}
-
-	function spanishWordCount(entry: SentenceDataEntry): number {
-		const t = (entry as { translation?: unknown }).translation
-		if (!t) return 0
-		if (typeof t === "string")
-			return t.trim().split(/\s+/).filter(Boolean).length
-		if (isWordObject(t)) return 1
-		if (Array.isArray(t)) {
-			return t.reduce(
-				(acc, item) =>
-					acc +
-					(isWordObject(item)
-						? 1
-						: typeof item === "string"
-						? item.trim().split(/\s+/).filter(Boolean).length
-						: 0),
-				0
-			)
-		}
-		return 0
-	}
-
-	function expectedAnswers(entry: SentenceDataEntry): string[] {
-		const target = spanishTarget(entry)
-		return target ? [normalize(target)] : []
 	}
 
 	const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
 		if (e.key !== "Enter") return
 		if (!currentSentenceObject || activeSectionOriginalIndex == null) return
 
-		const entry = currentSentenceObject.data[activeSectionOriginalIndex]
-		const answers = expectedAnswers(entry)
-		if (answers.length === 0) return
-
-		if (answers.includes(normalize(input))) {
-			// mark translated
-			setSectionTranslated(activeSectionOriginalIndex, true)
-			setInput("")
-
-			// if all translated now, advance sentence
-			const remaining = (
-				currentSentenceProgress?.translationSections ?? []
-			).some((s) => s.index !== activeSectionOriginalIndex && !s.isTranslated)
-			if (!remaining) {
-				nextSentence()
-			}
-		}
+		const { correct } = checkCurrentAnswer(input)
+		if (correct) setInput("")
 	}
 
 	return (
@@ -259,9 +181,11 @@ const Main = () => {
 											currentSentenceObject!.data[activeSectionOriginalIndex]
 										const target = spanishTarget(entry) ?? ""
 										const count = spanishWordCount(entry)
+										const pt = formatPhraseTranslation(entry)
 										return (
 											<div className="mt-1">
 												<div>Phrase: {entry.phrase}</div>
+												{pt && <div>Phrase Translation (priority): {pt}</div>}
 												<div>Target (Spanish): {target}</div>
 												<div>Expected words: {count}</div>
 											</div>
@@ -273,13 +197,19 @@ const Main = () => {
 							<h4 className="font-semibold mb-1">Progress</h4>
 							<ul className="text-sm list-disc ml-5">
 								{(currentSentenceProgress?.translationSections ?? []).map(
-									(s) => (
-										<li key={s.index}>
-											#{s.index + 1}:{" "}
-											{currentSentenceObject?.data[s.index]?.phrase} -{" "}
-											{s.isTranslated ? "translated" : "pending"}
-										</li>
-									)
+									(s) => {
+										const entry = currentSentenceObject?.data[s.index]
+										const pt = entry
+											? formatPhraseTranslation(entry as SentenceDataEntry)
+											: null
+										return (
+											<li key={s.index}>
+												#{s.index + 1}: {entry?.phrase}
+												{pt ? ` — ${pt}` : ""} -{" "}
+												{s.isTranslated ? "translated" : "pending"}
+											</li>
+										)
+									}
 								)}
 							</ul>
 							<div className="text-sm mt-1">
