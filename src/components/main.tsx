@@ -20,6 +20,10 @@ const Main = () => {
 		(state) => state.currentSentenceProgress
 	)
 	const checkCurrentAnswer = useDataStore((state) => state.checkCurrentAnswer)
+	const isLessonComplete = useDataStore((state) => state.isLessonComplete)
+	const getLessonSummary = useDataStore((state) => state.getLessonSummary)
+
+	const [showSummary, setShowSummary] = React.useState(false)
 
 	const [input, setInput] = React.useState("")
 
@@ -39,6 +43,16 @@ const Main = () => {
 		initializeSentenceProgress()
 		setInput("")
 	}, [initializeSentenceProgress, currentLessonIndex, currentSentenceIndex])
+
+	// Open summary when lesson completes
+	React.useEffect(() => {
+		if (isLessonComplete()) setShowSummary(true)
+	}, [
+		isLessonComplete,
+		currentLessonIndex,
+		currentSentenceIndex,
+		currentSentenceProgress,
+	])
 
 	// Determine the next un-translated section index (original data index), if any
 	const activeSectionOriginalIndex: number | null = React.useMemo(() => {
@@ -68,6 +82,101 @@ const Main = () => {
 
 	return (
 		<div>
+			{/* End-of-lesson Summary Modal */}
+			{showSummary &&
+				(() => {
+					const summary = getLessonSummary()
+					return (
+						<div className="fixed inset-0 z-50 flex items-center justify-center">
+							<div
+								className="absolute inset-0 bg-black/50"
+								onClick={() => setShowSummary(false)}
+							/>
+							<div className="relative bg-white text-black dark:bg-zinc-900 dark:text-zinc-50 shadow-xl rounded-lg max-w-3xl w-[90%] p-4">
+								<div className="flex items-center justify-between mb-2">
+									<h3 className="text-lg font-semibold">
+										Lesson {summary.lessonNumber} Summary
+									</h3>
+									<button
+										className="px-2 py-1 text-sm border rounded"
+										onClick={() => setShowSummary(false)}
+									>
+										Close
+									</button>
+								</div>
+								<div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+									<div className="p-2 border rounded">
+										<div className="font-medium">Total</div>
+										<div>{summary.totalSubmissions}</div>
+									</div>
+									<div className="p-2 border rounded">
+										<div className="font-medium text-green-700">Correct</div>
+										<div>{summary.correctCount}</div>
+									</div>
+									<div className="p-2 border rounded">
+										<div className="font-medium text-red-700">Incorrect</div>
+										<div>{summary.incorrectCount}</div>
+									</div>
+								</div>
+								{summary.references.length > 0 && (
+									<div className="mt-3">
+										<div className="font-semibold">
+											Common references to review
+										</div>
+										<ul className="list-disc ml-5 text-sm">
+											{summary.references.map((r, idx) => (
+												<li key={idx}>{r}</li>
+											))}
+										</ul>
+									</div>
+								)}
+								<div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[40vh] overflow-auto">
+									<div>
+										<div className="font-semibold mb-1">Incorrect</div>
+										<ul className="text-sm space-y-2">
+											{summary.incorrect.length === 0 && (
+												<li className="text-zinc-500">None</li>
+											)}
+											{summary.incorrect.map((s, i) => (
+												<li
+													key={i}
+													className="p-2 border rounded"
+												>
+													<div className="font-medium">
+														{s.sentence.sentence}
+													</div>
+													<div>Phrase: {s.section.phrase}</div>
+													<div>Your input: “{s.userInput}”</div>
+													<div>Expected: {s.expected?.join(" | ")}</div>
+												</li>
+											))}
+										</ul>
+									</div>
+									<div>
+										<div className="font-semibold mb-1">Correct</div>
+										<ul className="text-sm space-y-2">
+											{summary.correct.length === 0 && (
+												<li className="text-zinc-500">None</li>
+											)}
+											{summary.correct.map((s, i) => (
+												<li
+													key={i}
+													className="p-2 border rounded"
+												>
+													<div className="font-medium">
+														{s.sentence.sentence}
+													</div>
+													<div>Phrase: {s.section.phrase}</div>
+													<div>Input: “{s.userInput}”</div>
+												</li>
+											))}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					)
+				})()}
 			<select
 				value={currentLessonIndex}
 				onChange={handleLessonChange}

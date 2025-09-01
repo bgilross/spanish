@@ -6,8 +6,8 @@ import type {
 	Lesson,
 	SentenceDataEntry,
 	TranslationSections,
-	// TranslationSection,
-	// CurrentTranslationSections,
+	SubmissionLog,
+	ErrorEntry,
 } from "./types"
 
 interface DataStore {
@@ -15,6 +15,8 @@ interface DataStore {
 	currentLessonIndex: number
 	currentSentenceIndex: number
 	currentSentenceProgress: SentenceProgress | null
+	submissionLog: SubmissionLog[]
+	errorLog: ErrorEntry[]
 
 	// sentences: Sentence[]
 	startNewLesson: (index: number) => void
@@ -23,6 +25,9 @@ interface DataStore {
 	nextSentence: () => void
 	getActiveSectionIndex: () => number | null
 	checkCurrentAnswer: (input: string) => { correct: boolean; advanced: boolean }
+	clearLogs: () => void
+	isLessonComplete: () => boolean
+	getLessonSummary: () => LessonSummary
 }
 
 const lessons = spanishData.lessons
@@ -34,13 +39,31 @@ type SentenceProgress = {
 	translationSections: TranslationSections
 }
 
+type LessonSummary = {
+	lessonNumber: number
+	correctCount: number
+	incorrectCount: number
+	totalSubmissions: number
+	correct: SubmissionLog[]
+	incorrect: Array<SubmissionLog & { expected?: string[] }>
+	references: string[]
+}
+
 export const useDataStore = create<DataStore>((set, get) => ({
 	lessons,
 	currentLessonIndex,
 	currentSentenceIndex,
 	currentSentenceProgress,
+	submissionLog: [],
+	errorLog: [],
 	startNewLesson: (index: number) => {
-		set({ currentLessonIndex: index, currentSentenceIndex: 0 })
+		set({
+			currentLessonIndex: index,
+			currentSentenceIndex: 0,
+			currentSentenceProgress: null,
+			submissionLog: [],
+			errorLog: [],
+		})
 	},
 
 	initializeSentenceProgress: () => {
@@ -98,6 +121,8 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			currentLessonIndex,
 			currentSentenceIndex,
 			currentSentenceProgress,
+			submissionLog,
+			errorLog,
 		} = get()
 		const lesson = lessons[currentLessonIndex]
 		const sentence = lesson.sentences?.[currentSentenceIndex]
@@ -114,8 +139,38 @@ export const useDataStore = create<DataStore>((set, get) => ({
 		if (answers.length === 0) return { correct: false, advanced: false }
 
 		const normalized = normalizeText(input)
-		if (!answers.includes(normalized))
+		const isCorrect = answers.includes(normalized)
+
+		// Log submission
+		const submission: SubmissionLog = {
+			lessonNumber: lesson.lesson,
+			sentenceIndex: currentSentenceIndex,
+			sectionIndex: next.index,
+			feedbackMode: false,
+			sentence,
+			section: entry,
+			isCorrect,
+			userInput: input,
+		}
+		set({ submissionLog: [...submissionLog, submission] })
+
+		if (!isCorrect) {
+			// Add error with references if present
+			const references = (
+				entry as { reference?: Record<string, (number | string)[]> }
+			).reference
+			const refKeys = references ? Object.keys(references) : []
+			const error: ErrorEntry = {
+				userInput: input,
+				currentSentence: sentence,
+				currentSection: entry,
+				lessonNumber: lesson.lesson,
+				errorWords: [],
+				references: refKeys,
+			}
+			set({ errorLog: [...errorLog, error] })
 			return { correct: false, advanced: false }
+		}
 
 		// Mark translated
 		set((state) => {
@@ -137,5 +192,44 @@ export const useDataStore = create<DataStore>((set, get) => ({
 		}
 
 		return { correct: true, advanced: false }
+	},
+	clearLogs: () => set({ submissionLog: [], errorLog: [] }),
+
+	isLessonComplete: () => {
+		const {
+			lessons,
+			currentLessonIndex,
+			currentSentenceIndex,
+			currentSentenceProgress,
+		} = get()
+		const sentences = lessons[currentLessonIndex]?.sentences ?? []
+		const isLast = currentSentenceIndex >= sentences.length - 1
+		const allDone =
+			currentSentenceProgress?.translationSections.every(
+				(s) => s.isTranslated
+			) ?? false
+		return isLast && allDone
+	},
+
+	getLessonSummary: () => {
+		const { lessons, currentLessonIndex, submissionLog, errorLog } = get()
+		const lesson = lessons[currentLessonIndex]
+		const lessonNum = lesson.lesson
+		const subs = submissionLog.filter((s) => s.lessonNumber === lessonNum)
+		const errs = errorLog.filter((e) => e.lessonNumber === lessonNum)
+		const correct = subs.filter((s) => s.isCorrect)
+		const incorrect = subs
+			.filter((s) => !s.isCorrect)
+			.map((s) => ({ ...s, expected: expectedAnswers(s.section) }))
+		const refs = Array.from(new Set(errs.flatMap((e) => e.references)))
+		return {
+			lessonNumber: lessonNum,
+			correctCount: correct.length,
+			incorrectCount: incorrect.length,
+			totalSubmissions: subs.length,
+			correct,
+			incorrect,
+			references: refs,
+		}
 	},
 }))
