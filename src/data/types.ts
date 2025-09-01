@@ -75,15 +75,19 @@ export interface VerbGroup {
 	words: Record<string, VerbRoot>
 }
 
-export type QuizType = "parts" | "full"
-
 export type TranslatedWordEntry = {
 	index: number
 	words: string[]
 	phraseTranslation?: string | null
 }
 
-export type CurrentSectionEntry = { section: SentenceDataEntry; index: number }
+export type TranslationSection = {
+	section: SentenceDataEntry
+	index: number
+	isTranslated: boolean
+}
+
+export type TranslationSections = TranslationSection[]
 
 export type ErrorWord = {
 	word: WordObject
@@ -99,14 +103,12 @@ export type ErrorEntry = {
 	lessonNumber: number
 	errorWords: ErrorWord[]
 	references: string[]
-	mode: QuizType
 }
 
 export type SubmissionLog = {
 	lessonNumber: number
 	sentenceIndex: number
 	sectionIndex: number | null
-	quizType: QuizType
 	feedbackMode: boolean
 	sentence: Sentence
 	section: SentenceDataEntry
