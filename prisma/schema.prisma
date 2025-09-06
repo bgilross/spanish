@@ -13,3 +13,28 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// --- Domain Models ---
+// We keep lessons & sentences in code. We only persist user identities (simple) and completed lesson attempts.
+// A LessonAttempt stores the summary produced at quiz completion so we can later build dashboards.
+
+model User {
+  id        String          @id @default(cuid())
+  createdAt DateTime        @default(now())
+  attempts  LessonAttempt[]
+}
+
+model LessonAttempt {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  lessonNumber     Int
+  correctCount     Int
+  incorrectCount   Int
+  totalSubmissions Int
+  references       String[] // distinct reference keys encountered in incorrect submissions
+  summary          Json     // full raw summary blob (shape defined in app, flexible for evolution)
+  createdAt        DateTime @default(now())
+
+  @@index([userId, lessonNumber])
+}

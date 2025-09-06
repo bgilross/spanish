@@ -45,12 +45,34 @@ const Main = () => {
 	}, [initializeSentenceProgress, currentLessonIndex, currentSentenceIndex])
 
 	React.useEffect(() => {
-		if (isLessonComplete()) setShowSummary(true)
+		if (isLessonComplete()) {
+			setShowSummary(true)
+			// Fire-and-forget persistence of lesson attempt summary.
+			// TODO: Replace placeholder user id with real auth user id once auth is integrated.
+			const summary = getLessonSummary()
+			const userId = localStorage.getItem("demoUserId") || undefined
+			// Create a lightweight demo user id if none (temporary approach for development)
+			if (!userId) {
+				const newId = crypto.randomUUID()
+				localStorage.setItem("demoUserId", newId)
+			}
+			const effectiveUserId = userId || localStorage.getItem("demoUserId")!
+			fetch("/api/lessonAttempts", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					userId: effectiveUserId,
+					lessonNumber: summary.lessonNumber,
+					summary,
+				}),
+			}).catch((e) => console.error("Persist lesson attempt failed", e))
+		}
 	}, [
 		isLessonComplete,
 		currentLessonIndex,
 		currentSentenceIndex,
 		currentSentenceProgress,
+		getLessonSummary,
 	])
 
 	const activeSectionOriginalIndex: number | null = React.useMemo(() => {
