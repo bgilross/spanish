@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // Using default output so Vercel build gets @prisma/client automatically
 }
 
 datasource db {
