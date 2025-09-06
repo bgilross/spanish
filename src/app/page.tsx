@@ -1,5 +1,5 @@
 // NOTE: File is committed as lowercase `main.tsx` in repo; import must match case for Linux/Vercel
-import Main from "@/components/Main"
+import Main from "@/components/MainPage"
 
 export default function Home() {
 	return (
