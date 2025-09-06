@@ -29,6 +29,12 @@ const Main = () => {
 	const getLessonSummary = useDataStore((state) => state.getLessonSummary)
 
 	const [showSummary, setShowSummary] = React.useState(false)
+	const [saveStatus, setSaveStatus] = React.useState<
+		| { state: "idle" }
+		| { state: "saving" }
+		| { state: "saved"; id?: string }
+		| { state: "error"; message: string }
+	>({ state: "idle" })
 	const [showIntro, setShowIntro] = React.useState(true)
 	const [showWordBank, setShowWordBank] = React.useState(false)
 
@@ -47,6 +53,7 @@ const Main = () => {
 	React.useEffect(() => {
 		if (isLessonComplete()) {
 			setShowSummary(true)
+			setSaveStatus({ state: "saving" })
 			// Fire-and-forget persistence of lesson attempt summary.
 			// TODO: Replace placeholder user id with real auth user id once auth is integrated.
 			const summary = getLessonSummary()
@@ -65,7 +72,16 @@ const Main = () => {
 					lessonNumber: summary.lessonNumber,
 					summary,
 				}),
-			}).catch((e) => console.error("Persist lesson attempt failed", e))
+			})
+				.then(async (r) => {
+					if (!r.ok) throw new Error("Request failed: " + r.status)
+					const data = await r.json()
+					setSaveStatus({ state: "saved", id: data.attempt?.id })
+				})
+				.catch((e) => {
+					console.error("Persist lesson attempt failed", e)
+					setSaveStatus({ state: "error", message: e.message })
+				})
 		}
 	}, [
 		isLessonComplete,
@@ -101,6 +117,7 @@ const Main = () => {
 						open={showSummary}
 						onClose={() => setShowSummary(false)}
 						summary={getLessonSummary()}
+						saveStatus={saveStatus}
 					/>
 				)}
 
