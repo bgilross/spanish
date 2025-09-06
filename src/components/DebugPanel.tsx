@@ -32,10 +32,7 @@ const DebugPanel: React.FC<Props> = ({
 	translationSections,
 }) => {
 	return (
-		<details
-			open
-			className="mt-6"
-		>
+		<details className="mt-6">
 			<summary className="cursor-pointer">Debug</summary>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div>

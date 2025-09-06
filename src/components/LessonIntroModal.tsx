@@ -56,7 +56,7 @@ const LessonIntroModal: React.FC<Props> = ({
 								className="px-3 py-1 text-sm rounded bg-emerald-600 text-white hover:bg-emerald-500"
 								onClick={onClose}
 							>
-								Start Lesson
+								Start Quiz
 							</button>
 						</div>
 					</div>

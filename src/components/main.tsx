@@ -9,6 +9,7 @@ import AnswerInput from "@/components/AnswerInput"
 import SummaryModal from "@/components/SummaryModal"
 import LessonIntroModal from "@/components/LessonIntroModal"
 import DebugPanel from "@/components/DebugPanel"
+import WordBankModal from "@/components/WordBankModal"
 
 const Main = () => {
 	const lessons = useDataStore((state) => state.lessons)
@@ -28,6 +29,7 @@ const Main = () => {
 
 	const [showSummary, setShowSummary] = React.useState(false)
 	const [showIntro, setShowIntro] = React.useState(true)
+	const [showWordBank, setShowWordBank] = React.useState(false)
 
 	// Open intro modal on initial load & whenever the lesson index changes
 	React.useEffect(() => {
@@ -90,7 +92,7 @@ const Main = () => {
 					/>
 				)}
 
-				{/* Lesson intro modal */}
+				{/* Lesson intro modal (can coexist with word bank) */}
 				<LessonIntroModal
 					open={showIntro && !showSummary}
 					lesson={currentLesson}
@@ -99,11 +101,17 @@ const Main = () => {
 					onClose={() => setShowIntro(false)}
 					onNavigate={(idx) => {
 						if (idx >= 0 && idx < lessons.length) {
-							// calling startNewLesson will trigger effect to reopen intro but we want to keep it open
 							useDataStore.getState().startNewLesson(idx)
 							setShowIntro(true)
 						}
 					}}
+				/>
+
+				{/* Word bank modal */}
+				<WordBankModal
+					open={showWordBank && !showSummary}
+					lesson={currentLesson}
+					onClose={() => setShowWordBank(false)}
 				/>
 
 				<section className="mt-6 space-y-2 text-sm text-zinc-300">
@@ -119,6 +127,20 @@ const Main = () => {
 							<span className="font-medium text-zinc-100">
 								{currentSentenceIndex + 1} / {currentLesson.sentences?.length}
 							</span>
+						</span>
+						<span className="flex items-center gap-2 mt-2 w-full">
+							<button
+								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
+								onClick={() => setShowIntro(true)}
+							>
+								Lesson Info
+							</button>
+							<button
+								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
+								onClick={() => setShowWordBank(true)}
+							>
+								Word Bank
+							</button>
 						</span>
 					</div>
 					<p className="text-base text-zinc-200 leading-relaxed">
