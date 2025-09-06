@@ -76,12 +76,14 @@ const LessonControls: React.FC<Props> = ({ onBeforeSimulate }) => {
 			<select
 				value={currentLessonIndex}
 				onChange={handleLessonChange}
-				className="px-2 py-1 border rounded"
+				className="px-2 py-1 border rounded bg-black text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-black dark:text-white"
+				style={{ backgroundColor: "black", color: "white" }}
 			>
 				{lessons.map((lesson, i) => (
 					<option
 						key={i}
 						value={i}
+						className="bg-black text-white"
 					>
 						Lesson {lesson.lesson} - {lesson.details}
 					</option>
