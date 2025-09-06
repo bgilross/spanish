@@ -1,8 +1,9 @@
+// Duplicate of Main.tsx but lowercase for case-sensitive deployment environments.
+// Keep this as the canonical file; remove the capitalized variant if present.
 "use client"
 
 import React from "react"
 import { useDataStore } from "@/data/dataStore"
-// no direct translation helpers needed here
 import LessonControls from "@/components/LessonControls"
 import SentenceLine from "@/components/SentenceLine"
 import AnswerInput from "@/components/AnswerInput"
@@ -31,23 +32,18 @@ const Main = () => {
 	const [showIntro, setShowIntro] = React.useState(true)
 	const [showWordBank, setShowWordBank] = React.useState(false)
 
-	// Open intro modal on initial load & whenever the lesson index changes
 	React.useEffect(() => {
 		setShowIntro(true)
 		setShowSummary(false)
 	}, [currentLessonIndex])
 
-	// sizing kept in SentenceLine
-
 	const currentLesson = lessons[currentLessonIndex]
 	const currentSentenceObject = currentLesson.sentences?.[currentSentenceIndex]
 
-	// Initialize progress whenever lesson or sentence changes
 	React.useEffect(() => {
 		initializeSentenceProgress()
 	}, [initializeSentenceProgress, currentLessonIndex, currentSentenceIndex])
 
-	// Open summary when lesson completes (quiz finished)
 	React.useEffect(() => {
 		if (isLessonComplete()) setShowSummary(true)
 	}, [
@@ -57,21 +53,16 @@ const Main = () => {
 		currentSentenceProgress,
 	])
 
-	// Determine the next un-translated section index (original data index), if any
 	const activeSectionOriginalIndex: number | null = React.useMemo(() => {
 		const sections = currentSentenceProgress?.translationSections ?? []
 		const next = sections.find((s) => !s.isTranslated)
 		return next ? next.index : null
 	}, [currentSentenceProgress])
 
-	// Flash state remains here to keep behavior; handled inside AnswerInput
-
 	const onSubmit = (text: string) => {
 		const res = checkCurrentAnswer(text)
 		return { correct: res.correct }
 	}
-
-	// simulation is handled by LessonControls
 
 	return (
 		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-16">
@@ -83,7 +74,6 @@ const Main = () => {
 					<LessonControls onBeforeSimulate={() => setShowSummary(false)} />
 				</header>
 
-				{/* Summary modal */}
 				{showSummary && (
 					<SummaryModal
 						open={showSummary}
@@ -92,7 +82,6 @@ const Main = () => {
 					/>
 				)}
 
-				{/* Lesson intro modal (can coexist with word bank) */}
 				<LessonIntroModal
 					open={showIntro && !showSummary}
 					lesson={currentLesson}
@@ -107,7 +96,6 @@ const Main = () => {
 					}}
 				/>
 
-				{/* Word bank modal */}
 				<WordBankModal
 					open={showWordBank && !showSummary}
 					lesson={currentLesson}
