@@ -1,9 +1,10 @@
-import NextAuth, { type NextAuthOptions } from "next-auth"
+import NextAuth from "next-auth/next"
 import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from "@/lib/prisma"
 
-const authOptions: NextAuthOptions = {
+// Using const assertions to satisfy NextAuth expected literal types
+const authOptions = {
 	adapter: PrismaAdapter(prisma),
 	providers: [
 		GoogleProvider({
@@ -11,17 +12,19 @@ const authOptions: NextAuthOptions = {
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
 		}),
 	],
-	session: { strategy: "database" },
+	session: { strategy: "database" as const },
 	callbacks: {
-		async session({ session, user }) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		async session({ session, user }: { session: any; user: { id: string } }) {
 			if (session.user) {
 				;(session.user as { id?: string }).id = user.id
 			}
 			return session
 		},
 	},
-}
+} as const
 
-const handler = NextAuth(authOptions)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handler = NextAuth(authOptions as any)
 
 export { handler as GET, handler as POST }
