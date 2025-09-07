@@ -49,6 +49,17 @@ type LessonSummary = {
 		SubmissionLog & { expected?: string[]; references?: string[] }
 	>
 	references: string[]
+	// Added analytics for richer feedback
+	sentenceStats: Array<{
+		sentenceIndex: number
+		totalSections: number
+		attemptsBySection: Record<string, number>
+		incorrectAttemptsBySection: Record<string, number>
+		firstTryCorrectSections: number[]
+		incorrectSections: number[]
+		errorReferences: Record<string, number>
+	}>
+	errorCategoryCounts: Record<string, number>
 }
 
 export const useDataStore = create<DataStore>((set, get) => ({
@@ -236,6 +247,92 @@ export const useDataStore = create<DataStore>((set, get) => ({
 				}
 			})
 		const refs = Array.from(new Set(errs.flatMap((e) => e.references)))
+
+		// --- Added detailed analytics ---
+		// Group submissions by sentence & section to derive stats
+		const sentenceStatsMap = new Map<
+			number,
+			{
+				sentenceIndex: number
+				totalSections: number
+				attemptsBySection: Record<string, number>
+				incorrectAttemptsBySection: Record<string, number>
+				firstAttemptBySection: Record<string, SubmissionLog | undefined>
+				incorrectSectionsSet: Set<number>
+				errorReferences: Record<string, number>
+			}
+		>()
+
+		for (const s of subs) {
+			const sentIdx: number = s.sentenceIndex
+			if (!sentenceStatsMap.has(sentIdx)) {
+				const totalSections = (s.sentence?.data || []).filter(
+					(entry: SentenceDataEntry) =>
+						Boolean((entry as SentenceDataEntry)?.translation)
+				).length
+				sentenceStatsMap.set(sentIdx, {
+					sentenceIndex: sentIdx,
+					totalSections,
+					attemptsBySection: {},
+					incorrectAttemptsBySection: {},
+					firstAttemptBySection: {},
+					incorrectSectionsSet: new Set<number>(),
+					errorReferences: {},
+				})
+			}
+			const stat = sentenceStatsMap.get(sentIdx)!
+			const key = String(s.sectionIndex)
+			stat.attemptsBySection[key] = (stat.attemptsBySection[key] || 0) + 1
+			if (!stat.firstAttemptBySection[key]) stat.firstAttemptBySection[key] = s
+			if (!s.isCorrect) {
+				stat.incorrectAttemptsBySection[key] =
+					(stat.incorrectAttemptsBySection[key] || 0) + 1
+				// sectionIndex is number in SubmissionLog
+				if (typeof s.sectionIndex === "number") {
+					stat.incorrectSectionsSet.add(s.sectionIndex)
+				}
+				const refsObj: Record<string, (number | string)[]> =
+					(
+						s.section as unknown as {
+							reference?: Record<string, (number | string)[]>
+						}
+					).reference || {}
+				for (const rKey of Object.keys(refsObj)) {
+					stat.errorReferences[rKey] = (stat.errorReferences[rKey] || 0) + 1
+				}
+			}
+		}
+
+		const sentenceStats = Array.from(sentenceStatsMap.values()).map((v) => {
+			const firstTryCorrectSections: number[] = []
+			for (const [secKey, firstAttempt] of Object.entries(
+				v.firstAttemptBySection
+			)) {
+				if (firstAttempt && firstAttempt.isCorrect) {
+					// If only one attempt overall for this section and it's correct => first try success
+					if (v.attemptsBySection[secKey] === 1) {
+						firstTryCorrectSections.push(Number(secKey))
+					}
+				}
+			}
+			return {
+				sentenceIndex: v.sentenceIndex,
+				totalSections: v.totalSections,
+				attemptsBySection: v.attemptsBySection,
+				incorrectAttemptsBySection: v.incorrectAttemptsBySection,
+				firstTryCorrectSections,
+				incorrectSections: Array.from(v.incorrectSectionsSet.values()),
+				errorReferences: v.errorReferences,
+			}
+		})
+
+		// Aggregate error categories across entire lesson attempt
+		const errorCategoryCounts: Record<string, number> = {}
+		for (const inc of incorrect) {
+			for (const r of inc.references || []) {
+				errorCategoryCounts[r] = (errorCategoryCounts[r] || 0) + 1
+			}
+		}
 		return {
 			lessonNumber: lessonNum,
 			correctCount: correct.length,
@@ -244,6 +341,8 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			correct,
 			incorrect,
 			references: refs,
+			sentenceStats,
+			errorCategoryCounts,
 		}
 	},
 }))
