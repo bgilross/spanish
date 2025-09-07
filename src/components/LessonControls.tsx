@@ -24,6 +24,15 @@ const LessonControls: React.FC<Props> = ({
 	)
 
 	const [simulating, setSimulating] = React.useState(false)
+	const [isMobile, setIsMobile] = React.useState(false)
+
+	React.useEffect(() => {
+		if (typeof window === "undefined") return
+		const check = () => setIsMobile(window.innerWidth < 640)
+		check()
+		window.addEventListener("resize", check)
+		return () => window.removeEventListener("resize", check)
+	}, [])
 
 	const handleLessonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const index = parseInt(e.target.value)
@@ -35,12 +44,10 @@ const LessonControls: React.FC<Props> = ({
 		onBeforeSimulate?.()
 		setSimulating(true)
 		try {
-			// Ensure progress exists at start
 			if (!useDataStore.getState().currentSentenceProgress) {
 				initializeSentenceProgress()
 				await new Promise((r) => setTimeout(r, 0))
 			}
-
 			let guard = 0
 			while (!isLessonComplete() && guard < 10000) {
 				const state = useDataStore.getState()
@@ -49,9 +56,7 @@ const LessonControls: React.FC<Props> = ({
 				const sections =
 					state.currentSentenceProgress?.translationSections ?? []
 				const next = sections.find((s) => !s.isTranslated)
-
 				if (!sentenceObj) break
-
 				if (!next) {
 					if (!useDataStore.getState().currentSentenceProgress) {
 						initializeSentenceProgress()
@@ -60,12 +65,9 @@ const LessonControls: React.FC<Props> = ({
 					guard++
 					continue
 				}
-
 				const entry = sentenceObj.data[next.index]
 				const answers = expectedAnswers(entry)
 				const correctAns = answers[0] ?? "si"
-
-				// wrong then right
 				useDataStore.getState().checkCurrentAnswer("__wrong__")
 				await new Promise((r) => setTimeout(r, 0))
 				useDataStore.getState().checkCurrentAnswer(correctAns)
@@ -92,21 +94,20 @@ const LessonControls: React.FC<Props> = ({
 				aria-label="Select lesson"
 			>
 				{lessons.map((lesson, i) => {
-					const baseLabel = compact
-						? `L${lesson.lesson}: ${(lesson.details || lesson.name || "")
-								.split(/\.\s|;|,|\n/)[0]
-								.slice(0, 24)}${
-								(lesson.details || lesson.name || "").length > 24 ? "…" : ""
-						  }`
-						: `Lesson ${lesson.lesson} - ${lesson.details}`
+					const rawDetail = lesson.details || lesson.name || ""
+					const fullLabel = `Lesson ${lesson.lesson} - ${rawDetail}`
+					let truncated = rawDetail.split(/\.\s|;|,|\n/)[0].trim()
+					if (truncated.length > 28) truncated = truncated.slice(0, 28) + "…"
+					const mobileLabel = `L${lesson.lesson}: ${truncated}`
+					const display = compact && isMobile ? mobileLabel : fullLabel
 					return (
 						<option
 							key={i}
 							value={i}
 							className="bg-black text-white"
-							title={lesson.details}
+							title={fullLabel}
 						>
-							{baseLabel}
+							{display}
 						</option>
 					)
 				})}
