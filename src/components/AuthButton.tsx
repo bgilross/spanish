@@ -15,13 +15,14 @@ export function AuthButton() {
 			</button>
 		)
 	}
+	const userId = (session.user as { id?: string } | undefined)?.id
 	return (
 		<div className="flex items-center gap-2">
 			<span
 				className="text-xs text-zinc-300 max-w-[140px] truncate"
-				title={session.user.email || session.user.name || session.user.id}
+				title={session.user.email || session.user.name || userId || "User"}
 			>
-				{session.user.name || session.user.email || "User"}
+				{session.user.name || session.user.email || userId || "User"}
 			</span>
 			<button
 				className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
