@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma"
 // Using const assertions to satisfy NextAuth expected literal types
 const authOptions = {
 	adapter: PrismaAdapter(prisma),
+	allowDangerousEmailAccountLinking: process.env.NODE_ENV !== "production",
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID || "",
