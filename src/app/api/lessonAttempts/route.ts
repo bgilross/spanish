@@ -82,3 +82,22 @@ export async function GET(req: NextRequest) {
 		)
 	}
 }
+
+// DELETE /api/lessonAttempts?userId=...  -> remove all attempts for user (dev only)
+export async function DELETE(req: NextRequest) {
+	try {
+		if (process.env.NODE_ENV !== "development") {
+			return NextResponse.json({ error: "Not allowed in production" }, { status: 403 })
+		}
+		const { searchParams } = new URL(req.url)
+		const userId = searchParams.get("userId")
+		if (!userId) {
+			return NextResponse.json({ error: "userId query param required" }, { status: 400 })
+		}
+		const result = await prisma.lessonAttempt.deleteMany({ where: { userId } })
+		return NextResponse.json({ deleted: result.count })
+	} catch (err) {
+		console.error("DELETE /api/lessonAttempts error", err)
+		return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+	}
+}

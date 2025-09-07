@@ -47,6 +47,58 @@ const MainPage = () => {
 		if (fake) userId = fake
 	}
 
+	// Track if we've already auto-selected based on last completion
+	const autoSelectAppliedRef = React.useRef(false)
+
+	// Fetch last completed lesson attempts and auto-select next lesson on initial load
+	React.useEffect(() => {
+		if (!userId) return
+		if (autoSelectAppliedRef.current)
+			return // Only run once after user id is available
+		;(async () => {
+			try {
+				const res = await fetch(
+					`/api/lessonAttempts?userId=${userId}&limit=100`
+				)
+				if (!res.ok) return
+				const data = await res.json()
+				const attempts: Array<{ lessonNumber: number }> = data.attempts || []
+				if (attempts.length === 0) {
+					autoSelectAppliedRef.current = true
+					return
+				}
+				const maxCompleted = attempts.reduce(
+					(acc, a) => (a.lessonNumber > acc ? a.lessonNumber : acc),
+					0
+				)
+				// Determine target lesson index (maxCompleted + 1) within bounds
+				const targetLessonNumber = Math.min(
+					maxCompleted + 1,
+					lessons[lessons.length - 1].lesson
+				)
+				// Find index by lesson number (lessons may not be contiguous in theory)
+				const targetIndex = lessons.findIndex(
+					(l) => l.lesson === targetLessonNumber
+				)
+				if (targetIndex >= 0 && targetIndex !== currentLessonIndex) {
+					useDataStore.getState().startNewLesson(targetIndex)
+				}
+				autoSelectAppliedRef.current = true
+			} catch (e) {
+				console.warn("Auto-select lesson failed", e)
+			}
+		})()
+	}, [userId, lessons, currentLessonIndex])
+
+	// When user re-opens the lesson intro (back to lessons) after closing, we can re-align to last+1
+	React.useEffect(() => {
+		if (!showIntro) return
+		if (!userId) return
+		// Don't force after initial apply if user has manually navigated to a higher lesson already
+		if (!autoSelectAppliedRef.current) return
+		// We could optionally refresh attempts to catch newly completed lessons in another tab
+	}, [showIntro, userId])
+
 	React.useEffect(() => {
 		setShowIntro(true)
 		setShowSummary(false)
@@ -149,6 +201,31 @@ const MainPage = () => {
 							>
 								Dashboard
 							</a>
+						)}
+						{process.env.NODE_ENV === "development" && userId && (
+							<button
+								onClick={async () => {
+								if (!confirm("Clear ALL lesson attempts for this user?")) return
+								try {
+									const res = await fetch(`/api/lessonAttempts?userId=${userId}`, {
+										method: "DELETE",
+									})
+									if (!res.ok) throw new Error("Delete failed")
+									// Reset auto-select so it can recompute (will land on lesson 1)
+									autoSelectAppliedRef.current = false
+									// Force re-run selection next effect cycle
+									setShowIntro(true)
+									alert("History cleared")
+								} catch (e) {
+									alert("Failed to clear history")
+									console.error(e)
+								}
+							}}
+							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40"
+							title="Dev only: clear stored lesson attempts"
+						>
+								Clear History
+							</button>
 						)}
 						<AuthButton />
 						{/* Lesson controls forced to next line on very narrow screens */}
