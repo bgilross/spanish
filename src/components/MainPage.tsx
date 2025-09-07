@@ -3,6 +3,8 @@
 "use client"
 
 import React from "react"
+import { useSession } from "next-auth/react"
+import { AuthButton } from "@/components/AuthButton"
 import { useDataStore } from "@/data/dataStore"
 import LessonControls from "@/components/LessonControls"
 import SentenceLine from "@/components/SentenceLine"
@@ -34,6 +36,7 @@ const MainPage = () => {
 	const savedLessonNumbersRef = React.useRef<Set<number>>(new Set())
 	const [showIntro, setShowIntro] = React.useState(true)
 	const [showWordBank, setShowWordBank] = React.useState(false)
+	const { data: session } = useSession()
 
 	React.useEffect(() => {
 		setShowIntro(true)
@@ -48,18 +51,18 @@ const MainPage = () => {
 	}, [initializeSentenceProgress, currentLessonIndex, currentSentenceIndex])
 
 	React.useEffect(() => {
+		if (!session?.user?.id) return
 		if (!isLessonComplete()) return
 		const summary = getLessonSummary()
 		if (savedLessonNumbersRef.current.has(summary.lessonNumber)) return
 		savedLessonNumbersRef.current.add(summary.lessonNumber)
 		setShowSummary(true)
 		setSaveStatus({ state: "saving" })
-		let userId = localStorage.getItem("demoUserId") || undefined
-		if (!userId) {
-			userId = crypto.randomUUID()
-			localStorage.setItem("demoUserId", userId)
+		const payload = {
+			userId: session.user.id,
+			lessonNumber: summary.lessonNumber,
+			summary,
 		}
-		const payload = { userId, lessonNumber: summary.lessonNumber, summary }
 		fetch("/api/lessonAttempts", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -78,6 +81,7 @@ const MainPage = () => {
 				setSaveStatus({ state: "error", message: e.message })
 			})
 	}, [
+		session?.user?.id,
 		isLessonComplete,
 		currentLessonIndex,
 		currentSentenceIndex,
@@ -103,8 +107,18 @@ const MainPage = () => {
 					<h1 className="text-2xl font-semibold tracking-tight">
 						Spanish Lesson Trainer
 					</h1>
-					<LessonControls onBeforeSimulate={() => setShowSummary(false)} />
+					<div className="flex items-center gap-3">
+						<AuthButton />
+						<LessonControls onBeforeSimulate={() => setShowSummary(false)} />
+					</div>
 				</header>
+
+				{!session?.user?.id && (
+					<div className="mt-4 p-3 text-xs rounded border border-amber-500/40 bg-amber-500/5 text-amber-300">
+						Sign in to record your progress. Lesson attempts won&#39;t be saved
+						while signed out.
+					</div>
+				)}
 
 				{showSummary && (
 					<SummaryModal
