@@ -1,10 +1,10 @@
-// NOTE: File is committed as lowercase `main.tsx` in repo; import must match case for Linux/Vercel
-import Main from "@/components/MainPage"
+// Render the canonical MainPage component (includes persistence & logging)
+import MainPage from "@/components/MainPage"
 
 export default function Home() {
 	return (
 		<div>
-			<Main />
+			<MainPage />
 		</div>
 	)
 }
