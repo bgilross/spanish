@@ -1,6 +1,9 @@
 "use client"
 import React from "react"
 import { useSession } from "next-auth/react"
+import spanishData from "@/data/spanishData"
+import { expectedAnswers } from "@/lib/translation"
+import type { SubmissionLog, SentenceDataEntry, Sentence } from "@/data/types"
 
 interface SentenceStat {
 	sentenceIndex: number
@@ -9,9 +12,15 @@ interface SentenceStat {
 	incorrectSections?: number[]
 }
 
+interface SummarySubmission extends SubmissionLog {
+	expected?: string[]
+	references?: string[]
+}
+
 interface AttemptSummary {
 	errorCategoryCounts?: Record<string, number>
-	incorrect?: unknown[]
+	incorrect?: SummarySubmission[]
+	correct?: SummarySubmission[]
 	sentenceStats?: SentenceStat[]
 	[k: string]: unknown
 }
@@ -87,6 +96,39 @@ export function ProgressDashboard() {
 		}
 	}, [attempts])
 
+	// Build reference explanation map (reference key -> explanation strings)
+	const referenceInfoMap = React.useMemo(() => {
+		interface LessonLike {
+			info: string[]
+			sentences?: Sentence[]
+		}
+		const map: Record<string, string[]> = {}
+		const lessons = (spanishData as { lessons?: LessonLike[] }).lessons || []
+		for (const lesson of lessons) {
+			const infoArr = Array.isArray(lesson.info) ? lesson.info : []
+			for (const sentence of lesson.sentences || []) {
+				for (const entry of sentence.data || []) {
+					const refObj = (
+						entry as { reference?: Record<string, (number | string)[]> }
+					).reference
+					if (!refObj) continue
+					for (const [refKey, arr] of Object.entries(refObj)) {
+						if (!map[refKey]) map[refKey] = []
+						for (const val of arr) {
+							if (typeof val === "number" && infoArr[val]) {
+								if (!map[refKey].includes(infoArr[val]))
+									map[refKey].push(infoArr[val])
+							} else if (typeof val === "string") {
+								if (!map[refKey].includes(val)) map[refKey].push(val)
+							}
+						}
+					}
+				}
+			}
+		}
+		return map
+	}, [])
+
 	if (status === "loading") {
 		return <div className="text-sm text-zinc-400">Loading session…</div>
 	}
@@ -137,13 +179,12 @@ export function ProgressDashboard() {
 							<p className="text-xs text-zinc-500">None</p>
 						)}
 						{aggregate.topCategories.map(([k, v]) => (
-							<p
+							<ErrorCategoryRow
 								key={k}
-								className="text-xs text-zinc-300 flex justify-between"
-							>
-								<span>{k}</span>
-								<span className="text-zinc-400">{v}</span>
-							</p>
+								k={k}
+								v={v}
+								explanations={referenceInfoMap[k]}
+							/>
 						))}
 					</div>
 				</div>
@@ -191,6 +232,62 @@ function AttemptRow({
 	const cats = attempt.summary?.errorCategoryCounts || {}
 	const incorrect = attempt.summary?.incorrect?.length || attempt.incorrectCount
 	const sentenceStats = attempt.summary?.sentenceStats || []
+
+	// Build per-sentence detailed attempts: user inputs vs expected answers.
+	const sentenceDetails = React.useMemo(() => {
+		const map = new Map<
+			number,
+			{
+				sentence?: Sentence
+				sections: Record<
+					number,
+					{ phrase: string; attempts: string[]; expected: string[] }
+				>
+			}
+		>()
+		const incorrectSubs = attempt.summary.incorrect || []
+		const correctSubs = attempt.summary.correct || []
+		const process = (subs: SummarySubmission[]) => {
+			for (const s of subs) {
+				if (
+					typeof s.sentenceIndex !== "number" ||
+					typeof s.sectionIndex !== "number"
+				)
+					continue
+				if (!map.has(s.sentenceIndex)) {
+					map.set(s.sentenceIndex, {
+						sentence: s.sentence as Sentence,
+						sections: {},
+					})
+				}
+				const sent = map.get(s.sentenceIndex)!
+				const secIdx = s.sectionIndex
+				const sections = sent.sections
+				if (!sections[secIdx]) {
+					const entry = s.section as SentenceDataEntry
+					const expected =
+						s.expected && s.expected.length
+							? s.expected
+							: expectedAnswers(entry)
+					const phrase =
+						(entry as { phrase?: string }).phrase || "Section " + (secIdx + 1)
+					sections[secIdx] = { phrase, attempts: [], expected }
+				}
+				// Append user input if new
+				if (typeof s.userInput === "string" && s.userInput.trim()) {
+					const arr = sections[secIdx].attempts
+					if (arr[arr.length - 1] !== s.userInput) arr.push(s.userInput)
+				}
+			}
+		}
+		process(incorrectSubs)
+		process(correctSubs)
+		// Return ordered array
+		return Array.from(map.entries())
+			.sort((a, b) => a[0] - b[0])
+			.map(([idx, val]) => ({ sentenceIndex: idx, ...val }))
+	}, [attempt.summary])
+
 	return (
 		<li className="border border-zinc-700 rounded-md bg-zinc-800/40">
 			<button
@@ -218,25 +315,33 @@ function AttemptRow({
 				</span>
 			</button>
 			{open && (
-				<div className="px-4 pb-4 pt-1 space-y-3 text-xs text-zinc-300">
-					<div className="flex flex-wrap gap-3">
-						{Object.keys(cats).length === 0 && (
-							<span className="text-zinc-500">No errors</span>
-						)}
-						{Object.entries(cats).map(([k, v]) => (
-							<span
-								key={k}
-								className="inline-flex items-center gap-1 rounded border border-zinc-600 px-2 py-0.5 bg-zinc-800/60"
-							>
-								<span>{k}</span>
-								<span className="text-zinc-400">{v as number}</span>
-							</span>
-						))}
+				<div className="px-4 pb-4 pt-1 space-y-5 text-xs text-zinc-300">
+					{/* Error Categories */}
+					<div className="space-y-2">
+						<p className="text-[11px] uppercase tracking-wide text-zinc-500">
+							Error Categories
+						</p>
+						<div className="flex flex-wrap gap-2">
+							{Object.keys(cats).length === 0 && (
+								<span className="text-zinc-500">No errors</span>
+							)}
+							{Object.entries(cats).map(([k, v]) => (
+								<span
+									key={k}
+									className="inline-flex items-center gap-1 rounded border border-zinc-600 px-2 py-0.5 bg-zinc-800/60"
+								>
+									<span>{k}</span>
+									<span className="text-zinc-400">{v as number}</span>
+								</span>
+							))}
+						</div>
 					</div>
+
+					{/* Sentence Stats */}
 					{sentenceStats.length > 0 && (
-						<div className="space-y-1">
+						<div className="space-y-2">
 							<p className="text-[11px] uppercase tracking-wide text-zinc-500">
-								Sentences
+								Sentence Performance
 							</p>
 							<div className="grid gap-2 sm:grid-cols-2">
 								{sentenceStats.map((s: SentenceStat) => {
@@ -266,8 +371,124 @@ function AttemptRow({
 							</div>
 						</div>
 					)}
+
+					{/* Sentence Details */}
+					{sentenceDetails.length > 0 && (
+						<div className="space-y-2">
+							<p className="text-[11px] uppercase tracking-wide text-zinc-500">
+								Sentence Details
+							</p>
+							<div className="space-y-3">
+								{sentenceDetails.map((sd) => (
+									<div
+										key={sd.sentenceIndex}
+										className="border border-zinc-700 rounded p-2 bg-zinc-900/50 space-y-2"
+									>
+										<p className="text-[11px] font-medium text-zinc-200">
+											Sentence {sd.sentenceIndex + 1}:{" "}
+											<span className="text-zinc-400">
+												{sd.sentence?.sentence}
+											</span>
+										</p>
+										<div className="space-y-1">
+											{Object.entries(sd.sections)
+												.sort((a, b) => Number(a[0]) - Number(b[0]))
+												.map(([secIdx, sec]) => (
+													<div
+														key={secIdx}
+														className="text-[11px] border border-zinc-700 rounded px-2 py-1 bg-zinc-800/40"
+													>
+														<p className="text-zinc-300">
+															<span className="text-zinc-500">
+																Section {Number(secIdx) + 1}:
+															</span>{" "}
+															{sec.phrase}
+														</p>
+														<p className="text-[10px] mt-0.5">
+															<span className="text-zinc-500">
+																Your Attempts:
+															</span>{" "}
+															{sec.attempts.map((a, i) => (
+																<span
+																	key={i}
+																	className={
+																		"px-1 rounded " +
+																		(i === sec.attempts.length - 1
+																			? "bg-emerald-700/40 text-emerald-300"
+																			: "bg-zinc-700/40 text-zinc-300")
+																	}
+																>
+																	{a}
+																</span>
+															))}
+														</p>
+														<p className="text-[10px] mt-0.5">
+															<span className="text-zinc-500">Correct:</span>{" "}
+															{sec.expected.map((e, i) => (
+																<span
+																	key={i}
+																	className="px-1 rounded bg-emerald-800/40 text-emerald-300 mr-1"
+																>
+																	{e}
+																</span>
+															))}
+														</p>
+													</div>
+												))}
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
 				</div>
 			)}
 		</li>
+	)
+}
+
+function ErrorCategoryRow({
+	k,
+	v,
+	explanations,
+}: {
+	k: string
+	v: number
+	explanations?: string[]
+}) {
+	const [open, setOpen] = React.useState(false)
+	return (
+		<div className="mb-1">
+			<button
+				onClick={() => setOpen((o) => !o)}
+				className="text-xs w-full text-left flex justify-between items-center gap-2 hover:text-zinc-200"
+			>
+				<span>{k}</span>
+				<span className="text-zinc-400 flex items-center gap-2">
+					{v}
+					<span className="text-[10px] px-1 py-0.5 rounded bg-zinc-700">
+						{open ? "-" : "+"}
+					</span>
+				</span>
+			</button>
+			{open && (
+				<div className="mt-1 space-y-1 pl-2 border-l border-zinc-700">
+					{explanations && explanations.length > 0 ? (
+						explanations.map((e, i) => (
+							<p
+								key={i}
+								className="text-[10px] text-zinc-400 leading-snug"
+							>
+								{e}
+							</p>
+						))
+					) : (
+						<p className="text-[10px] text-zinc-600">
+							No reference details found.
+						</p>
+					)}
+				</div>
+			)}
+		</div>
 	)
 }
