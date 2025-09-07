@@ -13,6 +13,7 @@ import SummaryModal from "@/components/SummaryModal"
 import LessonIntroModal from "@/components/LessonIntroModal"
 import DebugPanel from "@/components/DebugPanel"
 import WordBankModal from "@/components/WordBankModal"
+import OriginalSentenceLine from "./OriginalSentenceLine"
 
 const MainPage = () => {
 	const lessons = useDataStore((s) => s.lessons)
@@ -200,9 +201,11 @@ const MainPage = () => {
 							</button>
 						</span>
 					</div>
-					<p className="text-base text-zinc-200 leading-relaxed">
-						{currentSentenceObject?.sentence}
-					</p>
+					{/* Replaced plain paragraph with underlined active section sentence display */}
+					<OriginalSentenceLine
+						sentence={currentSentenceObject}
+						activeIndex={activeSectionOriginalIndex}
+					/>
 				</section>
 
 				<section className="mt-6">
