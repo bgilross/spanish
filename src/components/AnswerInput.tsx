@@ -2,7 +2,6 @@
 
 import React from "react"
 import { spanishWordCount } from "@/lib/translation"
-import { isWordObject } from "@/lib/translation"
 import type { Sentence } from "@/data/types"
 
 type Props = {
@@ -62,20 +61,7 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 		// (Original untranslated phrase user sees)
 		const phrase = (entry as { phrase?: string }).phrase || ""
 		const englishCount = phrase.trim().split(/\s+/).filter(Boolean).length
-		// Build a representative Spanish target display (without normalization)
-		const t = (entry as { translation?: unknown }).translation
-		let spanishDisplay: string | null = null
-		if (typeof t === "string") spanishDisplay = t
-		else if (t && isWordObject(t)) spanishDisplay = t.word
-		else if (Array.isArray(t)) {
-			spanishDisplay = t
-				.map((item) =>
-					typeof item === "string" ? item : isWordObject(item) ? item.word : ""
-				)
-				.filter(Boolean)
-				.join(" ")
-		}
-		return { spanishCount, englishCount, spanishDisplay }
+		return { spanishCount, englishCount }
 	})()
 
 	return (
@@ -94,16 +80,9 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 				disabled={activeIndex == null}
 			/>
 			{info && (
-				<div className="text-[10px] leading-snug px-2 py-1 rounded border border-zinc-700 bg-zinc-800/60 max-w-[32ch]">
-					{info.spanishDisplay && (
-						<p className="text-zinc-200 break-words">
-							<span className="text-zinc-500">Spanish:</span>{" "}
-							{info.spanishDisplay}
-						</p>
-					)}
-					<p className="text-zinc-400 mt-0.5">
-						<span className="text-zinc-500">Words:</span> EN {info.englishCount}{" "}
-						· ES {info.spanishCount}
+				<div className="text-[10px] leading-snug px-2 py-1 rounded border border-zinc-700 bg-zinc-800/60 max-w-[40ch]">
+					<p className="text-zinc-300">
+						{info.spanishCount} Spanish word{info.spanishCount === 1 ? "" : "s"} and {info.englishCount} English word{info.englishCount === 1 ? "" : "s"} expected
 					</p>
 				</div>
 			)}
