@@ -37,8 +37,13 @@ const LessonIntroModal: React.FC<Props> = ({
 	const isEmptyLesson = sentencesCount === 0
 	const handleCompleteEmpty = () => {
 		if (!isEmptyLesson) return
-		markEmptyLessonComplete(lesson.lesson)
-		onClose()
+		if (!isAlreadyMarked) {
+			markEmptyLessonComplete(lesson.lesson)
+		}
+		// Advance to next lesson (keep modal open) if available
+		if (hasNext) {
+			onNavigate(lessonIndex + 1)
+		}
 	}
 
 	return (
@@ -80,12 +85,14 @@ const LessonIntroModal: React.FC<Props> = ({
 							>
 								Next
 							</button>
-							<button
-								className="px-3 py-1 text-sm rounded bg-emerald-600 text-white hover:bg-emerald-500"
-								onClick={onClose}
-							>
-								Start Quiz
-							</button>
+							{!isEmptyLesson && (
+								<button
+									className="px-3 py-1 text-sm rounded bg-emerald-600 text-white hover:bg-emerald-500"
+									onClick={onClose}
+								>
+									Start Quiz
+								</button>
+							)}
 							{isEmptyLesson && (
 								<button
 									className="px-3 py-1 text-sm rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40"
