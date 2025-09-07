@@ -111,20 +111,25 @@ const MainPage = () => {
 	return (
 		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-16">
 			<div className="w-full max-w-3xl pt-6">
-				<header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-					<h1 className="text-2xl font-semibold tracking-tight">
+				<header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+					<h1 className="text-xl sm:text-2xl font-semibold tracking-tight leading-tight">
 						Spanish Lesson Trainer
 					</h1>
-					<div className="flex items-center gap-3">
+					<div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
 						{userId && (
 							<a
 								href="/dashboard"
-								className="px-2 py-1 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+								className="px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800"
 							>
 								Dashboard
 							</a>
 						)}
 						<AuthButton />
+						{/* Lesson controls forced to next line on very narrow screens */}
+						<div
+							className="flex-grow basis-full h-0 sm:hidden"
+							aria-hidden
+						/>
 						<LessonControls onBeforeSimulate={() => setShowSummary(false)} />
 					</div>
 				</header>

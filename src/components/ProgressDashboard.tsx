@@ -273,7 +273,7 @@ export function ProgressDashboard() {
 			</div>
 
 			{aggregate && (
-				<div className="grid gap-4 sm:grid-cols-4 text-sm">
+				<div className="grid gap-3 grid-cols-2 sm:grid-cols-4 text-sm">
 					<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3">
 						<p className="text-zinc-400">Attempts</p>
 						<p className="text-lg font-semibold text-zinc-100">
@@ -489,39 +489,42 @@ function AttemptRow({
 		<li className="border border-zinc-700 rounded-md bg-zinc-800/40">
 			<button
 				onClick={() => setOpen((o) => !o)}
-				className="w-full text-left px-3 py-2 flex items-center justify-between gap-4 hover:bg-zinc-800/60"
+				className="w-full text-left px-3 py-2 flex items-start sm:items-center justify-between gap-3 sm:gap-4 hover:bg-zinc-800/60"
 			>
-				<span className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-					<span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-semibold rounded-full bg-zinc-700 text-zinc-200 border border-zinc-500">
-						{attemptIndex}
+				<span className="flex flex-col gap-1 min-w-0">
+					<span className="flex items-center gap-2">
+						<span className="inline-flex shrink-0 items-center justify-center w-5 h-5 text-[10px] font-semibold rounded-full bg-zinc-700 text-zinc-200 border border-zinc-500">
+							{attemptIndex}
+						</span>
+						<span className="text-xs font-medium text-zinc-200 truncate">
+							Lesson {attempt.lessonNumber}
+						</span>
 					</span>
-					<span className="text-xs font-medium text-zinc-200">
-						Lesson {attempt.lessonNumber}
-					</span>
-					<span className="text-xs text-zinc-400">
-						{created.toLocaleString()}
+					<span className="flex items-center gap-2 text-[10px] text-zinc-500">
+						<span className="sm:hidden">{created.toLocaleDateString()}</span>
+						<span className="hidden sm:inline">{created.toLocaleString()}</span>
 					</span>
 				</span>
-				<span className="flex items-center gap-4">
-					<span className="text-xs text-emerald-400 font-semibold">
+				<span className="flex flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-4 text-right">
+					<span className="text-xs text-emerald-400 font-semibold leading-none">
 						{accuracy.toFixed(1)}%
 					</span>
-					<span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700 text-zinc-200">
+					<span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700 text-zinc-200 leading-none">
 						{attempt.correctCount}/{attempt.correctCount + incorrect}
 					</span>
-					<span className="text-[10px] px-1 py-0.5 rounded bg-zinc-700 text-zinc-300">
+					<span className="text-[10px] px-1 py-0.5 rounded bg-zinc-700 text-zinc-300 leading-none">
 						{open ? "Hide" : "Show"}
 					</span>
 				</span>
 			</button>
 			{open && (
-				<div className="px-4 pb-4 pt-1 space-y-5 text-xs text-zinc-300">
+				<div className="px-3 sm:px-4 pb-4 pt-1 space-y-5 text-[11px] sm:text-xs text-zinc-300">
 					{/* Error Categories */}
 					<div className="space-y-2">
 						<p className="text-[11px] uppercase tracking-wide text-zinc-500">
 							Error Categories
 						</p>
-						<div className="space-y-1">
+						<div className="space-y-1 max-h-56 overflow-auto pr-1">
 							{Object.keys(cats).length === 0 && (
 								<span className="text-zinc-500 text-xs">No errors</span>
 							)}
@@ -585,7 +588,7 @@ function AttemptRow({
 											key={sd.sentenceIndex}
 											className="border border-zinc-700 rounded p-2 bg-zinc-900/50 space-y-2"
 										>
-											<p className="text-[11px] font-medium text-zinc-200">
+											<p className="text-[11px] font-medium text-zinc-200 break-words">
 												Sentence {sd.sentenceIndex + 1}:{" "}
 												<span className="text-zinc-400">
 													{sd.sentence?.sentence}
@@ -611,13 +614,13 @@ function AttemptRow({
 															key={secIdx}
 															className="text-[11px] border border-zinc-700 rounded px-2 py-1 bg-zinc-800/40"
 														>
-															<p className="text-zinc-300">
+															<p className="text-zinc-300 break-words">
 																<span className="text-zinc-500">
 																	Section {Number(secIdx) + 1}:
 																</span>{" "}
 																{sec.phrase}
 															</p>
-															<p className="text-[10px] mt-0.5">
+															<p className="text-[10px] mt-0.5 break-words">
 																<span className="text-zinc-500">
 																	Your Attempts:
 																</span>{" "}
@@ -636,7 +639,7 @@ function AttemptRow({
 																	)
 																})}
 															</p>
-															<p className="text-[10px] mt-0.5">
+															<p className="text-[10px] mt-0.5 break-words">
 																<span className="text-zinc-500">Correct:</span>{" "}
 																{sec.expected.map((e, i) => (
 																	<span
@@ -660,13 +663,13 @@ function AttemptRow({
 																					key={i}
 																					className="text-[10px]"
 																				>
-																					<p className="text-zinc-500">
+																					<p className="text-zinc-500 break-words">
 																						Ref: {formatErrorCategory(rd.key)}
 																					</p>
 																					{lines.map((l, li) => (
 																						<p
 																							key={li}
-																							className="text-zinc-400 leading-snug"
+																							className="text-zinc-400 leading-snug break-words"
 																						>
 																							{l}
 																						</p>
