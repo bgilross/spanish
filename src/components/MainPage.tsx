@@ -109,6 +109,14 @@ const MainPage = () => {
 						Spanish Lesson Trainer
 					</h1>
 					<div className="flex items-center gap-3">
+						{userId && (
+							<a
+								href="/dashboard"
+								className="px-2 py-1 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+							>
+								Dashboard
+							</a>
+						)}
 						<AuthButton />
 						<LessonControls onBeforeSimulate={() => setShowSummary(false)} />
 					</div>
