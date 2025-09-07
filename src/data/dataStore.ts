@@ -17,9 +17,11 @@ interface DataStore {
 	currentSentenceProgress: SentenceProgress | null
 	submissionLog: SubmissionLog[]
 	errorLog: ErrorEntry[]
+	emptyLessonCompleted: Record<number, boolean>
 
 	// sentences: Sentence[]
 	startNewLesson: (index: number) => void
+	markEmptyLessonComplete: (lessonNumber: number) => void
 	initializeSentenceProgress: () => void
 	setSectionTranslated: (sectionIndex: number, translated?: boolean) => void
 	nextSentence: () => void
@@ -34,6 +36,7 @@ const lessons = spanishData.lessons
 const currentLessonIndex = 0
 const currentSentenceIndex = 0
 const currentSentenceProgress = null
+const emptyLessonCompleted: Record<number, boolean> = {}
 
 type SentenceProgress = {
 	translationSections: TranslationSections
@@ -69,6 +72,7 @@ export const useDataStore = create<DataStore>((set, get) => ({
 	currentSentenceProgress,
 	submissionLog: [],
 	errorLog: [],
+	emptyLessonCompleted,
 	startNewLesson: (index: number) => {
 		set({
 			currentLessonIndex: index,
@@ -77,6 +81,14 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			submissionLog: [],
 			errorLog: [],
 		})
+	},
+	markEmptyLessonComplete: (lessonNumber: number) => {
+		set((state) => ({
+			emptyLessonCompleted: {
+				...state.emptyLessonCompleted,
+				[lessonNumber]: true,
+			},
+		}))
 	},
 
 	initializeSentenceProgress: () => {
@@ -214,8 +226,14 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			currentLessonIndex,
 			currentSentenceIndex,
 			currentSentenceProgress,
+			emptyLessonCompleted,
 		} = get()
 		const sentences = lessons[currentLessonIndex]?.sentences ?? []
+		// Empty lessons only count as complete if explicitly marked
+		if (sentences.length === 0) {
+			const lessonNumber = lessons[currentLessonIndex].lesson
+			return Boolean(emptyLessonCompleted[lessonNumber])
+		}
 		const isLast = currentSentenceIndex >= sentences.length - 1
 		const allDone =
 			currentSentenceProgress?.translationSections.every(

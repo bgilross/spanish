@@ -54,10 +54,18 @@ const MainPage = () => {
 
 	const currentLesson = lessons[currentLessonIndex]
 	const currentSentenceObject = currentLesson.sentences?.[currentSentenceIndex]
+	const hasSentences = (currentLesson.sentences?.length || 0) > 0
 
 	React.useEffect(() => {
+		// Skip initialization for empty lessons
+		if ((lessons[currentLessonIndex]?.sentences?.length || 0) === 0) return
 		initializeSentenceProgress()
-	}, [initializeSentenceProgress, currentLessonIndex, currentSentenceIndex])
+	}, [
+		initializeSentenceProgress,
+		currentLessonIndex,
+		currentSentenceIndex,
+		lessons,
+	])
 
 	React.useEffect(() => {
 		if (!userId) return
@@ -105,8 +113,22 @@ const MainPage = () => {
 	}, [currentSentenceProgress])
 
 	const onSubmit = (text: string) => {
+		if (!hasSentences) return { correct: false }
 		const res = checkCurrentAnswer(text)
 		return { correct: res.correct }
+	}
+
+	const goPrevLesson = () => {
+		if (currentLessonIndex > 0) {
+			useDataStore.getState().startNewLesson(currentLessonIndex - 1)
+			setShowIntro(true)
+		}
+	}
+	const goNextLesson = () => {
+		if (currentLessonIndex < lessons.length - 1) {
+			useDataStore.getState().startNewLesson(currentLessonIndex + 1)
+			setShowIntro(true)
+		}
 	}
 
 	return (
@@ -195,7 +217,11 @@ const MainPage = () => {
 						<span className="inline-flex items-center gap-1">
 							<span className="text-zinc-400">Sentence:</span>
 							<span className="font-medium text-zinc-100">
-								{currentSentenceIndex + 1} / {currentLesson.sentences?.length}
+								{hasSentences
+									? `${currentSentenceIndex + 1} / ${
+											currentLesson.sentences?.length
+									  }`
+									: "—"}
 							</span>
 						</span>
 						<span className="flex items-center gap-2 mt-2 w-full">
@@ -211,51 +237,76 @@ const MainPage = () => {
 							>
 								Word Bank
 							</button>
+							<div className="flex gap-2 ml-auto">
+								<button
+									className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 disabled:opacity-40"
+									onClick={goPrevLesson}
+									disabled={currentLessonIndex === 0}
+								>
+									Prev Lesson
+								</button>
+								<button
+									className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 disabled:opacity-40"
+									onClick={goNextLesson}
+									disabled={currentLessonIndex >= lessons.length - 1}
+								>
+									Next Lesson
+								</button>
+							</div>
 						</span>
 					</div>
-					{/* Replaced plain paragraph with underlined active section sentence display */}
-					<OriginalSentenceLine
-						sentence={currentSentenceObject}
-						activeIndex={activeSectionOriginalIndex}
-					/>
+					{/* Show original sentence line unless lesson has no sentences */}
+					{hasSentences ? (
+						<OriginalSentenceLine
+							sentence={currentSentenceObject}
+							activeIndex={activeSectionOriginalIndex}
+						/>
+					) : (
+						<p className="text-sm text-zinc-400 mt-2">
+							No sentences present in this lesson. Click &quot;Next Lesson&quot;
+							to advance.
+						</p>
+					)}
 				</section>
 
-				<section className="mt-6">
-					<div className="rounded-lg bg-zinc-800/60 backdrop-blur-sm border border-zinc-700 px-4 py-6 shadow-inner shadow-black/40">
-						<SentenceLine
-							sentence={currentSentenceObject}
-							toTranslate={
-								new Set(
-									currentSentenceProgress?.translationSections.map(
-										(s) => s.index
-									) || []
-								)
-							}
-							translated={
-								new Set(
-									(currentSentenceProgress?.translationSections || [])
-										.filter((s) => s.isTranslated)
-										.map((s) => s.index)
-								)
-							}
-							activeIndex={activeSectionOriginalIndex}
-							minCh={3}
-							maxCh={20}
-						/>
-						<div className="mt-4 flex flex-wrap items-center gap-3">
-							<AnswerInput
-								activeIndex={activeSectionOriginalIndex}
+				{hasSentences && (
+					<section className="mt-6">
+						<div className="rounded-lg bg-zinc-800/60 backdrop-blur-sm border border-zinc-700 px-4 py-6 shadow-inner shadow-black/40">
+							<SentenceLine
 								sentence={currentSentenceObject}
-								onSubmit={onSubmit}
+								toTranslate={
+									new Set(
+										currentSentenceProgress?.translationSections.map(
+											(s) => s.index
+										) || []
+									)
+								}
+								translated={
+									new Set(
+										(currentSentenceProgress?.translationSections || [])
+											.filter((s) => s.isTranslated)
+											.map((s) => s.index)
+									)
+								}
+								activeIndex={activeSectionOriginalIndex}
+								minCh={3}
+								maxCh={20}
 							/>
-							{activeSectionOriginalIndex == null && (
-								<span className="text-xs text-emerald-400 font-medium">
-									Sentence complete
-								</span>
-							)}
+							<div className="mt-4 flex flex-wrap items-center gap-3">
+								<AnswerInput
+									activeIndex={activeSectionOriginalIndex}
+									sentence={currentSentenceObject}
+									onSubmit={onSubmit}
+								/>
+								{activeSectionOriginalIndex == null && (
+									<span className="text-xs text-emerald-400 font-medium">
+										Sentence complete
+									</span>
+								)}
+							</div>
 						</div>
-					</div>
-				</section>
+					</section>
+				)}
 
 				<section className="mt-10">
 					<DebugPanel

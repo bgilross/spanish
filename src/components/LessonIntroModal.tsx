@@ -4,6 +4,7 @@ import React from "react"
 import type { Lesson } from "@/data/types"
 import LessonControls from "@/components/LessonControls"
 import { APP_VERSION } from "@/lib/version"
+import { useDataStore } from "@/data/dataStore"
 
 type Props = {
 	open: boolean
@@ -24,10 +25,21 @@ const LessonIntroModal: React.FC<Props> = ({
 	onNavigate,
 	lessons,
 }) => {
+	const markEmptyLessonComplete = useDataStore((s) => s.markEmptyLessonComplete)
+	const isAlreadyMarked = useDataStore(
+		(s) => s.emptyLessonCompleted[lesson.lesson]
+	)
 	if (!open) return null
 
 	const hasPrev = lessonIndex > 0
 	const hasNext = lessonIndex < totalLessons - 1
+	const sentencesCount = lesson.sentences?.length || 0
+	const isEmptyLesson = sentencesCount === 0
+	const handleCompleteEmpty = () => {
+		if (!isEmptyLesson) return
+		markEmptyLessonComplete(lesson.lesson)
+		onClose()
+	}
 
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -74,6 +86,20 @@ const LessonIntroModal: React.FC<Props> = ({
 							>
 								Start Quiz
 							</button>
+							{isEmptyLesson && (
+								<button
+									className="px-3 py-1 text-sm rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40"
+									onClick={handleCompleteEmpty}
+									disabled={isAlreadyMarked}
+									title={
+										isAlreadyMarked
+											? "Already marked complete"
+											: "Mark this introductory lesson as complete"
+									}
+								>
+									{isAlreadyMarked ? "Completed" : "Complete Lesson"}
+								</button>
+							)}
 						</div>
 					</div>
 					{lesson.details && (
