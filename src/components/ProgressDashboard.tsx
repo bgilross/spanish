@@ -556,24 +556,42 @@ function AttemptRow({
 					<span className="text-[10px] px-1 py-0.5 rounded bg-zinc-700 text-zinc-300 leading-none">
 						{open ? "Hide" : "Show"}
 					</span>
-					{process.env.NODE_ENV === "development" && (
-						<button
-							onClick={(e) => {
-								e.stopPropagation()
-								onDeleteLesson(attempt.lessonNumber)
-							}}
-							disabled={deleting !== null}
-							className="text-[10px] px-1.5 py-0.5 rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
-						>
-							{deleting === String(attempt.lessonNumber)
-								? "Deleting…"
-								: "Delete"}
-						</button>
-					)}
+					<button
+						onClick={(e) => {
+							e.stopPropagation()
+							onDeleteLesson(attempt.lessonNumber)
+						}}
+						disabled={deleting !== null}
+						className="text-[10px] px-1.5 py-0.5 rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
+						title="Delete all attempts for this lesson"
+					>
+						{deleting === String(attempt.lessonNumber)
+							? "Deleting…"
+							: "Delete Lesson"}
+					</button>
 				</span>
 			</button>
 			{open && (
 				<div className="px-3 sm:px-4 pb-4 pt-1 space-y-5 text-[11px] sm:text-xs text-zinc-300">
+					<div className="flex flex-wrap gap-2 justify-end text-[10px] mb-2">
+						<button
+							onClick={async () => {
+								if (!confirm("Delete ONLY this attempt?")) return
+								if (deleting) return
+								try {
+									await fetch(
+										`/api/lessonAttempts?userId=${attempt.userId}&attemptId=${attempt.id}`,
+										{ method: "DELETE" }
+									)
+									// Soft close panel; parent refresh handled externally via manual refresh
+									setOpen(false)
+								} catch {}
+							}}
+							className="px-2 py-0.5 rounded border border-red-600 text-red-300 hover:bg-red-900/40"
+						>
+							Delete This Attempt
+						</button>
+					</div>
 					{/* Error Categories */}
 					<div className="space-y-2">
 						<p className="text-[11px] uppercase tracking-wide text-zinc-500">

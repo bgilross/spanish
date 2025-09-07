@@ -94,6 +94,7 @@ export async function DELETE(req: NextRequest) {
 		}
 		const { searchParams } = new URL(req.url)
 		const userId = searchParams.get("userId")
+		const attemptId = searchParams.get("attemptId")
 		const lessonParam = searchParams.get("lessonNumber")
 		const lessonNumber = lessonParam ? Number(lessonParam) : undefined
 		if (!userId) {
@@ -101,6 +102,12 @@ export async function DELETE(req: NextRequest) {
 				{ error: "userId query param required" },
 				{ status: 400 }
 			)
+		}
+		if (attemptId) {
+			const deleted = await prisma.lessonAttempt.deleteMany({
+				where: { id: attemptId, userId },
+			})
+			return NextResponse.json({ deleted: deleted.count, scope: "attempt" })
 		}
 		const where: { userId: string; lessonNumber?: number } = { userId }
 		if (typeof lessonNumber === "number" && !Number.isNaN(lessonNumber)) {
