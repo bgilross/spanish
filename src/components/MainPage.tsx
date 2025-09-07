@@ -155,6 +155,7 @@ const MainPage = () => {
 					lesson={currentLesson}
 					lessonIndex={currentLessonIndex}
 					totalLessons={lessons.length}
+					lessons={lessons}
 					onClose={() => setShowIntro(false)}
 					onNavigate={(idx) => {
 						if (idx >= 0 && idx < lessons.length) {

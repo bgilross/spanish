@@ -29,6 +29,27 @@ export function formatErrorCategory(key: string): string {
 			groupId
 				.replace(/[_-]+/g, " ")
 				.replace(/(^|\s)\w/g, (c) => c.toUpperCase())
+		// Attempt to pull the actual word (with accents) from spanishWords data
+		try {
+			interface MinimalWord {
+				word?: string
+			}
+			interface MinimalGroup {
+				words?: Record<string, MinimalWord>
+			}
+			const groupsUnknown: unknown = spanishWords
+			if (
+				groupsUnknown &&
+				typeof groupsUnknown === "object" &&
+				groupId in (groupsUnknown as Record<string, unknown>)
+			) {
+				const group = (groupsUnknown as Record<string, MinimalGroup>)[groupId]
+				const surface = group?.words?.[wordId]?.word || wordId
+				return `${surface} (${groupLabel})`
+			}
+		} catch {
+			// silent fallback
+		}
 		return `${wordId} (${groupLabel})`
 	}
 	return key
@@ -66,6 +87,50 @@ type LessonAttempt = {
 	references: string[]
 	createdAt: string
 	summary: AttemptSummary
+}
+
+function AllErrorsBlock({
+	aggregate,
+	referenceInfoMap,
+}: {
+	aggregate: {
+		allCategories: [string, number][]
+		topCategories: [string, number][]
+	}
+	referenceInfoMap: Record<string, string[]>
+}) {
+	const [showAll, setShowAll] = React.useState(false)
+	const list = showAll ? aggregate.allCategories : aggregate.topCategories
+	return (
+		<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3">
+			<div className="flex items-start justify-between mb-1">
+				<p className="text-zinc-400 text-sm leading-tight">
+					{showAll ? "All Errors" : "Top Errors"}
+				</p>
+				{aggregate.allCategories.length > 5 && (
+					<button
+						onClick={() => setShowAll((s) => !s)}
+						className="text-[10px] px-2 py-0.5 rounded border border-zinc-600 hover:bg-zinc-700 text-zinc-200"
+					>
+						{showAll
+							? "Show Top"
+							: `Show All (${aggregate.allCategories.length})`}
+					</button>
+				)}
+			</div>
+			{list.length === 0 && <p className="text-xs text-zinc-500">None</p>}
+			<div className="space-y-1 max-h-60 overflow-auto pr-1">
+				{list.map(([k, v]) => (
+					<ErrorCategoryRow
+						key={k}
+						k={k}
+						v={v}
+						explanations={referenceInfoMap[k]}
+					/>
+				))}
+			</div>
+		</div>
+	)
 }
 
 export function ProgressDashboard() {
@@ -122,14 +187,16 @@ export function ProgressDashboard() {
 			})
 		}
 		const avgAccuracy = totalAnswered ? (totalCorrect / totalAnswered) * 100 : 0
-		const topCategories = Object.entries(categoryTotals)
-			.sort((a, b) => b[1] - a[1])
-			.slice(0, 5)
+		const allCategories = Object.entries(categoryTotals).sort(
+			(a, b) => b[1] - a[1]
+		)
+		const topCategories = allCategories.slice(0, 5)
 		return {
 			totalAttempts,
 			lessonsCompleted: lessonsSet.size,
 			avgAccuracy,
 			topCategories,
+			allCategories,
 		}
 	}, [attempts])
 
@@ -225,20 +292,10 @@ export function ProgressDashboard() {
 							{aggregate.avgAccuracy.toFixed(1)}%
 						</p>
 					</div>
-					<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3">
-						<p className="text-zinc-400 mb-1">Top Errors</p>
-						{aggregate.topCategories.length === 0 && (
-							<p className="text-xs text-zinc-500">None</p>
-						)}
-						{aggregate.topCategories.map(([k, v]) => (
-							<ErrorCategoryRow
-								key={k}
-								k={k}
-								v={v}
-								explanations={referenceInfoMap[k]}
-							/>
-						))}
-					</div>
+					<AllErrorsBlock
+						aggregate={aggregate}
+						referenceInfoMap={referenceInfoMap}
+					/>
 				</div>
 			)}
 
@@ -510,137 +567,121 @@ function AttemptRow({
 						</div>
 					)}
 
-					{/* Sentence Stats */}
-					{sentenceStats.length > 0 && (
-						<div className="space-y-2">
-							<p className="text-[11px] uppercase tracking-wide text-zinc-500">
-								Sentence Performance
-							</p>
-							<div className="grid gap-2 sm:grid-cols-2">
-								{sentenceStats.map((s: SentenceStat) => {
-									const secTotal = s.totalSections || 0
-									const firstTry = (s.firstTryCorrectSections || []).length
-									const struggle = (s.incorrectSections || []).length
-									return (
-										<div
-											key={s.sentenceIndex}
-											className="border border-zinc-700 rounded p-2 bg-zinc-800/40"
-										>
-											<p className="text-[11px] text-zinc-400 mb-1">
-												Sentence {s.sentenceIndex + 1}
-											</p>
-											<p className="text-[10px] text-zinc-300">
-												Sections: {secTotal}
-											</p>
-											<p className="text-[10px] text-emerald-400">
-												First-Try: {firstTry}
-											</p>
-											<p className="text-[10px] text-rose-400">
-												Struggle: {struggle}
-											</p>
-										</div>
-									)
-								})}
-							</div>
-						</div>
-					)}
-
-					{/* Sentence Details */}
 					{sentenceDetails.length > 0 && (
 						<div className="space-y-2">
 							<p className="text-[11px] uppercase tracking-wide text-zinc-500">
-								Sentence Details
+								Sentence Performance & Details
 							</p>
 							<div className="space-y-3">
-								{sentenceDetails.map((sd) => (
-									<div
-										key={sd.sentenceIndex}
-										className="border border-zinc-700 rounded p-2 bg-zinc-900/50 space-y-2"
-									>
-										<p className="text-[11px] font-medium text-zinc-200">
-											Sentence {sd.sentenceIndex + 1}:{" "}
-											<span className="text-zinc-400">
-												{sd.sentence?.sentence}
-											</span>
-										</p>
-										<div className="space-y-1">
-											{Object.entries(sd.sections)
-												.sort((a, b) => Number(a[0]) - Number(b[0]))
-												.map(([secIdx, sec]) => (
-													<div
-														key={secIdx}
-														className="text-[11px] border border-zinc-700 rounded px-2 py-1 bg-zinc-800/40"
-													>
-														<p className="text-zinc-300">
-															<span className="text-zinc-500">
-																Section {Number(secIdx) + 1}:
-															</span>{" "}
-															{sec.phrase}
-														</p>
-														<p className="text-[10px] mt-0.5">
-															<span className="text-zinc-500">
-																Your Attempts:
-															</span>{" "}
-															{sec.attempts.map((a, i) => {
-																const base = "px-1 rounded"
-																const cls = !a.correct
-																	? `${base} bg-rose-800/40 text-rose-300`
-																	: i === sec.attempts.length - 1
-																	? `${base} bg-emerald-700/40 text-emerald-300`
-																	: `${base} bg-zinc-700/40 text-zinc-300`
-																return (
+								{sentenceDetails.map((sd) => {
+									const stat = sentenceStats.find(
+										(s) => s.sentenceIndex === sd.sentenceIndex
+									)
+									const secTotal = stat?.totalSections || 0
+									const firstTry = (stat?.firstTryCorrectSections || []).length
+									const struggle = (stat?.incorrectSections || []).length
+									return (
+										<div
+											key={sd.sentenceIndex}
+											className="border border-zinc-700 rounded p-2 bg-zinc-900/50 space-y-2"
+										>
+											<p className="text-[11px] font-medium text-zinc-200">
+												Sentence {sd.sentenceIndex + 1}:{" "}
+												<span className="text-zinc-400">
+													{sd.sentence?.sentence}
+												</span>
+											</p>
+											<div className="flex flex-wrap gap-3 text-[10px]">
+												<span className="text-zinc-400">
+													Sections:{" "}
+													<span className="text-zinc-200">{secTotal}</span>
+												</span>
+												<span className="text-emerald-400">
+													First-Try: {firstTry}
+												</span>
+												<span className="text-rose-400">
+													Struggle: {struggle}
+												</span>
+											</div>
+											<div className="space-y-1">
+												{Object.entries(sd.sections)
+													.sort((a, b) => Number(a[0]) - Number(b[0]))
+													.map(([secIdx, sec]) => (
+														<div
+															key={secIdx}
+															className="text-[11px] border border-zinc-700 rounded px-2 py-1 bg-zinc-800/40"
+														>
+															<p className="text-zinc-300">
+																<span className="text-zinc-500">
+																	Section {Number(secIdx) + 1}:
+																</span>{" "}
+																{sec.phrase}
+															</p>
+															<p className="text-[10px] mt-0.5">
+																<span className="text-zinc-500">
+																	Your Attempts:
+																</span>{" "}
+																{sec.attempts.map((a, i) => {
+																	const base = "px-1 rounded"
+																	const cls = !a.correct
+																		? `${base} bg-rose-800/40 text-rose-300`
+																		: i === sec.attempts.length - 1
+																		? `${base} bg-emerald-700/40 text-emerald-300`
+																		: `${base} bg-zinc-700/40 text-zinc-300`
+																	return (
+																		<span
+																			key={i}
+																			className={cls}
+																		>{`${i + 1}: ${a.text}`}</span>
+																	)
+																})}
+															</p>
+															<p className="text-[10px] mt-0.5">
+																<span className="text-zinc-500">Correct:</span>{" "}
+																{sec.expected.map((e, i) => (
 																	<span
 																		key={i}
-																		className={cls}
-																	>{`${i + 1}: ${a.text}`}</span>
-																)
-															})}
-														</p>
-														<p className="text-[10px] mt-0.5">
-															<span className="text-zinc-500">Correct:</span>{" "}
-															{sec.expected.map((e, i) => (
-																<span
-																	key={i}
-																	className="px-1 rounded bg-emerald-800/40 text-emerald-300 mr-1"
-																>
-																	{e}
-																</span>
-															))}
-														</p>
-														{sec.referenceDetails &&
-															sec.referenceDetails.length > 0 && (
-																<div className="mt-1 space-y-1">
-																	{sec.referenceDetails.map((rd, i) => {
-																		const lines = getRefLines(
-																			rd.key,
-																			rd.indices
-																		)
-																		return (
-																			<div
-																				key={i}
-																				className="text-[10px]"
-																			>
-																				<p className="text-zinc-500">
-																					Ref: {formatErrorCategory(rd.key)}
-																				</p>
-																				{lines.map((l, li) => (
-																					<p
-																						key={li}
-																						className="text-zinc-400 leading-snug"
-																					>
-																						{l}
+																		className="px-1 rounded bg-emerald-800/40 text-emerald-300 mr-1"
+																	>
+																		{e}
+																	</span>
+																))}
+															</p>
+															{sec.referenceDetails &&
+																sec.referenceDetails.length > 0 && (
+																	<div className="mt-1 space-y-1">
+																		{sec.referenceDetails.map((rd, i) => {
+																			const lines = getRefLines(
+																				rd.key,
+																				rd.indices
+																			)
+																			return (
+																				<div
+																					key={i}
+																					className="text-[10px]"
+																				>
+																					<p className="text-zinc-500">
+																						Ref: {formatErrorCategory(rd.key)}
 																					</p>
-																				))}
-																			</div>
-																		)
-																	})}
-																</div>
-															)}
-													</div>
-												))}
+																					{lines.map((l, li) => (
+																						<p
+																							key={li}
+																							className="text-zinc-400 leading-snug"
+																						>
+																							{l}
+																						</p>
+																					))}
+																				</div>
+																			)
+																		})}
+																	</div>
+																)}
+														</div>
+													))}
+											</div>
 										</div>
-									</div>
-								))}
+									)
+								})}
 							</div>
 						</div>
 					)}

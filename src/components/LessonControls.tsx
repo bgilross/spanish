@@ -6,9 +6,13 @@ import { expectedAnswers } from "@/lib/translation"
 
 type Props = {
 	onBeforeSimulate?: () => void
+	showSimulator?: boolean
 }
 
-const LessonControls: React.FC<Props> = ({ onBeforeSimulate }) => {
+const LessonControls: React.FC<Props> = ({
+	onBeforeSimulate,
+	showSimulator = true,
+}) => {
 	const lessons = useDataStore((s) => s.lessons)
 	const currentLessonIndex = useDataStore((s) => s.currentLessonIndex)
 	const startNewLesson = useDataStore((s) => s.startNewLesson)
@@ -89,14 +93,16 @@ const LessonControls: React.FC<Props> = ({ onBeforeSimulate }) => {
 					</option>
 				))}
 			</select>
-			<button
-				onClick={simulateLesson}
-				disabled={simulating}
-				className="px-2 py-1 border rounded disabled:opacity-50"
-				title="Simulate one wrong and one right answer per section"
-			>
-				{simulating ? "Simulating…" : "Simulate lesson (wrong+right)"}
-			</button>
+			{showSimulator && (
+				<button
+					onClick={simulateLesson}
+					disabled={simulating}
+					className="px-2 py-1 border rounded disabled:opacity-50"
+					title="Simulate one wrong and one right answer per section"
+				>
+					{simulating ? "Simulating…" : "Simulate lesson (wrong+right)"}
+				</button>
+			)}
 		</div>
 	)
 }

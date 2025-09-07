@@ -1943,12 +1943,7 @@ const spanishData: { lessons: Lesson[] } = {
 				prep.words.para.info[9],
 				"These combinations are known as IDIOMS, which are phrases that don't usually translate properly to english but are commonly used by native speakers",
 			],
-			wordBank: [
-				prep.words.con,
-				prep.words.en,
-				prep.words.para,
-				prep.words.para,
-			],
+			wordBank: [prep.words.con, prep.words.en, prep.words.para],
 			sentences: [
 				{
 					id: 1,

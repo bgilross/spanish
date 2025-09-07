@@ -2,6 +2,7 @@
 
 import React from "react"
 import type { Lesson } from "@/data/types"
+import LessonControls from "@/components/LessonControls"
 
 type Props = {
 	open: boolean
@@ -10,6 +11,7 @@ type Props = {
 	totalLessons: number
 	onClose: () => void // Starts the quiz
 	onNavigate: (index: number) => void // For prev/next while staying in modal
+	lessons?: Lesson[] // Optional full lessons list for direct selection
 }
 
 const LessonIntroModal: React.FC<Props> = ({
@@ -19,6 +21,7 @@ const LessonIntroModal: React.FC<Props> = ({
 	totalLessons,
 	onClose,
 	onNavigate,
+	lessons,
 }) => {
 	if (!open) return null
 
@@ -37,7 +40,13 @@ const LessonIntroModal: React.FC<Props> = ({
 						<h2 className="text-xl font-semibold tracking-tight">
 							{lesson.name}
 						</h2>
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-2 flex-wrap justify-end text-xs">
+							{/* Reuse LessonControls select only */}
+							{lessons && lessons.length > 0 && (
+								<div className="hidden sm:block">
+									<LessonControls showSimulator={false} />
+								</div>
+							)}
 							<button
 								className="px-3 py-1 text-sm rounded border border-zinc-400 dark:border-zinc-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-zinc-100 dark:hover:bg-zinc-800"
 								onClick={() => hasPrev && onNavigate(lessonIndex - 1)}
