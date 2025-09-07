@@ -10,6 +10,13 @@ const authOptions = {
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID || "",
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+			authorization: {
+				params: {
+					prompt: "select_account",
+					access_type: "offline",
+					response_type: "code",
+				},
+			},
 		}),
 	],
 	session: { strategy: "database" as const },
@@ -20,6 +27,31 @@ const authOptions = {
 				;(session.user as { id?: string }).id = user.id
 			}
 			return session
+		},
+	},
+	events: {
+		signIn(message: unknown) {
+			const m = message as { user?: { id?: string } }
+			console.log("[auth] signIn", m.user?.id)
+		},
+		signOut(message: unknown) {
+			const m = message as { sessionToken?: string }
+			console.log("[auth] signOut", m.sessionToken)
+		},
+		session(message: unknown) {
+			const m = message as { session?: { user?: { id?: string } } }
+			console.log("[auth] session", m.session?.user?.id)
+		},
+	},
+	logger: {
+		error(code: string, metadata?: unknown) {
+			console.error("[auth][error]", code, metadata)
+		},
+		warn(code: string) {
+			console.warn("[auth][warn]", code)
+		},
+		debug(code: string, metadata?: unknown) {
+			console.debug("[auth][debug]", code, metadata)
 		},
 	},
 } as const
