@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
 import { useSession } from "next-auth/react"
-import spanishData from "@/data/spanishData"
+import spanishWords from "@/data/spanishWords"
 import { expectedAnswers } from "@/lib/translation"
 import type { SubmissionLog, SentenceDataEntry, Sentence } from "@/data/types"
 
@@ -96,34 +96,40 @@ export function ProgressDashboard() {
 		}
 	}, [attempts])
 
-	// Build reference explanation map (reference key -> explanation strings)
+	// Build reference explanation map from spanishWords only (group info + word info)
 	const referenceInfoMap = React.useMemo(() => {
-		interface LessonLike {
-			info: string[]
-			sentences?: Sentence[]
-		}
 		const map: Record<string, string[]> = {}
-		const lessons = (spanishData as { lessons?: LessonLike[] }).lessons || []
-		for (const lesson of lessons) {
-			const infoArr = Array.isArray(lesson.info) ? lesson.info : []
-			for (const sentence of lesson.sentences || []) {
-				for (const entry of sentence.data || []) {
-					const refObj = (
-						entry as { reference?: Record<string, (number | string)[]> }
-					).reference
-					if (!refObj) continue
-					for (const [refKey, arr] of Object.entries(refObj)) {
-						if (!map[refKey]) map[refKey] = []
-						for (const val of arr) {
-							if (typeof val === "number" && infoArr[val]) {
-								if (!map[refKey].includes(infoArr[val]))
-									map[refKey].push(infoArr[val])
-							} else if (typeof val === "string") {
-								if (!map[refKey].includes(val)) map[refKey].push(val)
-							}
-						}
-					}
-				}
+		const groups = spanishWords as unknown as Record<
+			string,
+			{
+				id: string
+				info?: string[]
+				words?: Record<string, { id: string; info?: string[] }>
+			}
+		>
+		for (const maybeGroup of Object.values(groups)) {
+			if (
+				!maybeGroup ||
+				typeof maybeGroup !== "object" ||
+				!("id" in maybeGroup)
+			)
+				continue
+			const group = maybeGroup as {
+				id: string
+				info?: string[]
+				words?: Record<string, { id: string; info?: string[] }>
+			}
+			const gInfo = Array.isArray(group.info) ? group.info : []
+			const wordEntries = group.words || {}
+			for (const [key, w] of Object.entries(wordEntries)) {
+				const refKey = `${group.id}.words.${key}`
+				const wInfo = Array.isArray(w.info) ? w.info : []
+				const combined: string[] = []
+				for (const item of gInfo)
+					if (!combined.includes(item)) combined.push(item)
+				for (const item of wInfo)
+					if (!combined.includes(item)) combined.push(item)
+				map[refKey] = combined
 			}
 		}
 		return map
