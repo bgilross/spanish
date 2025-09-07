@@ -3,6 +3,7 @@
 import React from "react"
 import { resolveReference, resolveReferenceList } from "@/lib/refs"
 import type { SubmissionLog } from "@/data/types"
+import { APP_VERSION } from "@/lib/version"
 
 type Summary = {
 	lessonNumber: number
@@ -43,8 +44,11 @@ const SummaryModal: React.FC<Props> = ({
 			/>
 			<div className="relative bg-white text-black dark:bg-zinc-900 dark:text-zinc-50 shadow-xl rounded-lg max-w-3xl w-[90%] p-4">
 				<div className="flex items-center justify-between mb-2">
-					<h3 className="text-lg font-semibold">
+					<h3 className="text-lg font-semibold flex items-center gap-2">
 						Lesson {summary.lessonNumber} Summary
+						<span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-200 font-mono">
+							v{APP_VERSION}
+						</span>
 					</h3>
 					<button
 						className="px-2 py-1 text-sm border rounded"

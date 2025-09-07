@@ -3,6 +3,7 @@
 import React from "react"
 import type { Lesson } from "@/data/types"
 import LessonControls from "@/components/LessonControls"
+import { APP_VERSION } from "@/lib/version"
 
 type Props = {
 	open: boolean
@@ -37,8 +38,11 @@ const LessonIntroModal: React.FC<Props> = ({
 			<div className="relative bg-white text-black dark:bg-zinc-900 dark:text-zinc-50 shadow-2xl rounded-lg w-full max-w-3xl max-h-[80vh] flex flex-col border border-zinc-700/50">
 				<header className="px-5 pt-4 pb-3 border-b border-zinc-200 dark:border-zinc-700 flex flex-col gap-1">
 					<div className="flex items-center justify-between gap-4">
-						<h2 className="text-xl font-semibold tracking-tight">
+						<h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
 							{lesson.name}
+							<span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-200 font-mono">
+								v{APP_VERSION}
+							</span>
 						</h2>
 						<div className="flex items-center gap-2 flex-wrap justify-end text-xs">
 							{/* Reuse LessonControls select only */}

@@ -14,6 +14,7 @@ import LessonIntroModal from "@/components/LessonIntroModal"
 import DebugPanel from "@/components/DebugPanel"
 import WordBankModal from "@/components/WordBankModal"
 import OriginalSentenceLine from "./OriginalSentenceLine"
+import { APP_VERSION } from "@/lib/version"
 
 const MainPage = () => {
 	const lessons = useDataStore((s) => s.lessons)
@@ -112,8 +113,11 @@ const MainPage = () => {
 		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-16">
 			<div className="w-full max-w-3xl pt-6">
 				<header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-					<h1 className="text-xl sm:text-2xl font-semibold tracking-tight leading-tight">
+					<h1 className="text-xl sm:text-2xl font-semibold tracking-tight leading-tight flex items-center gap-2">
 						Spanish Lesson Trainer
+						<span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700 text-zinc-200 font-mono select-none">
+							v{APP_VERSION}
+						</span>
 					</h1>
 					<div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
 						{userId && (

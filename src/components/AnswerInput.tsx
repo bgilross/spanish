@@ -2,6 +2,7 @@
 
 import React from "react"
 import { spanishWordCount } from "@/lib/translation"
+import { isWordObject } from "@/lib/translation"
 import type { Sentence } from "@/data/types"
 
 type Props = {
@@ -52,28 +53,64 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 		setFlash(correct ? "green" : "red")
 	}
 
-	const placeholder = (() => {
-		if (activeIndex == null) return "All parts translated"
+    const info = (() => {
+		if (activeIndex == null) return null
 		const entry = sentence?.data[activeIndex]
-		if (!entry) return "Translate"
-		const count = spanishWordCount(entry)
-		return count === 1
-			? "Expect 1 Spanish word"
-			: `Expect ${count} Spanish words`
+		if (!entry) return null
+		const spanishCount = spanishWordCount(entry)
+		// Derive English (source phrase) word count from the phrase field itself
+		// (Original untranslated phrase user sees)
+		const phrase = (entry as { phrase?: string }).phrase || ""
+		const englishCount = phrase
+			.trim()
+			.split(/\s+/)
+			.filter(Boolean).length
+		// Build a representative Spanish target display (without normalization)
+		const t = (entry as { translation?: unknown }).translation
+		let spanishDisplay: string | null = null
+		if (typeof t === "string") spanishDisplay = t
+		else if (t && isWordObject(t)) spanishDisplay = t.word
+		else if (Array.isArray(t)) {
+			spanishDisplay = t
+				.map((item) =>
+					typeof item === "string"
+						? item
+						: isWordObject(item)
+						? item.word
+						: ""
+				)
+				.filter(Boolean)
+				.join(" ")
+		}
+		return { spanishCount, englishCount, spanishDisplay }
 	})()
 
 	return (
-		<input
-			type="text"
-			ref={inputRef}
-			autoFocus
-			className="px-2 py-1 border rounded min-w-[16ch]"
-			placeholder={placeholder}
-			value={input}
-			onChange={(e) => setInput(e.target.value)}
-			onKeyDown={handleKeyDown}
-			disabled={activeIndex == null}
-		/>
+		<div className="flex items-start gap-3 flex-wrap">
+			<input
+				type="text"
+				ref={inputRef}
+				autoFocus
+				className="px-2 py-1 border rounded min-w-[16ch] bg-zinc-950/40 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
+				placeholder={activeIndex == null ? "All parts translated" : "Type answer"}
+				value={input}
+				onChange={(e) => setInput(e.target.value)}
+				onKeyDown={handleKeyDown}
+				disabled={activeIndex == null}
+			/>
+			{info && (
+				<div className="text-[10px] leading-snug px-2 py-1 rounded border border-zinc-700 bg-zinc-800/60 max-w-[32ch]">
+					{info.spanishDisplay && (
+						<p className="text-zinc-200 break-words">
+							<span className="text-zinc-500">Spanish:</span> {info.spanishDisplay}
+						</p>
+					)}
+					<p className="text-zinc-400 mt-0.5">
+						<span className="text-zinc-500">Words:</span> EN {info.englishCount} · ES {info.spanishCount}
+					</p>
+				</div>
+			)}
+		</div>
 	)
 }
 

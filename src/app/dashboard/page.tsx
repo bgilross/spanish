@@ -1,6 +1,7 @@
 import React from "react"
 import Link from "next/link"
 import { ProgressDashboard } from "@/components/ProgressDashboard"
+import { APP_VERSION } from "@/lib/version"
 
 export const dynamic = "force-dynamic"
 
@@ -9,8 +10,11 @@ export default function DashboardPage() {
 		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-16">
 			<div className="w-full max-w-5xl pt-8 space-y-4">
 				<div className="flex items-center justify-between flex-wrap gap-3">
-					<h1 className="text-2xl font-semibold tracking-tight">
+					<h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
 						Progress Dashboard
+						<span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700 text-zinc-200 font-mono">
+							v{APP_VERSION}
+						</span>
 					</h1>
 					<Link
 						href="/"
