@@ -82,7 +82,9 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 			{info && (
 				<div className="text-[10px] leading-snug px-2 py-1 rounded border border-zinc-700 bg-zinc-800/60 max-w-[40ch]">
 					<p className="text-zinc-300">
-						{info.spanishCount} Spanish word{info.spanishCount === 1 ? "" : "s"} and {info.englishCount} English word{info.englishCount === 1 ? "" : "s"} expected
+						{info.spanishCount} Spanish word{info.spanishCount === 1 ? "" : "s"}{" "}
+						and {info.englishCount} English word
+						{info.englishCount === 1 ? "" : "s"} expected
 					</p>
 				</div>
 			)}

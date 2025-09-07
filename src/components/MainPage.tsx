@@ -205,25 +205,29 @@ const MainPage = () => {
 						{process.env.NODE_ENV === "development" && userId && (
 							<button
 								onClick={async () => {
-								if (!confirm("Clear ALL lesson attempts for this user?")) return
-								try {
-									const res = await fetch(`/api/lessonAttempts?userId=${userId}`, {
-										method: "DELETE",
-									})
-									if (!res.ok) throw new Error("Delete failed")
-									// Reset auto-select so it can recompute (will land on lesson 1)
-									autoSelectAppliedRef.current = false
-									// Force re-run selection next effect cycle
-									setShowIntro(true)
-									alert("History cleared")
-								} catch (e) {
-									alert("Failed to clear history")
-									console.error(e)
-								}
-							}}
-							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40"
-							title="Dev only: clear stored lesson attempts"
-						>
+									if (!confirm("Clear ALL lesson attempts for this user?"))
+										return
+									try {
+										const res = await fetch(
+											`/api/lessonAttempts?userId=${userId}`,
+											{
+												method: "DELETE",
+											}
+										)
+										if (!res.ok) throw new Error("Delete failed")
+										// Reset auto-select so it can recompute (will land on lesson 1)
+										autoSelectAppliedRef.current = false
+										// Force re-run selection next effect cycle
+										setShowIntro(true)
+										alert("History cleared")
+									} catch (e) {
+										alert("Failed to clear history")
+										console.error(e)
+									}
+								}}
+								className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40"
+								title="Dev only: clear stored lesson attempts"
+							>
 								Clear History
 							</button>
 						)}

@@ -87,17 +87,35 @@ export async function GET(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
 	try {
 		if (process.env.NODE_ENV !== "development") {
-			return NextResponse.json({ error: "Not allowed in production" }, { status: 403 })
+			return NextResponse.json(
+				{ error: "Not allowed in production" },
+				{ status: 403 }
+			)
 		}
 		const { searchParams } = new URL(req.url)
 		const userId = searchParams.get("userId")
+		const lessonParam = searchParams.get("lessonNumber")
+		const lessonNumber = lessonParam ? Number(lessonParam) : undefined
 		if (!userId) {
-			return NextResponse.json({ error: "userId query param required" }, { status: 400 })
+			return NextResponse.json(
+				{ error: "userId query param required" },
+				{ status: 400 }
+			)
 		}
-		const result = await prisma.lessonAttempt.deleteMany({ where: { userId } })
-		return NextResponse.json({ deleted: result.count })
+		const where: { userId: string; lessonNumber?: number } = { userId }
+		if (typeof lessonNumber === "number" && !Number.isNaN(lessonNumber)) {
+			where.lessonNumber = lessonNumber
+		}
+		const result = await prisma.lessonAttempt.deleteMany({ where })
+		return NextResponse.json({
+			deleted: result.count,
+			scope: where.lessonNumber ? "lesson" : "all",
+		})
 	} catch (err) {
 		console.error("DELETE /api/lessonAttempts error", err)
-		return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+		return NextResponse.json(
+			{ error: "Internal Server Error" },
+			{ status: 500 }
+		)
 	}
 }

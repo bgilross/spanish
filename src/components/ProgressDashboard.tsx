@@ -145,6 +145,7 @@ export function ProgressDashboard() {
 	const [attempts, setAttempts] = React.useState<LessonAttempt[] | null>(null)
 	const [loading, setLoading] = React.useState(false)
 	const [error, setError] = React.useState<string | null>(null)
+	const [deleting, setDeleting] = React.useState<string | null>(null)
 
 	const load = React.useCallback(async () => {
 		if (!userId) return
@@ -253,6 +254,33 @@ export function ProgressDashboard() {
 		)
 	}
 
+	const deleteAll = async () => {
+		if (!userId) return
+		if (!confirm("Delete ALL lesson attempts?")) return
+		setDeleting("ALL")
+		try {
+			await fetch(`/api/lessonAttempts?userId=${userId}`, { method: "DELETE" })
+			await load()
+		} finally {
+			setDeleting(null)
+		}
+	}
+
+	const deleteLesson = async (lessonNumber: number) => {
+		if (!userId) return
+		if (!confirm(`Delete attempts for lesson ${lessonNumber}?`)) return
+		setDeleting(String(lessonNumber))
+		try {
+			await fetch(
+				`/api/lessonAttempts?userId=${userId}&lessonNumber=${lessonNumber}`,
+				{ method: "DELETE" }
+			)
+			await load()
+		} finally {
+			setDeleting(null)
+		}
+	}
+
 	return (
 		<div className="space-y-8">
 			{usingFallback && (
@@ -261,13 +289,20 @@ export function ProgressDashboard() {
 					<span className="font-mono">{userId}</span>
 				</div>
 			)}
-			<div className="flex items-center gap-3">
+			<div className="flex items-center gap-3 flex-wrap">
 				<button
 					onClick={load}
 					className="px-3 py-1.5 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
-					disabled={loading}
+					disabled={loading || deleting !== null}
 				>
 					{loading ? "Refreshing…" : "Refresh"}
+				</button>
+				<button
+					onClick={deleteAll}
+					className="px-3 py-1.5 text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
+					disabled={deleting !== null || loading}
+				>
+					{deleting === "ALL" ? "Deleting…" : "Delete All"}
 				</button>
 				{error && <span className="text-xs text-rose-400">{error}</span>}
 			</div>
@@ -322,6 +357,8 @@ export function ProgressDashboard() {
 								accuracy={accuracy}
 								attemptIndex={idx + 1}
 								referenceInfoMap={referenceInfoMap}
+								deleting={deleting}
+								onDeleteLesson={deleteLesson}
 							/>
 						)
 					})}
@@ -336,11 +373,15 @@ function AttemptRow({
 	accuracy,
 	referenceInfoMap,
 	attemptIndex,
+	deleting,
+	onDeleteLesson,
 }: {
 	attempt: LessonAttempt
 	accuracy: number
 	referenceInfoMap: Record<string, string[]>
 	attemptIndex: number
+	deleting: string | null
+	onDeleteLesson: (lessonNumber: number) => void | Promise<void>
 }) {
 	const [open, setOpen] = React.useState(false)
 	const created = new Date(attempt.createdAt)
@@ -515,6 +556,20 @@ function AttemptRow({
 					<span className="text-[10px] px-1 py-0.5 rounded bg-zinc-700 text-zinc-300 leading-none">
 						{open ? "Hide" : "Show"}
 					</span>
+					{process.env.NODE_ENV === "development" && (
+						<button
+							onClick={(e) => {
+								e.stopPropagation()
+								onDeleteLesson(attempt.lessonNumber)
+							}}
+							disabled={deleting !== null}
+							className="text-[10px] px-1.5 py-0.5 rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
+						>
+							{deleting === String(attempt.lessonNumber)
+								? "Deleting…"
+								: "Delete"}
+						</button>
+					)}
 				</span>
 			</button>
 			{open && (
