@@ -36,6 +36,11 @@ button[disabled] {
 	cursor: not-allowed;
 }
 
+/* Expansion / disclosure buttons keep default arrow cursor for subtle UI */
+button[data-expand] {
+	cursor: default !important;
+}
+
 /* Common interactive utility classes (Tailwind adds these often) */
 .cursor-pointer,
 a,

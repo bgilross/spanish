@@ -529,6 +529,7 @@ function AttemptRow({
 	return (
 		<li className="border border-zinc-700 rounded-md bg-zinc-800/40">
 			<button
+				data-expand
 				onClick={() => setOpen((o) => !o)}
 				className="w-full text-left px-3 py-2 flex items-start sm:items-center justify-between gap-3 sm:gap-4 hover:bg-zinc-800/60"
 			>
@@ -781,6 +782,7 @@ function ErrorCategoryRow({
 	return (
 		<div className="mb-1">
 			<button
+				data-expand
 				onClick={() => setOpen((o) => !o)}
 				className="text-xs w-full text-left flex justify-between items-center gap-2 hover:text-zinc-200"
 			>
