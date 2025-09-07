@@ -37,6 +37,7 @@ const MainPage = () => {
 	const [showIntro, setShowIntro] = React.useState(true)
 	const [showWordBank, setShowWordBank] = React.useState(false)
 	const { data: session } = useSession()
+	const userId = (session?.user as { id?: string } | undefined)?.id
 
 	React.useEffect(() => {
 		setShowIntro(true)
@@ -51,7 +52,7 @@ const MainPage = () => {
 	}, [initializeSentenceProgress, currentLessonIndex, currentSentenceIndex])
 
 	React.useEffect(() => {
-		if (!session?.user?.id) return
+		if (!userId) return
 		if (!isLessonComplete()) return
 		const summary = getLessonSummary()
 		if (savedLessonNumbersRef.current.has(summary.lessonNumber)) return
@@ -59,7 +60,7 @@ const MainPage = () => {
 		setShowSummary(true)
 		setSaveStatus({ state: "saving" })
 		const payload = {
-			userId: session.user.id,
+			userId,
 			lessonNumber: summary.lessonNumber,
 			summary,
 		}
@@ -81,7 +82,7 @@ const MainPage = () => {
 				setSaveStatus({ state: "error", message: e.message })
 			})
 	}, [
-		session?.user?.id,
+		userId,
 		isLessonComplete,
 		currentLessonIndex,
 		currentSentenceIndex,
@@ -113,7 +114,7 @@ const MainPage = () => {
 					</div>
 				</header>
 
-				{!session?.user?.id && (
+				{!userId && (
 					<div className="mt-4 p-3 text-xs rounded border border-amber-500/40 bg-amber-500/5 text-amber-300">
 						Sign in to record your progress. Lesson attempts won&#39;t be saved
 						while signed out.
