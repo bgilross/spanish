@@ -37,7 +37,13 @@ const MainPage = () => {
 	const [showIntro, setShowIntro] = React.useState(true)
 	const [showWordBank, setShowWordBank] = React.useState(false)
 	const { data: session } = useSession()
-	const userId = (session?.user as { id?: string } | undefined)?.id
+	let userId = (session?.user as { id?: string } | undefined)?.id
+	// Dev fallback (allows local testing of persistence without Google OAuth)
+	if (!userId && process.env.NODE_ENV === "development") {
+		const fake =
+			process.env.NEXT_PUBLIC_DEV_FAKE_USER_ID || process.env.DEV_FAKE_USER_ID
+		if (fake) userId = fake
+	}
 
 	React.useEffect(() => {
 		setShowIntro(true)
@@ -126,6 +132,12 @@ const MainPage = () => {
 					<div className="mt-4 p-3 text-xs rounded border border-amber-500/40 bg-amber-500/5 text-amber-300">
 						Sign in to record your progress. Lesson attempts won&#39;t be saved
 						while signed out.
+					</div>
+				)}
+				{!session?.user && userId && process.env.NODE_ENV === "development" && (
+					<div className="mt-3 p-2 text-[10px] rounded border border-indigo-500/40 bg-indigo-500/5 text-indigo-300">
+						Using local dev fallback user:{" "}
+						<span className="font-mono">{userId}</span>
 					</div>
 				)}
 

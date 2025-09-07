@@ -34,3 +34,98 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+---
+
+## Local Development (Database + Auth)
+
+The app persists lesson attempt summaries and authentication state in Postgres via Prisma + NextAuth.
+
+### 1. Copy environment file
+
+```
+cp .env.example .env
+```
+
+Fill in:
+
+- `DATABASE_URL` (see Docker option below)
+- `NEXTAUTH_SECRET` (generate: `openssl rand -hex 32` or any long random string)
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (Google Cloud Console OAuth credentials; Authorized origin `http://localhost:3000`, redirect `http://localhost:3000/api/auth/callback/google`)
+
+### 2. Start a local Postgres (Docker)
+
+If you have Docker installed you can run a throwaway DB:
+
+```
+docker run --name spanish-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=spanish_dev -p 5432:5432 -d postgres:16
+```
+
+Confirm connection (optional):
+
+```
+docker exec -it spanish-postgres psql -U postgres -d spanish_dev -c "\dt"
+```
+
+### 3. Install deps & generate Prisma Client
+
+```
+npm install
+npx prisma migrate deploy   # applies existing migrations
+npx prisma generate         # (normally run automatically via postinstall)
+```
+
+If you edit the schema locally and want a new migration (dev only):
+
+```
+npx prisma migrate dev --name some_change
+```
+
+### 4. Run the dev server
+
+```
+npm run dev
+```
+
+Navigate to `http://localhost:3000`.
+
+### 4b. Local Testing Without Google Sign-In
+
+If you don't want to configure Google OAuth immediately, set a fake user id in `.env`:
+
+```
+DEV_FAKE_USER_ID=dev-test-user
+```
+
+The app (in development only) will treat this as the signed-in user for saving lesson attempts. A small banner will show the active fallback id. Remove it or sign in with Google to use real accounts.
+
+### 5. Google OAuth Setup Tips
+
+In Google Cloud Console > Credentials:
+
+- Application type: Web
+- Authorized JavaScript origins: `http://localhost:3000`
+- Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
+
+### 6. Troubleshooting
+
+| Symptom                        | Fix                                                                                                                   |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `P1001` (database unreachable) | Check container running; correct host/port in `DATABASE_URL`.                                                         |
+| `Error: NEXTAUTH_SECRET`       | Provide a value in `.env`.                                                                                            |
+| OAuth "redirect_uri_mismatch"  | Ensure redirect URI exactly matches in Google console.                                                                |
+| No attempts saved locally      | Confirm you are signed in; check API route logs in terminal.                                                          |
+| Migration errors (shadow DB)   | Use `npx prisma migrate dev --name temp --create-only` then inspect or `prisma migrate reset` (will wipe local data). |
+
+### 7. Switching between Local and Vercel
+
+Keep your production variables only in the Vercel dashboard. Local `.env` should NOT be committed. Use `.env.example` as authoritative list.
+
+---
+
+## Production Hardening TODO
+
+- Remove `allowDangerousEmailAccountLinking` in prod.
+- Add rate limiting / input validation on API routes.
+- Add monitoring for failed sign-in attempts.
+- Add explicit Zod schemas for request payloads.
