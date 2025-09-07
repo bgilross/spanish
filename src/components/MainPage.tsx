@@ -134,7 +134,10 @@ const MainPage = () => {
 							className="flex-grow basis-full h-0 sm:hidden"
 							aria-hidden
 						/>
-						<LessonControls onBeforeSimulate={() => setShowSummary(false)} />
+						<LessonControls
+							compact
+							onBeforeSimulate={() => setShowSummary(false)}
+						/>
 					</div>
 				</header>
 

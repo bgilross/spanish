@@ -47,8 +47,11 @@ const LessonIntroModal: React.FC<Props> = ({
 						<div className="flex items-center gap-2 flex-wrap justify-end text-xs">
 							{/* Reuse LessonControls select only */}
 							{lessons && lessons.length > 0 && (
-								<div className="hidden sm:block">
-									<LessonControls showSimulator={false} />
+								<div className="w-full sm:w-auto order-2 sm:order-none">
+									<LessonControls
+										showSimulator={false}
+										compact
+									/>
 								</div>
 							)}
 							<button
