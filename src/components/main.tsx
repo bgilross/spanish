@@ -13,20 +13,16 @@ import DebugPanel from "@/components/DebugPanel"
 import WordBankModal from "@/components/WordBankModal"
 
 const Main = () => {
-	const lessons = useDataStore((state) => state.lessons)
-	const currentLessonIndex = useDataStore((state) => state.currentLessonIndex)
-	const currentSentenceIndex = useDataStore(
-		(state) => state.currentSentenceIndex
-	)
+	const lessons = useDataStore((s) => s.lessons)
+	const currentLessonIndex = useDataStore((s) => s.currentLessonIndex)
+	const currentSentenceIndex = useDataStore((s) => s.currentSentenceIndex)
 	const initializeSentenceProgress = useDataStore(
-		(state) => state.initializeSentenceProgress
+		(s) => s.initializeSentenceProgress
 	)
-	const currentSentenceProgress = useDataStore(
-		(state) => state.currentSentenceProgress
-	)
-	const checkCurrentAnswer = useDataStore((state) => state.checkCurrentAnswer)
-	const isLessonComplete = useDataStore((state) => state.isLessonComplete)
-	const getLessonSummary = useDataStore((state) => state.getLessonSummary)
+	const currentSentenceProgress = useDataStore((s) => s.currentSentenceProgress)
+	const checkCurrentAnswer = useDataStore((s) => s.checkCurrentAnswer)
+	const isLessonComplete = useDataStore((s) => s.isLessonComplete)
+	const getLessonSummary = useDataStore((s) => s.getLessonSummary)
 
 	const [showSummary, setShowSummary] = React.useState(false)
 	const [saveStatus, setSaveStatus] = React.useState<
@@ -35,6 +31,7 @@ const Main = () => {
 		| { state: "saved"; id?: string }
 		| { state: "error"; message: string }
 	>({ state: "idle" })
+	const savedLessonNumbersRef = React.useRef<Set<number>>(new Set())
 	const [showIntro, setShowIntro] = React.useState(true)
 	const [showWordBank, setShowWordBank] = React.useState(false)
 
@@ -51,38 +48,35 @@ const Main = () => {
 	}, [initializeSentenceProgress, currentLessonIndex, currentSentenceIndex])
 
 	React.useEffect(() => {
-		if (isLessonComplete()) {
-			setShowSummary(true)
-			setSaveStatus({ state: "saving" })
-			// Fire-and-forget persistence of lesson attempt summary.
-			// TODO: Replace placeholder user id with real auth user id once auth is integrated.
-			const summary = getLessonSummary()
-			const userId = localStorage.getItem("demoUserId") || undefined
-			// Create a lightweight demo user id if none (temporary approach for development)
-			if (!userId) {
-				const newId = crypto.randomUUID()
-				localStorage.setItem("demoUserId", newId)
-			}
-			const effectiveUserId = userId || localStorage.getItem("demoUserId")!
-			fetch("/api/lessonAttempts", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					userId: effectiveUserId,
-					lessonNumber: summary.lessonNumber,
-					summary,
-				}),
-			})
-				.then(async (r) => {
-					if (!r.ok) throw new Error("Request failed: " + r.status)
-					const data = await r.json()
-					setSaveStatus({ state: "saved", id: data.attempt?.id })
-				})
-				.catch((e) => {
-					console.error("Persist lesson attempt failed", e)
-					setSaveStatus({ state: "error", message: e.message })
-				})
+		if (!isLessonComplete()) return
+		const summary = getLessonSummary()
+		if (savedLessonNumbersRef.current.has(summary.lessonNumber)) return
+		savedLessonNumbersRef.current.add(summary.lessonNumber)
+		setShowSummary(true)
+		setSaveStatus({ state: "saving" })
+		let userId = localStorage.getItem("demoUserId") || undefined
+		if (!userId) {
+			userId = crypto.randomUUID()
+			localStorage.setItem("demoUserId", userId)
 		}
+		const payload = { userId, lessonNumber: summary.lessonNumber, summary }
+		fetch("/api/lessonAttempts", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload),
+		})
+			.then(async (r) => {
+				if (!r.ok) {
+					const txt = await r.text().catch(() => "")
+					throw new Error(`Request failed ${r.status}: ${txt}`)
+				}
+				const data = await r.json()
+				setSaveStatus({ state: "saved", id: data.attempt?.id })
+			})
+			.catch((e) => {
+				console.error("[LessonAttempt] Save failed", e)
+				setSaveStatus({ state: "error", message: e.message })
+			})
 	}, [
 		isLessonComplete,
 		currentLessonIndex,
@@ -91,8 +85,8 @@ const Main = () => {
 		getLessonSummary,
 	])
 
-	const activeSectionOriginalIndex: number | null = React.useMemo(() => {
-		const sections = currentSentenceProgress?.translationSections ?? []
+	const activeSectionOriginalIndex = React.useMemo(() => {
+		const sections = currentSentenceProgress?.translationSections || []
 		const next = sections.find((s) => !s.isTranslated)
 		return next ? next.index : null
 	}, [currentSentenceProgress])
@@ -183,14 +177,14 @@ const Main = () => {
 								new Set(
 									currentSentenceProgress?.translationSections.map(
 										(s) => s.index
-									) ?? []
+									) || []
 								)
 							}
 							translated={
 								new Set(
-									currentSentenceProgress?.translationSections
+									(currentSentenceProgress?.translationSections || [])
 										.filter((s) => s.isTranslated)
-										.map((s) => s.index) ?? []
+										.map((s) => s.index)
 								)
 							}
 							activeIndex={activeSectionOriginalIndex}
@@ -220,7 +214,7 @@ const Main = () => {
 						activeIndex={activeSectionOriginalIndex}
 						currentSentenceData={currentSentenceObject?.data}
 						translationSections={
-							currentSentenceProgress?.translationSections ?? []
+							currentSentenceProgress?.translationSections || []
 						}
 					/>
 				</section>
