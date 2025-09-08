@@ -6034,6 +6034,20 @@ const spanishData: { lessons: Lesson[] } = {
 			],
 			wordBank: [],
 		},
+		{
+			lesson: 17,
+			name: "Lesson 17",
+			details: "Subject Pronouns: I, YOU, HE, SHE, WE, THEY",
+			info: [
+				"Subject Pronouns HE, SHE, WE, I, YOU, and THEY",
+				"I = YO",
+				"HE = ÉL",
+				"SHE = ELLA",
+				"WE (M) = NOSOTROS, (F) = NOSOTRAS",
+				"THEY (M) = ELLOS, (F) = ELLAS",
+			],
+			wordBank: [],
+		},
 	],
 }
 
