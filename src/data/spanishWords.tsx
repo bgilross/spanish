@@ -1,9 +1,9 @@
-import { WordGroup, VerbGroup } from "../data/types"
+import { WordGroup, VerbGroup, PronounGroup } from "../data/types"
 
 interface SpanishWords {
 	artcl: WordGroup
 	conj: WordGroup
-	pron: WordGroup
+	pron: PronounGroup
 	prep: WordGroup
 	advrb: WordGroup
 	noun: WordGroup
@@ -138,27 +138,126 @@ const spanishWords: SpanishWords = {
 		id: "pron",
 		name: "Pronoun",
 		info: ["PRONOUNS are INTERCHANGEABLE with NOUNS!"],
+		demonstrative: {
+			id: "demonstrative",
+			name: "Demonstrative",
+			info: [],
+			words: {
+				eso: {
+					id: "pron.demonstrative.eso",
+					translations: ["that"],
+					word: "eso",
+					audio:
+						"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=that&tl=es&total=1&idx=0&textlen=4",
+					pos: "Pronoun",
+					info: [
+						"likely the MOST VERSATILE word in Spanish! It is interchangeable with any NOUN or NOUN PHRASE, it can also represent actions and concepts",
+					],
+				},
+			},
+		},
+		interrogative: {
+			id: "interrogative",
+			name: "Interrogative",
+			info: [],
+			words: {
+				que: {
+					id: "pron.interrogative.que",
+					translations: ["what"],
+					word: "qué",
+					info: [
+						"Qué can mean HOW in the sense of HOW lucky, would be Qué Lucky! or What Lucky!/What Luck!",
+						"Para qué is an idiom which means 'So that' or 'In order that'",
+					],
+					pos: "Pronoun",
+				},
+			},
+		},
+		subject: {
+			id: "subject",
+			name: "Subject",
+			info: [],
+			words: {},
+		},
+		dObj: {
+			id: "dObj",
+			name: "Direct Object",
+			info: [
+				`If a pronoun is interchangeable with "him", it's probably a direct object pronoun. "We found it!" We found HIM`,
+				`PLACEMENT: Whenever a DIRECT OBJECT PRONOUN occurs in Spanish, it ALWAYS occurs DIRECTLY before the verb. We found him = We HIM found, or We LO found.`,
+				` Spanish speakers don't say "I hugged him." Instead, they say "I him hugged." And they don't say "I brought her." They say "I her brought." And instead of "I did it", they say "I it did."`,
+				`When NO and LO are together: The Direct Object Pronoun is most important to be next to the verb.`,
+			],
+			words: {
+				lo: {
+					id: "pron.dObj.lo",
+					translations: ["him", "it (M)"],
+					word: "lo",
+					pos: "Direct Object Pronoun",
+					gender: "masculine",
+					info: [],
+				},
+				los: {
+					id: "pron.dObj.los",
+					translations: ["them (M)"],
+					word: "los",
+					pos: "Direct Object Pronoun",
+					gender: "masculine",
+					info: [],
+				},
+				la: {
+					id: "pron.dObj.la",
+					translations: ["her", "it (F)"],
+					word: "la",
+					pos: "Direct Object Pronoun",
+					gender: "feminine",
+					info: [],
+				},
+				las: {
+					id: "pron.dObj.las",
+					translations: ["them (F)"],
+					word: "las",
+					pos: "Direct Object Pronoun",
+					gender: "feminine",
+					info: [],
+				},
+				me: {
+					id: "pron.dObj.me",
+					translations: ["me"],
+					word: "me",
+					pos: "Direct Object Pronoun",
+					info: [],
+				},
+				te: {
+					id: "pron.dObj.te",
+					translations: ["you"],
+					word: "te",
+					pos: "Direct Object Pronoun",
+					info: [],
+				},
+			},
+		},
+		// Back-compat: simple alias bucket for legacy references like pron.words.eso / pron.words.que
 		words: {
+			// These point to the categorized entries; keep ids consistent with new paths
 			eso: {
-				id: "pron.eso",
-				translations: ["that"],
+				id: "pron.demonstrative.eso",
 				word: "eso",
-				audio:
-					"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=that&tl=es&total=1&idx=0&textlen=4",
+				translations: ["that"],
 				pos: "Pronoun",
 				info: [
 					"likely the MOST VERSATILE word in Spanish! It is interchangeable with any NOUN or NOUN PHRASE, it can also represent actions and concepts",
 				],
 			},
 			que: {
-				id: "pron.que",
-				translations: ["what"],
+				id: "pron.interrogative.que",
 				word: "qué",
+				translations: ["what"],
+				pos: "Pronoun",
 				info: [
 					"Qué can mean HOW in the sense of HOW lucky, would be Qué Lucky! or What Lucky!/What Luck!",
 					"Para qué is an idiom which means 'So that' or 'In order that'",
 				],
-				pos: "Pronoun",
 			},
 		},
 	},

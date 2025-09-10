@@ -57,20 +57,31 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 		const entry = sentence?.data[activeIndex]
 		if (!entry) return null
 		const spanishCount = spanishWordCount(entry)
-		// Derive English (source phrase) word count from the phrase field itself
-		// (Original untranslated phrase user sees)
-		const phrase = (entry as { phrase?: string }).phrase || ""
-		const englishCount = phrase.trim().split(/\s+/).filter(Boolean).length
+		// Prefer phraseTranslation for English-side count when available,
+		// then subtract the Spanish word count to avoid double-counting mixed phrases.
+		const pt = (entry as { phraseTranslation?: string | string[] })
+			.phraseTranslation
+		let englishCount: number
+		if (typeof pt === "string") {
+			const total = pt.trim().split(/\s+/).filter(Boolean).length
+			englishCount = Math.max(0, total - spanishCount)
+		} else if (Array.isArray(pt) && pt.length && typeof pt[0] === "string") {
+			const total = pt[0].trim().split(/\s+/).filter(Boolean).length
+			englishCount = Math.max(0, total - spanishCount)
+		} else {
+			// No phraseTranslation: the user should type only Spanish for this section
+			englishCount = 0
+		}
 		return { spanishCount, englishCount }
 	})()
 
 	return (
-		<div className="flex items-start gap-3 flex-wrap">
+		<div className="flex items-start justify-center gap-3 flex-wrap w-full">
 			<input
 				type="text"
 				ref={inputRef}
 				autoFocus
-				className="px-2 py-1 border rounded min-w-[16ch] bg-zinc-950/40 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
+				className="px-3 py-2 border rounded min-w-[24ch] text-lg sm:text-xl bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
 				placeholder={
 					activeIndex == null ? "All parts translated" : "Type answer"
 				}

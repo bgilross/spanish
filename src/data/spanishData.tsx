@@ -3,7 +3,9 @@
 import type { Lesson } from "@/data/types"
 import words from "./spanishWords"
 
-const { conj, pron, prep, advrb, noun, verb, artcl, dObj } = words
+const { conj, pron, prep, advrb, noun, verb, artcl } = words
+
+// (compat removed) All references migrated to new pron.* paths
 
 // const sideLessonPotential = [
 // 	{
@@ -77,7 +79,7 @@ const spanishData: { lessons: Lesson[] } = {
 				"Nouns and verbs function very much the same in English as in Spanish but not quite exactly. Let's review nouns and verbs, how to identify them, and how to use them in a Spanish sentence template.",
 				noun.info[1],
 				noun.info[0],
-				`ESO is technically not a NOUN it's a PRONOUN meaning THAT. ${pron.words.eso.info[0]}`,
+				`ESO is technically not a NOUN it's a PRONOUN meaning THAT. ${pron.demonstrative.words.eso.info[0]}`,
 				`Any noun or noun phrase can be replaced with ESO and still make sense: 'Losing myself in a new city makes me happy' 'That/ESO makes me happy'`,
 
 				verb.info[0],
@@ -99,7 +101,7 @@ const spanishData: { lessons: Lesson[] } = {
 				verb.info[3],
 				conj.words.y.info[0],
 			],
-			wordBank: [conj.words.y, conj.words.que, pron.words.eso],
+			wordBank: [conj.words.y, conj.words.que, pron.demonstrative.words.eso],
 			sentences: [
 				{
 					id: 1,
@@ -110,7 +112,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "and", translation: conj.words.y },
 						{ phrase: "I" },
 						{ phrase: "want" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -124,7 +126,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phraseTranslation: "We said QUE",
 							reference: { "conj.words.que": [1] },
 						},
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "was" },
 						{ phrase: "fine" },
 					],
@@ -137,7 +139,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{ phrase: "hope" },
 						{ phrase: "that", translation: conj.words.que },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "is" },
 						{ phrase: "OK" },
 					],
@@ -162,7 +164,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "We" },
 						{ phrase: "said" },
 						{ phrase: "that", translation: conj.words.que },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "was" },
 						{ phrase: "fine" },
 					],
@@ -178,7 +180,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phraseTranslation: "I told them QUE",
 							reference: { "conj.words.que": [1] },
 						},
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "was" },
 						{ phrase: "in" },
 						{ phrase: "the" },
@@ -198,7 +200,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{ phrase: "he" },
 						{ phrase: "gets" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "soon" },
 					],
 				},
@@ -210,7 +212,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{ phrase: "don't" },
 						{ phrase: "want" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "here" },
 					],
 				},
@@ -227,7 +229,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{ phrase: "they" },
 						{ phrase: "said" },
-						{ phrase: "that!", translation: pron.words.eso },
+						{ phrase: "that!", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -241,7 +243,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "and", translation: conj.words.y },
 						{ phrase: "she" },
 						{ phrase: "said" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -251,7 +253,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{ phrase: "They" },
 						{ phrase: "found" },
-						{ phrase: "that?", translation: pron.words.eso },
+						{ phrase: "that?", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -259,7 +261,7 @@ const spanishData: { lessons: Lesson[] } = {
 					sentence: "That isn't my favorite thing",
 					translation: "ESO isn't my favorite thing",
 					data: [
-						{ phrase: "That", translation: pron.words.eso },
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
 						{ phrase: "isn't my favorite thing" },
 					],
 				},
@@ -295,7 +297,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{ phrase: "We" },
 						{ phrase: "want" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "as soon as possible" },
 					],
 				},
@@ -308,7 +310,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "told" },
 						{ phrase: "me" },
 						{ phrase: "that", translation: conj.words.que },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "was" },
 						{ phrase: "impossible" },
 					],
@@ -432,7 +434,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phraseTranslation: "NO will send",
 							reference: { "advrb.words.no": [6] },
 						},
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "to", translation: prep.words.a },
 						{ phrase: "her" },
 						{ phrase: "sister" },
@@ -448,7 +450,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "tired" },
 						{ phrase: "of", translation: prep.words.de },
 						{ phrase: "doing" },
-						{ phrase: "that?", translation: pron.words.eso },
+						{ phrase: "that?", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -479,7 +481,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phraseTranslation: "NO can do",
 							reference: { "advrb.words.no": [6] },
 						},
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -510,7 +512,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{ phrase: "more" },
 						{ phrase: "of" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -544,7 +546,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phraseTranslation: "QUE you have",
 							reference: { "conj.words.que": [1] },
 						},
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -559,7 +561,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phraseTranslation: "NO has",
 							reference: { "advrb.words.no": [7] },
 						},
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -594,7 +596,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "brother" },
 						{ phrase: "more" },
 						{ phrase: "of", translation: prep.words.de },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -640,7 +642,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "want" },
 						{ phrase: "to" },
 						{ phrase: "give" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "to", translation: prep.words.a },
 						{ phrase: "my" },
 						{ phrase: "brother" },
@@ -714,7 +716,7 @@ const spanishData: { lessons: Lesson[] } = {
 					sentence: "That won't matter",
 					translation: "ESO NO will matter",
 					data: [
-						{ phrase: "That", translation: pron.words.eso },
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
 						{
 							phrase: "won't mattter",
 							translation: advrb.words.no,
@@ -945,7 +947,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phraseTranslation: "NO could believe",
 							reference: { "advrb.words.no": [6] },
 						},
-						{ phrase: "that!", translation: pron.words.eso },
+						{ phrase: "that!", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -1195,7 +1197,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "The", translation: artcl.words.el },
 						{ phrase: "man" },
 						{ phrase: "has" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -1216,7 +1218,7 @@ const spanishData: { lessons: Lesson[] } = {
 					sentence: "That is the girl's",
 					translation: "ESO is DE LA girl",
 					data: [
-						{ phrase: "That", translation: pron.words.eso },
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
 						{ phrase: "is" },
 						{
 							phrase: "the girl's",
@@ -1371,14 +1373,19 @@ const spanishData: { lessons: Lesson[] } = {
 			info: [
 				"How does HIM/HER fit in as far as Word Categories go, like nouns and verbs? It can't always be subsituted in place of other nouns: 'Food makes me happy.' != 'Him makes me happy' ",
 				"HE and HIM have to go in very different and specific places in sentences, one is the subject (HE), and one is the Direct Object (HIM) ",
-				dObj.info[0],
-				dObj.info[1],
-				dObj.info[2],
+				pron.dObj.info[0],
+				pron.dObj.info[1],
+				pron.dObj.info[2],
 				"The Spanish Direct Objects for HIM and HER are LO and LA!",
 				"This LA(her) is diffrent then the LA for THE! If LA occurs before a noun it has to mean THE, if it occurs before a verb it has to mean HER!",
-				dObj.info[3],
+				pron.dObj.info[3],
 			],
-			wordBank: [dObj.words.lo, dObj.words.la, artcl.words.el, artcl.words.la],
+			wordBank: [
+				pron.dObj.words.lo,
+				pron.dObj.words.la,
+				artcl.words.el,
+				artcl.words.la,
+			],
 			sentences: [
 				{
 					id: 1,
@@ -1389,7 +1396,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "friends" },
 						{
 							phrase: "see her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "LA see",
 						},
 					],
@@ -1402,7 +1409,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "We" },
 						{
 							phrase: "found it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO found",
 						},
 					],
@@ -1415,13 +1422,13 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "He" },
 						{
 							phrase: "loves it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO loves",
 						},
 						{ phrase: "and", translation: conj.words.y },
 						{
 							phrase: "calls it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO calls",
 						},
 						{ phrase: "his own" },
@@ -1437,7 +1444,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{
 							phrase: "did it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO did",
 						},
 					],
@@ -1447,10 +1454,10 @@ const spanishData: { lessons: Lesson[] } = {
 					sentence: "That caused it",
 					translation: "ESO LO caused",
 					data: [
-						{ phrase: "That", translation: pron.words.eso },
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
 						{
 							phrase: "caused it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO caused",
 						},
 					],
@@ -1464,7 +1471,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "girl" },
 						{
 							phrase: "doesn't love him",
-							translation: [advrb.words.no, dObj.words.lo],
+							translation: [advrb.words.no, pron.dObj.words.lo],
 							phraseTranslation: "NO LO loves",
 							reference: { "advrb.words.no": [7] },
 						},
@@ -1475,7 +1482,7 @@ const spanishData: { lessons: Lesson[] } = {
 					sentence: "That went to it's home",
 					translation: "ESO went A its home",
 					data: [
-						{ phrase: "That", translation: pron.words.eso },
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
 						{ phrase: "went" },
 						{ phrase: "to", translation: prep.words.a },
 						{ phrase: "its" },
@@ -1490,7 +1497,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{
 							phrase: "don't take her",
-							translation: [advrb.words.no, dObj.words.la],
+							translation: [advrb.words.no, pron.dObj.words.la],
 							phraseTranslation: "NO LA take",
 						},
 						{ phrase: "to", translation: prep.words.a },
@@ -1502,10 +1509,10 @@ const spanishData: { lessons: Lesson[] } = {
 					sentence: "That didn't hurt her",
 					translation: "ESO NO LA hurt",
 					data: [
-						{ phrase: "That", translation: pron.words.eso },
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
 						{
 							phrase: "didn't hurt her",
-							translation: [advrb.words.no, dObj.words.la],
+							translation: [advrb.words.no, pron.dObj.words.la],
 							phraseTranslation: "NO LA hurt",
 							reference: { "advrb.words.no": [7] },
 						},
@@ -1520,7 +1527,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "man" },
 						{
 							phrase: "found her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "LA found",
 						},
 						{ phrase: "with" },
@@ -1542,7 +1549,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "boy" },
 						{
 							phrase: "is not",
-							translation: [advrb.words.no, dObj.words.lo],
+							translation: [advrb.words.no, pron.dObj.words.lo],
 							phraseTranslation: "NO is",
 							reference: { "advrb.words.no": [6] },
 						},
@@ -1566,7 +1573,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "girl" },
 						{
 							phrase: "saw him",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO saw",
 						},
 					],
@@ -1580,7 +1587,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "dog" },
 						{
 							phrase: "saw her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "LA saw",
 						},
 						{ phrase: "coming" },
@@ -1600,7 +1607,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phraseTranslation: "I think QUE",
 							reference: { "conj.words.que": [1] },
 						},
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "is" },
 						{ phrase: "from", translation: prep.words.de },
 						{ phrase: "Canada" },
@@ -1617,7 +1624,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "your" },
 						{ phrase: "country" },
 						{ phrase: "did" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -1632,7 +1639,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "woman" },
 						{
 							phrase: "see her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "LA see",
 						},
 					],
@@ -1646,7 +1653,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "mother" },
 						{
 							phrase: "didn't find him",
-							translation: [advrb.words.no, dObj.words.lo],
+							translation: [advrb.words.no, pron.dObj.words.lo],
 							phraseTranslation: "NO LO found",
 							reference: { "advrb.words.no": [7] },
 						},
@@ -1717,7 +1724,12 @@ const spanishData: { lessons: Lesson[] } = {
 				"TE, and ME, are the Spanish Direct Object Pronouns for YOU and ME!",
 				"Although ESO is a Pronoun, and in 'She saw ESO' it is functioning as a Direct Object it still isn't one of the specific Direct Object Pronouns! SO it doesn't get shuffled.",
 			],
-			wordBank: [dObj.words.te, dObj.words.me, artcl.words.un, artcl.words.una],
+			wordBank: [
+				pron.dObj.words.te,
+				pron.dObj.words.me,
+				artcl.words.un,
+				artcl.words.una,
+			],
 			sentences: [
 				{
 					id: 1,
@@ -1727,7 +1739,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "They" },
 						{
 							phrase: "found me",
-							translation: dObj.words.me,
+							translation: pron.dObj.words.me,
 							phraseTranslation: "ME found",
 						},
 					],
@@ -1740,7 +1752,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "We" },
 						{
 							phrase: "saw you",
-							translation: dObj.words.te,
+							translation: pron.dObj.words.te,
 							phraseTranslation: "TE saw",
 						},
 					],
@@ -1766,7 +1778,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "girl" },
 						{
 							phrase: "found me",
-							translation: dObj.words.me,
+							translation: pron.dObj.words.me,
 							phraseTranslation: "ME found",
 						},
 					],
@@ -1798,7 +1810,7 @@ const spanishData: { lessons: Lesson[] } = {
 
 						{
 							phrase: "he saw you",
-							translation: dObj.words.te,
+							translation: pron.dObj.words.te,
 							phraseTranslation: "he TE saw.",
 						},
 					],
@@ -1840,7 +1852,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "dog" },
 						{
 							phrase: "found you",
-							translation: dObj.words.te,
+							translation: pron.dObj.words.te,
 							phraseTranslation: "TE found",
 						},
 					],
@@ -1859,7 +1871,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "he knows me",
-							translation: dObj.words.me,
+							translation: pron.dObj.words.me,
 							phraseTranslation: "he ME knows",
 						},
 					],
@@ -1892,7 +1904,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "found her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "LA found",
 						},
 					],
@@ -1905,11 +1917,11 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "A", translation: artcl.words.un },
 						{ phrase: "man" },
 						{ phrase: "did" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "and", translation: conj.words.y },
 						{
 							phrase: "I found him",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "I LO found",
 						},
 					],
@@ -2015,7 +2027,7 @@ const spanishData: { lessons: Lesson[] } = {
 					sentence: "That was because of those problems",
 					translation: "ESO was POR those problems",
 					data: [
-						{ phrase: "That", translation: pron.words.eso },
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
 						{ phrase: "was" },
 						{ phrase: "beacuase of", translation: prep.words.para },
 						{ phrase: "those problems" },
@@ -2039,7 +2051,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "I saw him",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "I LO saw",
 						},
 						{
@@ -2059,7 +2071,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "the", translation: artcl.words.la },
 						{ phrase: "boss" },
 						{ phrase: "wants" },
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{
 							phrase: "by",
 							translation: prep.words.para,
@@ -2142,7 +2154,7 @@ const spanishData: { lessons: Lesson[] } = {
 					sentence: "That won't be for him",
 					translation: "That NO will be PARA him",
 					data: [
-						{ phrase: "That", translation: pron.words.eso },
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
 						{
 							phrase: "won't be",
 							translation: advrb.words.no,
@@ -2180,7 +2192,7 @@ const spanishData: { lessons: Lesson[] } = {
 					sentence: "That was created by an interesting guy",
 					translation: "ESO was created POR UN interesting guy",
 					data: [
-						{ phrase: "That", translation: pron.words.eso },
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
 						{ phrase: "was" },
 						{ phrase: "created" },
 						{
@@ -2200,7 +2212,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "I saw her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "I LA saw",
 						},
 						{ phrase: "in", translation: prep.words.en },
@@ -2222,7 +2234,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phraseTranslation: "I said QUE",
 							reference: { "conj.words.que": [1] },
 						},
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 						{ phrase: "my" },
 						{
 							phrase: "fur coat",
@@ -2292,14 +2304,14 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that's why",
-							translation: [prep.words.para, pron.words.eso],
+							translation: [prep.words.para, pron.demonstrative.words.eso],
 							phraseTranslation: "POR ESO",
 							reference: { "prep.words.para": [9] },
 						},
 
 						{
 							phrase: "she knows you",
-							translation: dObj.words.te,
+							translation: pron.dObj.words.te,
 							phraseTranslation: "she TE knows",
 						},
 					],
@@ -2312,7 +2324,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "He" },
 						{
 							phrase: "didn't bring me",
-							translation: [advrb.words.no, dObj.words.me],
+							translation: [advrb.words.no, pron.dObj.words.me],
 							phraseTranslation: "NO ME brought",
 							reference: { "advrb.words.no": [7] },
 						},
@@ -2339,8 +2351,8 @@ const spanishData: { lessons: Lesson[] } = {
 			wordBank: [
 				artcl.words.los,
 				artcl.words.las,
-				dObj.words.los,
-				dObj.words.las,
+				pron.dObj.words.los,
+				pron.dObj.words.las,
 			],
 			sentences: [
 				{
@@ -2352,7 +2364,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "girls" },
 						{
 							phrase: "visited them",
-							translation: dObj.words.los,
+							translation: pron.dObj.words.los,
 							phraseTranslation: "LOS visited",
 						},
 					],
@@ -2366,7 +2378,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "boys" },
 						{
 							phrase: "know them",
-							translation: dObj.words.las,
+							translation: pron.dObj.words.las,
 							phraseTranslation: "LAS know",
 						},
 					],
@@ -2380,7 +2392,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "man" },
 						{
 							phrase: "doesn't see them",
-							translation: [advrb.words.no, dObj.words.las],
+							translation: [advrb.words.no, pron.dObj.words.las],
 							phraseTranslation: "NO LAS see",
 							reference: { "advrb.words.no": [7] },
 						},
@@ -2394,7 +2406,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "We" },
 						{
 							phrase: "won't have them",
-							translation: [advrb.words.no, dObj.words.los],
+							translation: [advrb.words.no, pron.dObj.words.los],
 							phraseTranslation: "NO LOS will have",
 							reference: { "advrb.words.no": [7] },
 						},
@@ -2416,7 +2428,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "with", translation: prep.words.con },
 						{
 							phrase: "what?",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 						},
 					],
 				},
@@ -2427,11 +2439,11 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "What",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 						},
 						{
 							phrase: "hit him",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "lo hit",
 						},
 					],
@@ -2443,14 +2455,14 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "You found them",
-							translation: dObj.words.las,
+							translation: pron.dObj.words.las,
 							phraseTranslation: "You LAS found",
 						},
 
 						{ phrase: "with", translation: prep.words.con },
 						{
 							phrase: "what?",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 						},
 					],
 				},
@@ -2461,7 +2473,11 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "What is that for",
-							translation: [conj.words.que, prep.words.para, pron.words.eso],
+							translation: [
+								conj.words.que,
+								prep.words.para,
+								pron.demonstrative.words.eso,
+							],
 							phraseTranslation: "PARA QUE is ESO",
 							reference: {
 								"prep.words.para": [
@@ -2479,7 +2495,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "Why",
-							translation: [prep.words.para, pron.words.que],
+							translation: [prep.words.para, pron.interrogative.words.que],
 							phraseTranslation: "POR QUE",
 							reference: { "prep.words.para": [10] },
 						},
@@ -2556,7 +2572,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "But" },
 						{
 							phrase: "why?",
-							translation: [prep.words.para, pron.words.que],
+							translation: [prep.words.para, pron.interrogative.words.que],
 							phraseTranslation: "POR QUE",
 							reference: { "prep.words.para": [10] },
 						},
@@ -2605,11 +2621,11 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "what",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 						},
 						{
 							phrase: "did he put it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "he LO put",
 						},
 					],
@@ -2623,7 +2639,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "ladies" },
 						{
 							phrase: "saw her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "LA saw",
 						},
 					],
@@ -2635,7 +2651,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "What",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 						},
 						{
 							phrase: "isn't here",
@@ -2656,7 +2672,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{
 							phrase: "saw them",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LOS saw",
 						},
 						{
@@ -2675,7 +2691,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{
 							phrase: "found it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO found",
 						},
 						{
@@ -2695,7 +2711,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{
 							phrase: "have loved you",
-							translation: dObj.words.te,
+							translation: pron.dObj.words.te,
 							phraseTranslation: "TE have loved",
 						},
 						{
@@ -2715,7 +2731,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "man" },
 						{
 							phrase: "confronted them",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LOS confronted",
 						},
 					],
@@ -2727,12 +2743,12 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "(With) What",
-							translation: [prep.words.con, pron.words.que],
+							translation: [prep.words.con, pron.interrogative.words.que],
 							phraseTranslation: "CON QUE",
 						},
 						{
 							phrase: "did you eat with it",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "you LA ate",
 						},
 					],
@@ -2745,7 +2761,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{
 							phrase: "left them",
-							translation: dObj.words.las,
+							translation: pron.dObj.words.las,
 							phraseTranslation: "LAS left",
 						},
 						{
@@ -2768,14 +2784,14 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "the men",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LOS men",
 						},
 						{
 							phrase: "with",
 							translation: prep.words.con,
 						},
-						{ phrase: "that", translation: pron.words.eso },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
 					],
 				},
 				{
@@ -2791,13 +2807,13 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "the list" },
 						{
 							phrase: "that's why",
-							translation: [prep.words.para, pron.words.eso],
+							translation: [prep.words.para, pron.demonstrative.words.eso],
 							phraseTranslation: "POR ESO",
 							reference: { "prep.words.para": [9] },
 						},
 						{
 							phrase: "He knows me",
-							translation: dObj.words.me,
+							translation: pron.dObj.words.me,
 							phraseTranslation: "he ME knows",
 						},
 					],
@@ -2816,7 +2832,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "see them",
-							translation: dObj.words.las,
+							translation: pron.dObj.words.las,
 							phraseTranslation: "LAS see",
 						},
 					],
@@ -2852,7 +2868,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "She did it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "She LO did",
 						},
 						{
@@ -2863,7 +2879,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "I would notice her",
-							translation: [dObj.words.la],
+							translation: [pron.dObj.words.la],
 							phraseTranslation: "I LA would notice",
 						},
 					],
@@ -2893,8 +2909,8 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "How scary",
-							translation: pron.words.que,
-							reference: { "pron.words.que": [0] },
+							translation: pron.interrogative.words.que,
+							reference: { "pron.interrogative.words.que": [0] },
 						},
 						{
 							phrase: "that",
@@ -2912,8 +2928,8 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "How cool",
-							translation: pron.words.que,
-							reference: { "pron.words.que": [0] },
+							translation: pron.interrogative.words.que,
+							reference: { "pron.interrogative.words.que": [0] },
 						},
 						{
 							phrase: "that",
@@ -2938,8 +2954,8 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "How sad",
-							translation: pron.words.que,
-							reference: { "pron.words.que": [0] },
+							translation: pron.interrogative.words.que,
+							reference: { "pron.interrogative.words.que": [0] },
 						},
 						{
 							phrase: "that",
@@ -3012,7 +3028,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "amuses me",
 							phraseTranslation: "ME amuses",
-							translation: dObj.words.me,
+							translation: pron.dObj.words.me,
 						},
 					],
 				},
@@ -3023,7 +3039,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "Why",
-							translation: [prep.words.para, pron.words.que],
+							translation: [prep.words.para, pron.interrogative.words.que],
 							phraseTranslation: "POR QUE",
 							reference: { "prep.words.para": [10] },
 						},
@@ -3052,18 +3068,21 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "did it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO did",
 						},
 						{
 							phrase: "so that",
 							translation: [prep.words.para, conj.words.que],
 							phraseTranslation: "PARA QUE",
-							reference: { "prep.words.para": [5], "pron.words.que": [1] },
+							reference: {
+								"prep.words.para": [5],
+								"pron.interrogative.words.que": [1],
+							},
 						},
 						{
 							phrase: "She would find you",
-							translation: [dObj.words.te],
+							translation: [pron.dObj.words.te],
 							phraseTranslation: "She TE would find",
 						},
 					],
@@ -3103,7 +3122,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "How funny",
 							translation: conj.words.que,
 							phraseTranslation: "Que funny",
-							reference: { "pron.words.que": [0] },
+							reference: { "pron.interrogative.words.que": [0] },
 						},
 						{
 							phrase: "that",
@@ -3111,7 +3130,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 						{
 							phrase: "wasn't",
@@ -3133,7 +3152,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "Que",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 						},
 						{
 							phrase: "do you do",
@@ -3156,7 +3175,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{
 							phrase: "met them",
-							translation: dObj.words.las,
+							translation: pron.dObj.words.las,
 							phraseTranslation: "LAS met",
 						},
 						{
@@ -3167,9 +3186,9 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "park" },
 						{
 							phrase: "how unlikely",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 							phraseTranslation: "QUE unlikely",
-							reference: { "pron.words.que": [0] },
+							reference: { "pron.interrogative.words.que": [0] },
 						},
 					],
 				},
@@ -3188,7 +3207,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that's why",
-							translation: [prep.words.para, pron.words.eso],
+							translation: [prep.words.para, pron.demonstrative.words.eso],
 							phraseTranslation: "POR ESO",
 							reference: { "prep.words.para": [9] },
 						},
@@ -3199,7 +3218,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "guys" },
 						{
 							phrase: "know him",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO know",
 						},
 					],
@@ -3235,9 +3254,9 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "How nice",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 							phraseTranslation: "Que nice",
-							reference: { "pron.words.que": [0] },
+							reference: { "pron.interrogative.words.que": [0] },
 						},
 						{
 							phrase: "that",
@@ -3250,7 +3269,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "girl" },
 						{
 							phrase: "found her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "LA found",
 						},
 					],
@@ -3262,11 +3281,11 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "That",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 						{
 							phrase: "should impress them",
-							translation: dObj.words.los,
+							translation: pron.dObj.words.los,
 							phraseTranslation: "LOS should impress",
 						},
 						{
@@ -3322,7 +3341,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 						{
 							phrase: "so that",
@@ -3419,7 +3438,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "What",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 						},
 						{
 							phrase: "is",
@@ -3427,7 +3446,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 					],
 				},
@@ -3441,7 +3460,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that's why",
-							translation: [prep.words.para, pron.words.eso],
+							translation: [prep.words.para, pron.demonstrative.words.eso],
 							phraseTranslation: "POR ESO",
 							reference: { "prep.words.para": [9] },
 						},
@@ -3502,8 +3521,8 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "How",
-							translation: pron.words.que,
-							reference: { "pron.words.que": [0] },
+							translation: pron.interrogative.words.que,
+							reference: { "pron.interrogative.words.que": [0] },
 						},
 						{
 							phrase: "embarrassing",
@@ -3536,7 +3555,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "Why",
-							translation: [prep.words.para, pron.words.que],
+							translation: [prep.words.para, pron.interrogative.words.que],
 							phraseTranslation: "POR QUE",
 							reference: { "prep.words.para": [10] },
 						},
@@ -3614,7 +3633,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "met them",
-							translation: dObj.words.los,
+							translation: pron.dObj.words.los,
 							phraseTranslation: "LOS met",
 						},
 					],
@@ -3643,7 +3662,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 					],
 				},
@@ -3706,9 +3725,9 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "How strange",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 							phraseTranslation: "Que strange",
-							reference: { "pron.words.que": [0] },
+							reference: { "pron.interrogative.words.que": [0] },
 						},
 						{
 							phrase: "that",
@@ -3733,7 +3752,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "saw them",
-							translation: dObj.words.los,
+							translation: pron.dObj.words.los,
 							phraseTranslation: "LOS saw",
 						},
 						{
@@ -3742,7 +3761,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 					],
 				},
@@ -3982,7 +4001,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "QUE",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 						},
 						{
 							phrase: "is there in the kitchen?",
@@ -4038,7 +4057,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "That",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 						{
 							phrase: "is",
@@ -4237,7 +4256,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "That",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 						{
 							phrase: "is slipping away",
@@ -4275,7 +4294,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "know them",
-							translation: dObj.words.las,
+							translation: pron.dObj.words.las,
 							phraseTranslation: "LAS know",
 						},
 					],
@@ -4306,19 +4325,23 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "Why",
-							translation: [prep.words.para, pron.words.que],
+							translation: [prep.words.para, pron.interrogative.words.que],
 							phraseTranslation: "POR QUE",
 							reference: { "prep.words.para": [10] },
 						},
 						{
 							phrase: "didn't the girl",
-							translation: [artcl.words.la, advrb.words.no, dObj.words.los],
+							translation: [
+								artcl.words.la,
+								advrb.words.no,
+								pron.dObj.words.los,
+							],
 							phraseTranslation: "LA girl NO",
 							reference: { "advrb.words.no": [7] },
 						},
 						{
 							phrase: "see them",
-							translation: dObj.words.los,
+							translation: pron.dObj.words.los,
 							phraseTranslation: "LOS saw",
 						},
 					],
@@ -4369,7 +4392,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 						{
 							phrase: "is",
@@ -4565,7 +4588,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "saw him",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO saw",
 						},
 					],
@@ -4597,7 +4620,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "did it",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO did",
 						},
 					],
@@ -4611,7 +4634,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "Yes" },
 						{
 							phrase: "that's why",
-							translation: [prep.words.para, pron.words.eso],
+							translation: [prep.words.para, pron.demonstrative.words.eso],
 							phraseTranslation: "POR ESO",
 							reference: { "prep.words.para": [9] },
 						},
@@ -4664,7 +4687,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I" },
 						{
 							phrase: "brought her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "LA brought",
 						},
 						{
@@ -4818,8 +4841,8 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "How strange",
-							translation: pron.words.que,
-							reference: { "pron.words.que": [0] },
+							translation: pron.interrogative.words.que,
+							reference: { "pron.interrogative.words.que": [0] },
 							phraseTranslation: "QUE strange",
 						},
 						{
@@ -4846,7 +4869,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "I brought him",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 							phraseTranslation: "I LO brought",
 						},
 						{
@@ -4940,11 +4963,11 @@ const spanishData: { lessons: Lesson[] } = {
 
 						{
 							phrase: "that",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 						{
 							phrase: "amused you",
-							translation: dObj.words.te,
+							translation: pron.dObj.words.te,
 							phraseTranslation: "TE amused",
 						},
 					],
@@ -4990,7 +5013,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "I saw them",
-							translation: dObj.words.los,
+							translation: pron.dObj.words.los,
 							phraseTranslation: "I LOS saw",
 						},
 						{
@@ -5015,7 +5038,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "saw me",
 							phraseTranslation: "ME saw",
-							translation: dObj.words.me,
+							translation: pron.dObj.words.me,
 						},
 						{
 							phrase: "going",
@@ -5036,7 +5059,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "that",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 						{
 							phrase: "has been",
@@ -5093,7 +5116,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "I knew her",
-							translation: dObj.words.la,
+							translation: pron.dObj.words.la,
 							phraseTranslation: "I LA knew",
 						},
 						{ phrase: "she was better" },
@@ -5105,7 +5128,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 					],
 				},
@@ -5228,7 +5251,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "you can meet him",
 							phraseTranslation: "you LO can meet",
-							translation: dObj.words.lo,
+							translation: pron.dObj.words.lo,
 						},
 					],
 				},
@@ -5239,13 +5262,13 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "Why",
-							translation: [prep.words.para, pron.words.que],
+							translation: [prep.words.para, pron.interrogative.words.que],
 							phraseTranslation: "Por que",
 							reference: { "prep.words.para": [10] },
 						},
 						{
 							phrase: "did he bring them",
-							translation: dObj.words.las,
+							translation: pron.dObj.words.las,
 							phraseTranslation: "he LAS brought",
 						},
 					],
@@ -5354,9 +5377,9 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "How strange",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 							phraseTranslation: "QUE strange",
-							reference: { "pron.words.que": [0] },
+							reference: { "pron.interrogative.words.que": [0] },
 						},
 						{
 							phrase: "that",
@@ -5404,7 +5427,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "That's why",
-							translation: [prep.words.para, pron.words.eso],
+							translation: [prep.words.para, pron.demonstrative.words.eso],
 							phraseTranslation: "POR ESO",
 							reference: { "prep.words.para": [9] },
 						},
@@ -5428,7 +5451,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "What",
-							translation: pron.words.que,
+							translation: pron.interrogative.words.que,
 						},
 						{
 							phrase: "do",
@@ -5544,7 +5567,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "That",
-							translation: pron.words.eso,
+							translation: pron.demonstrative.words.eso,
 						},
 						{
 							phrase: "is because of",
@@ -5605,7 +5628,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "That is with",
-							translation: [pron.words.eso, prep.words.con],
+							translation: [pron.demonstrative.words.eso, prep.words.con],
 							phraseTranslation: "ESO is CON",
 							reference: { "verb.words.ser": [5] },
 						},
@@ -5680,7 +5703,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "They are near",
 							phraseTranslation: "They are POR",
 							translation: prep.words.para,
-							reference: { "verb.words.ser": [5], "prep.words.para": [3] },
+							reference: { "verb.words.ser": [5], "prep.words.por": [3] },
 						},
 						{
 							phrase: "the park",
@@ -5757,7 +5780,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "That is becaue of",
 							translation: [
-								pron.words.eso,
+								pron.demonstrative.words.eso,
 								prep.words.para,
 								verb.words.ser.present.es,
 							],
@@ -5805,7 +5828,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that's why",
-							translation: [pron.words.eso, prep.words.para],
+							translation: [pron.demonstrative.words.eso, prep.words.para],
 							phraseTranslation: "POR ESO",
 							reference: { "prep.words.para": [9] },
 						},
@@ -5831,7 +5854,7 @@ const spanishData: { lessons: Lesson[] } = {
 							translation: [
 								verb.words.ser.present.es,
 								prep.words.para,
-								pron.words.eso,
+								pron.demonstrative.words.eso,
 							],
 							reference: { "verb.words.ser": [2], "prep.words.para": [0] },
 						},

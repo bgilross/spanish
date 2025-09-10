@@ -57,6 +57,22 @@ export type WordGroup = {
 	words: Record<string, WordObject>
 }
 
+// Pronouns are grouped (e.g., demonstrative, interrogative, subject, direct object)
+// while maintaining a backward-compatible `words` map for simple lookups.
+export type PronounGroup = {
+	id: string
+	name: string
+	info: string[]
+	// Back-compat bucket for simple pronouns (e.g., eso, qué)
+	words: Record<string, WordObject>
+	// Categorized groups behave like classic WordGroups
+	demonstrative: WordGroup
+	interrogative: WordGroup
+	// Sub-groups that behave like classic WordGroups
+	subject: WordGroup
+	dObj: WordGroup
+}
+
 export interface VerbConjugation extends WordObject {
 	tense: string
 	person: string

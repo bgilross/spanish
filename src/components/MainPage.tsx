@@ -186,8 +186,8 @@ const MainPage = () => {
 	}
 
 	return (
-		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-16">
-			<div className="w-full max-w-3xl pt-6">
+		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-20">
+			<div className="w-full max-w-4xl pt-8">
 				<header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
 					<h1 className="text-xl sm:text-2xl font-semibold tracking-tight leading-tight flex items-center gap-2">
 						Spanish Lesson Trainer
@@ -289,7 +289,7 @@ const MainPage = () => {
 					onClose={() => setShowWordBank(false)}
 				/>
 
-				<section className="mt-6 space-y-2 text-sm text-zinc-300">
+				<section className="mt-8 space-y-3 text-sm text-zinc-300">
 					<div className="flex flex-wrap gap-x-6 gap-y-1">
 						<span className="inline-flex items-center gap-1">
 							<span className="text-zinc-400">Lesson:</span>
@@ -353,8 +353,8 @@ const MainPage = () => {
 				</section>
 
 				{hasSentences && (
-					<section className="mt-6">
-						<div className="rounded-lg bg-zinc-800/60 backdrop-blur-sm border border-zinc-700 px-4 py-6 shadow-inner shadow-black/40">
+					<section className="mt-8">
+						<div className="rounded-xl bg-zinc-800/60 backdrop-blur-sm border border-zinc-700 px-6 py-8 shadow-inner shadow-black/40">
 							<SentenceLine
 								sentence={currentSentenceObject}
 								toTranslate={
@@ -375,7 +375,7 @@ const MainPage = () => {
 								minCh={3}
 								maxCh={20}
 							/>
-							<div className="mt-4 flex flex-wrap items-center gap-3">
+							<div className="mt-6 flex flex-wrap items-center justify-center gap-3">
 								<AnswerInput
 									activeIndex={activeSectionOriginalIndex}
 									sentence={currentSentenceObject}

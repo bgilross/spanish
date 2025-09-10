@@ -24,7 +24,7 @@ const SentenceLine: React.FC<Props> = ({
 	if (!sentence) return null
 
 	return (
-		<div className="mt-2">
+		<div className="mt-2 text-xl sm:text-2xl text-center flex flex-wrap justify-center text-zinc-100">
 			{sentence.data.map((part, i) => {
 				const shouldBeBlank = toTranslate.has(i)
 				const isRevealed = translated.has(i)
