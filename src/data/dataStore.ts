@@ -33,7 +33,8 @@ interface DataStore {
 }
 
 const lessons = spanishData.lessons
-const currentLessonIndex = 0
+// Start app on Lesson 3 by default (index 2)
+const currentLessonIndex = 2
 const currentSentenceIndex = 0
 const currentSentenceProgress = null
 const emptyLessonCompleted: Record<number, boolean> = {}

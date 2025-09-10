@@ -36,7 +36,8 @@ const MainPage = () => {
 		| { state: "error"; message: string }
 	>({ state: "idle" })
 	const savedLessonNumbersRef = React.useRef<Set<number>>(new Set())
-	const [showIntro, setShowIntro] = React.useState(true)
+	// Start without the lesson info modal open by default
+	const [showIntro, setShowIntro] = React.useState(false)
 	const [showWordBank, setShowWordBank] = React.useState(false)
 	const { data: session } = useSession()
 	let userId = (session?.user as { id?: string } | undefined)?.id
@@ -100,7 +101,8 @@ const MainPage = () => {
 	}, [showIntro, userId])
 
 	React.useEffect(() => {
-		setShowIntro(true)
+		// Do not auto-open the lesson intro modal on lesson index change.
+		// Keep the modal closed by default; users can open it via controls.
 		setShowSummary(false)
 	}, [currentLessonIndex])
 

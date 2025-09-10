@@ -2,11 +2,11 @@
 import React, { useEffect, useState, useCallback } from "react"
 
 const points: string[] = [
-	"Login through Google for tracking your progress.",
-	"Use the dashboard link to view progress.",
-	"All quizzes are expected to be answered in Spanglish right now, using only the Spanish words covered so far.",
-	"To the right of the text input you will see the number of words in each language that are expected.",
-	"Open 'dbug' to get an idea of what is expected if there is confusion.",
+	"This is a Spanish learning/quiz app focused on SYNTAX, not vocabulary.",
+	"Log in through Google to save and track your progress.",
+	"Click 'Lesson Info' for information on the current lesson.",
+	"Open 'Word Bank' for a summary of the Spanish words covered in this lesson.",
+	"Make sure to read Lessons 1 and 2 for introductory information on the course method.",
 ]
 
 export const FirstVisitModal: React.FC = () => {
