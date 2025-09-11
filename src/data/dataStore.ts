@@ -28,6 +28,8 @@ interface DataStore {
 	getActiveSectionIndex: () => number | null
 	checkCurrentAnswer: (input: string) => { correct: boolean; advanced: boolean }
 	clearLogs: () => void
+	// Allow marking a previous submission as correct
+	markSubmissionCorrect: (submissionId: string) => void
 	isLessonComplete: () => boolean
 	getLessonSummary: () => LessonSummary
 }
@@ -169,6 +171,8 @@ export const useDataStore = create<DataStore>((set, get) => ({
 
 		// Log submission
 		const submission: SubmissionLog = {
+			// generate a short unique id for UI actions
+			id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
 			lessonNumber: lesson.lesson,
 			sentenceIndex: currentSentenceIndex,
 			sectionIndex: next.index,
@@ -220,6 +224,37 @@ export const useDataStore = create<DataStore>((set, get) => ({
 		return { correct: true, advanced: false }
 	},
 	clearLogs: () => set({ submissionLog: [], errorLog: [] }),
+	// Mark a previously incorrect submission as correct (e.g., typo forgiveness)
+	markSubmissionCorrect: (submissionId: string) => {
+		const { submissionLog, errorLog, currentSentenceProgress } = get()
+		// Find submission
+		const idx = submissionLog.findIndex((s) => s.id === submissionId)
+		if (idx === -1) return
+		const sub = submissionLog[idx]
+		// Update submission log entry to isCorrect = true
+		const updatedSub = { ...sub, isCorrect: true }
+		const newSubs = [...submissionLog]
+		newSubs[idx] = updatedSub
+		// Remove related error entries (match by lesson/sentence/section/userInput)
+		const newErrors = errorLog.filter(
+			(e) =>
+				!(
+					e.lessonNumber === sub.lessonNumber &&
+					e.currentSentence.id === sub.sentence.id &&
+					e.currentSection === sub.section &&
+					e.userInput === sub.userInput
+				)
+		)
+		set({ submissionLog: newSubs, errorLog: newErrors })
+
+		// Optionally mark the section translated in the current progress if it matches
+		if (currentSentenceProgress) {
+			const updatedSections = currentSentenceProgress.translationSections.map(
+				(s) => (s.index === sub.sectionIndex ? { ...s, isTranslated: true } : s)
+			)
+			set({ currentSentenceProgress: { translationSections: updatedSections } })
+		}
+	},
 
 	isLessonComplete: () => {
 		const {

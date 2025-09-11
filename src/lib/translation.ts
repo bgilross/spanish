@@ -28,6 +28,19 @@ export function spanishTarget(entry: SentenceDataEntry): string | null {
 }
 
 export function spanishWordCount(entry: SentenceDataEntry): number {
+	// If the entry includes explicit references mapping translation ids to
+	// phrase positions, use that to count occurrences (handles repeated words).
+	const ref = (
+		entry as { reference?: Record<string, (number | string)[] | undefined> }
+	).reference
+	if (ref && typeof ref === "object") {
+		let total = 0
+		for (const v of Object.values(ref)) {
+			if (Array.isArray(v)) total += v.length
+		}
+		if (total > 0) return total
+	}
+
 	const t = (entry as { translation?: unknown }).translation
 	if (!t) return 0
 	if (typeof t === "string") return t.trim().split(/\s+/).filter(Boolean).length

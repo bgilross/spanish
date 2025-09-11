@@ -130,4 +130,6 @@ export type SubmissionLog = {
 	section: SentenceDataEntry
 	isCorrect: boolean
 	userInput: string
+	// optional id to identify submission entries for UI actions (mark-correct)
+	id?: string
 }

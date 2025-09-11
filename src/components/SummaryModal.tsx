@@ -3,6 +3,7 @@
 import React from "react"
 import { resolveReference, resolveReferenceList } from "@/lib/refs"
 import type { SubmissionLog } from "@/data/types"
+import { useDataStore } from "@/data/dataStore"
 import { APP_VERSION } from "@/lib/version"
 
 type Summary = {
@@ -35,6 +36,12 @@ const SummaryModal: React.FC<Props> = ({
 	summary,
 	saveStatus,
 }) => {
+	const markSubmissionCorrect = useDataStore((s) => s.markSubmissionCorrect)
+	const getLessonSummary = useDataStore((s) => s.getLessonSummary)
+
+	const [localSummary, setLocalSummary] = React.useState(summary)
+
+	React.useEffect(() => setLocalSummary(summary), [summary])
 	if (!open) return null
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -119,7 +126,7 @@ const SummaryModal: React.FC<Props> = ({
 							{summary.incorrect.length === 0 && (
 								<li className="text-zinc-500">None</li>
 							)}
-							{summary.incorrect.map((s, i) => (
+							{localSummary.incorrect.map((s, i) => (
 								<li
 									key={i}
 									className="p-2 border rounded"
@@ -128,6 +135,20 @@ const SummaryModal: React.FC<Props> = ({
 									<div>Phrase: {s.section.phrase}</div>
 									<div>Your input: “{s.userInput}”</div>
 									<div>Expected: {s.expected?.join(" | ")}</div>
+									<div className="mt-2 flex gap-2">
+										<button
+											className="px-2 py-1 text-xs rounded border bg-emerald-600 text-white"
+											onClick={() => {
+												if (!s.id) return
+												markSubmissionCorrect(s.id)
+												// refresh local summary
+												const refreshed = getLessonSummary()
+												setLocalSummary(refreshed)
+											}}
+										>
+											Mark correct
+										</button>
+									</div>
 									{s.references && s.references.length > 0 && (
 										<div className="text-xs text-zinc-600 mt-1">
 											<div className="font-semibold text-[0.8rem] mb-0.5">

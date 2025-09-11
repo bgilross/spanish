@@ -5702,7 +5702,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "They are near",
 							phraseTranslation: "They are POR",
-							translation: prep.words.para,
+							translation: prep.words.por,
 							reference: { "verb.words.ser": [5], "prep.words.por": [3] },
 						},
 						{
