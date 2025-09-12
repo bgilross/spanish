@@ -19,6 +19,19 @@ export async function POST(req: Request) {
 				? body.boostTopics
 				: undefined,
 		})
+		// If the generator found no candidates or produced no questions, return helpful 400
+		if (
+			quiz.meta?.candidatePoolSize === 0 ||
+			(quiz.questions || []).length === 0
+		) {
+			return NextResponse.json(
+				{
+					error: "No candidate sentences found for selected topics",
+					meta: quiz.meta,
+				},
+				{ status: 400 }
+			)
+		}
 		return NextResponse.json(quiz)
 	} catch (e: unknown) {
 		const msg = e instanceof Error ? e.message : "Failed"

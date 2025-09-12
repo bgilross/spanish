@@ -25,6 +25,23 @@ export default function DashboardPage() {
 						</span>
 					</h1>
 					<div className="flex items-center gap-2">
+						<a
+							href="/api/quiz/debug"
+							className="text-[10px] px-2 py-1 rounded border border-zinc-700 hover:bg-zinc-800 text-zinc-400"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Debug Topics
+						</a>
+						<a
+							href="/api/quiz/debug?reset=1"
+							className="text-[10px] px-2 py-1 rounded border border-amber-600/50 hover:bg-amber-900/30 text-amber-400"
+							target="_blank"
+							rel="noopener noreferrer"
+							title="Force rebuild quiz index"
+						>
+							Reset Index
+						</a>
 						<button
 							type="button"
 							onClick={() => setShowQuiz(true)}

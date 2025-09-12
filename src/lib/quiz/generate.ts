@@ -1,4 +1,5 @@
-import { getSentenceTopicIndex } from "./index"
+import { getSentenceTopicIndex, getTopicTree } from "./index"
+import type { TopicNode } from "./types"
 import type { QuizConfig, GeneratedQuiz, QuizQuestion, TopicId } from "./types"
 
 // Lightweight seeded RNG (Mulberry32)
@@ -29,12 +30,47 @@ export function generateQuiz(config: QuizConfig): GeneratedQuiz {
 	const seedNum = hashSeed(config.seed || Date.now().toString())
 	const rnd = mulberry32(seedNum)
 
-	// Build candidate sets per topic
+	// Build candidate sets per topic.
+	// If a selected category (group:*) has zero direct candidates, attempt a
+	// fallback expansion to its descendant word-level topics.
 	const perTopic: Record<string, number[]> = {}
-	topics.forEach((t) => {
-		const list = index.topicToSentences.get(t) || []
+
+	// Build a quick lookup of topic tree nodes for descendant expansion.
+	const tree = getTopicTree()
+	const nodeMap = new Map<string, TopicNode>()
+	function flattenTree(nodes: TopicNode[]): TopicNode[] {
+		const all: TopicNode[] = []
+		for (const n of nodes) {
+			all.push(n)
+			if (n.children && n.children.length) all.push(...flattenTree(n.children))
+		}
+		return all
+	}
+	flattenTree(tree).forEach((n) => nodeMap.set(n.id, n))
+
+	const collectDescendantSentenceIds = (id: string): number[] => {
+		const root = nodeMap.get(id)
+		if (!root || !root.children) return []
+		const gathered = new Set<number>()
+		const stack = [...root.children]
+		while (stack.length) {
+			const cur = stack.pop()
+			if (!cur) continue
+			const list = index.topicToSentences.get(cur.id) || []
+			for (const sid of list) gathered.add(sid)
+			if (cur.children && cur.children.length) stack.push(...cur.children)
+		}
+		return Array.from(gathered)
+	}
+
+	for (const t of topics) {
+		let list = index.topicToSentences.get(t) || []
+		if (list.length === 0 && t.startsWith("group:")) {
+			// Fallback: expand descendants
+			list = collectDescendantSentenceIds(t)
+		}
 		perTopic[t] = seededShuffle(list, rnd)
-	})
+	}
 
 	// Desired per-topic coverage baseline
 	const baseNeed = Math.max(1, Math.ceil(questionCount / topics.length))

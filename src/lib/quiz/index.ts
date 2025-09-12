@@ -20,6 +20,11 @@ import crypto from "crypto"
 let _index: SentenceTopicIndex | null = null
 let _topics: TopicNode[] | null = null
 
+export function resetQuizIndex() {
+	_index = null
+	_topics = null
+}
+
 export function getTopicTree(): TopicNode[] {
 	if (_topics) return _topics
 	const raw = buildTopicTree(spanishWords as unknown as TopicBuildContext)
@@ -102,6 +107,40 @@ export function getSentenceTopicIndex(): SentenceTopicIndex {
 		}
 		sentenceTopics.set(s.id, tset)
 		for (const topic of tset) push(topic, s.id)
+	}
+
+	// Ensure group-level topic keys exist by unioning child word/topic entries
+	// This makes selecting a category (e.g. `group:prep` or `group:pron`) work
+	// even if some sentences only referenced word-level topics OR if the
+	// group-level key was created but remained empty (which can happen when
+	// word-level references are sparse / not yet annotated in early lessons).
+	try {
+		const rawTree = buildTopicTree(spanishWords as unknown as TopicBuildContext)
+		const walkEnsure = (ns: TopicNode[]) =>
+			ns.forEach((n) => {
+				const existing = topicToSentences.get(n.id)
+				// Union descendants if:
+				//   a) key does not exist, or
+				//   b) key exists but is currently empty
+				if (!existing || existing.size === 0) {
+					const union = new Set<number>()
+					if (n.children && n.children.length) {
+						for (const c of n.children) {
+							const childSet = topicToSentences.get(c.id) as
+								| Set<number>
+								| undefined
+							if (childSet && childSet instanceof Set) {
+								for (const sid of childSet) union.add(sid)
+							}
+						}
+					}
+					if (union.size > 0) topicToSentences.set(n.id, union)
+				}
+				if (n.children) walkEnsure(n.children)
+			})
+		walkEnsure(rawTree)
+	} catch {
+		// Non-fatal: if buildTopicTree fails for some reason, continue without group unions
 	}
 
 	const version = hashVersion(sentences.length, topicToSentences.size)

@@ -106,6 +106,15 @@ const QuizBuilder: React.FC<QuizBuilderProps> = ({ onStart }) => {
 
 	const shortfall = candidatePoolSize > 0 && candidatePoolSize < questionCount
 
+	// Build debug URL for currently selected topics
+	const debugUrl = React.useMemo(() => {
+		if (selected.size === 0) return "/api/quiz/debug"
+		const params = Array.from(selected)
+			.map((t) => `t=${encodeURIComponent(t)}`)
+			.join("&")
+		return `/api/quiz/debug?${params}`
+	}, [selected])
+
 	return (
 		<div className="space-y-4">
 			<h2 className="text-lg font-semibold">Custom Quiz Builder</h2>
@@ -236,6 +245,29 @@ const QuizBuilder: React.FC<QuizBuilderProps> = ({ onStart }) => {
 				>
 					Expand all
 				</button>
+			</div>
+			{/* Debug Links */}
+			<div className="flex flex-wrap gap-3 text-[10px] mt-2">
+				<a
+					href="/api/quiz/debug"
+					target="_blank"
+					rel="noopener noreferrer"
+					className="underline text-zinc-400 hover:text-zinc-200"
+				>
+					All Topics Debug
+				</a>
+				<a
+					href={debugUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					className={`underline ${
+						selected.size === 0
+							? "pointer-events-none opacity-40"
+							: "text-emerald-400 hover:text-emerald-200"
+					}`}
+				>
+					Selected Topics Debug
+				</a>
 			</div>
 			{shortfall && (
 				<div className="text-xs text-amber-400 bg-amber-900/20 border border-amber-700/40 rounded p-2">

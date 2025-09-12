@@ -351,9 +351,19 @@ function AttemptRow({
 						<span className="inline-flex shrink-0 items-center justify-center w-5 h-5 text-[10px] font-semibold rounded-full bg-zinc-700 text-zinc-200 border border-zinc-500">
 							{attemptIndex}
 						</span>
-						<span className="text-xs font-medium text-zinc-200 truncate">
-							Lesson {attempt.lessonNumber}
-						</span>
+						{(() => {
+							const summaryUnknown: unknown = attempt.summary
+							const isCustom =
+								typeof summaryUnknown === "object" &&
+								summaryUnknown !== null &&
+								"quizKind" in (summaryUnknown as Record<string, unknown>) &&
+								(summaryUnknown as { quizKind?: string }).quizKind === "custom"
+							return (
+								<span className="text-xs font-medium text-zinc-200 truncate">
+									{isCustom ? "Custom Quiz" : `Lesson ${attempt.lessonNumber}`}
+								</span>
+							)
+						})()}
 					</span>
 					<span className="flex items-center gap-2 text-[10px] text-zinc-500">
 						<span className="sm:hidden">{created.toLocaleDateString()}</span>

@@ -1,5 +1,3 @@
-"use client"
-
 import type { Lesson } from "@/data/types"
 import words from "./spanishWords"
 
@@ -6915,6 +6913,216 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "they(F)",
 							translation: pron.subject.words.ellas,
 						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "She was the friend, they(F) weren't the friends(F)",
+					translation: "ELLA ERA LA AMIGA, ELLAS NO ERAN LAS AMIGAS",
+					data: [
+						{
+							phrase: "She was the friend,",
+							translation: [
+								pron.subject.words.ella,
+								verb.words.ser.past.era,
+								artcl.words.la,
+								noun.words.amiga,
+							],
+						},
+						{
+							phrase: "they(F) weren't the friends(F)",
+							translation: [
+								pron.subject.words.ellas,
+								advrb.words.no,
+								verb.words.ser.past.eran,
+								artcl.words.las,
+								noun.words.amigas,
+							],
+							reference: { "advrb.words.no": [6] },
+						},
+					],
+				},
+				{
+					id: 19,
+					sentence: "I was her student",
+					translation: "YO ERA her student",
+					data: [
+						{
+							phrase: "I was",
+							translation: [pron.subject.words.yo, verb.words.ser.past.era],
+						},
+						{
+							phrase: "her student",
+						},
+					],
+				},
+				{
+					id: 20,
+					sentence: "You weren't the tallest(M), I was the tallest(M)",
+					translation: "TÚ NO ERAS EL tallest, YO ERA EL tallest",
+					data: [
+						{ phrase: "You", translation: pron.subject.words.tu },
+						{
+							phrase: "weren't",
+							translation: [advrb.words.no, verb.words.ser.past.eras],
+						},
+						{
+							phrase: "the tallest(M)",
+							translation: [artcl.words.el],
+							phraseTranslation: "EL tallest",
+						},
+					],
+				},
+				{
+					id: 21,
+					sentence: "You're my teacher so that I can learn algebra",
+					translation: "ERES my teacher PARA QUE I can learn algebra",
+					data: [
+						{
+							phrase: "You're",
+							translation: verb.words.ser.present.eres,
+							noPronoun: true,
+						},
+						{ phrase: "my teacher" },
+						{
+							phrase: "so that",
+							translation: [prep.words.para, conj.words.que],
+							reference: { "prep.words.para": [5] },
+						},
+						{ phrase: "I can learn algebra" },
+					],
+				},
+				{
+					id: 22,
+					sentence: "If he was the owner, why was she here?",
+					translation: "If ÉL ERA EL owner, POR QUÉ was ELLA here?",
+					data: [
+						{ phrase: "If" },
+						{
+							phrase: "he was",
+							translation: [pron.subject.words.el, verb.words.ser.past.era],
+						},
+						{
+							phrase: "the owner",
+							translation: [artcl.words.el],
+							phraseTranslation: "EL owner",
+						},
+						{
+							phrase: "why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							phraseTranslation: "POR QUÉ",
+							reference: { "prep.words.por": [10] },
+						},
+						{
+							phrase: "was she",
+							translation: [pron.subject.words.ella],
+							phraseTranslation: "was ELLA",
+							reference: { "verb.words.ser": [5] },
+						},
+						{ phrase: "here" },
+					],
+				},
+				{
+					id: 23,
+					sentence: "That was strange.",
+					translation: "ESO ERA strange.",
+					data: [
+						{
+							phrase: "That",
+							translation: pron.demonstrative.words.eso,
+						},
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+						},
+						{
+							phrase: "strange",
+						},
+					],
+				},
+				{
+					id: 24,
+					sentence: "He is the boss? I thought we(F) were the bosses(F)",
+					translation:
+						"ÉL ES EL boss? YO thought QUE NOSOTRAS ÉRAMOS LAS bosses",
+					data: [
+						{
+							phrase: "He is the boss?",
+							translation: [
+								pron.subject.words.el,
+								verb.words.ser.present.es,
+								artcl.words.el,
+							],
+							phraseTranslation: "ÉL ES EL boss?",
+						},
+						{
+							phrase: "I thought we(f) were",
+							translation: [
+								pron.subject.words.yo,
+								conj.words.que,
+								pron.subject.words.nosotras,
+								verb.words.ser.past.eramos,
+							],
+							phraseTranslation: "YO thought QUE NOSOTRAS ÉRAMOS",
+							reference: { "conj.words.que": [1] },
+						},
+						{
+							phrase: "the bosses(F)",
+							translation: [artcl.words.las],
+							phraseTranslation: "LAS bosses",
+						},
+					],
+				},
+				{
+					id: 25,
+					sentence: "I'm your friend(M), right?",
+					translation: "SOY your AMIGO, right?",
+					data: [
+						{
+							phrase: "I'm",
+							translation: verb.words.ser.present.soy,
+							noPronoun: true,
+						},
+						{ phrase: "your" },
+						{ phrase: "friend(M)", translation: noun.words.amigo },
+						{ phrase: "right?" },
+					],
+				},
+				{
+					id: 26,
+					sentence: "You were my favorite teacher",
+					translation: "TÚ ERAS my favorite teacher",
+					data: [
+						{
+							phrase: "You were",
+							translation: [pron.subject.words.tu, verb.words.ser.past.eras],
+						},
+						{ phrase: "my favorite teacher" },
+					],
+				},
+				{
+					id: 27,
+					sentence: "We were friends(M) and he and she were enemies",
+					translation: "ERAMOS AMIGOS, Y ÉL Y ELLA ERAN enemies",
+					data: [
+						{
+							phrase: "We were friends(M)",
+							translation: [verb.words.ser.past.eramos, noun.words.amigos],
+						},
+						{ phrase: "and", translation: conj.words.y },
+						{
+							phrase: "he and she",
+							translation: [
+								pron.subject.words.el,
+								conj.words.y,
+								pron.subject.words.ella,
+							],
+						},
+						{
+							phrase: "were",
+							translation: [verb.words.ser.past.eran],
+						},
+						{ phrase: "enemies" },
 					],
 				},
 			],
