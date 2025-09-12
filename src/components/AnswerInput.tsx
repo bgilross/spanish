@@ -45,6 +45,40 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 	}, [flash])
 
 	const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+		// Accent shortcut: Alt+<letter> inserts an accented Spanish character
+		// Use Alt only (avoid Meta/Ctrl). Note: Alt shortcuts can conflict with some OS/menu
+		if (e.altKey && !e.ctrlKey && !e.metaKey) {
+			const key = String(e.key || "").toLowerCase()
+			const ACCENTS: Record<string, [string, string]> = {
+				a: ["á", "Á"],
+				e: ["é", "É"],
+				i: ["í", "Í"],
+				o: ["ó", "Ó"],
+				u: ["ú", "Ú"],
+				n: ["ñ", "Ñ"],
+			}
+			if (key in ACCENTS) {
+				e.preventDefault()
+				const ch = e.shiftKey ? ACCENTS[key][1] : ACCENTS[key][0]
+				const el = inputRef.current
+				if (!el) return
+				const start = el.selectionStart ?? input.length
+				const end = el.selectionEnd ?? input.length
+				const before = input.slice(0, start)
+				const after = input.slice(end)
+				const next = before + ch + after
+				setInput(next)
+				// update caret position after React updates
+				window.setTimeout(() => {
+					if (!inputRef.current) return
+					const pos = (start || 0) + ch.length
+					inputRef.current.setSelectionRange(pos, pos)
+					inputRef.current.focus()
+				}, 0)
+				return
+			}
+		}
+
 		if (e.key !== "Enter") return
 		if (!sentence || activeIndex == null) return
 		const { correct } = onSubmit(input)
@@ -90,6 +124,11 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 				onKeyDown={handleKeyDown}
 				disabled={activeIndex == null}
 			/>
+			{/* Small hint for accent shortcuts */}
+			<div className="text-[10px] text-zinc-400 mt-1 w-full text-center">
+				Press Ctrl+Alt+e/i/o/u/a/n to insert accents (e.g. Ctrl+Alt+e → é). Use
+				Shift for uppercase.
+			</div>
 			{info && (
 				<div className="text-[10px] leading-snug px-2 py-1 rounded border border-zinc-700 bg-zinc-800/60 max-w-[40ch]">
 					<p className="text-zinc-300">
