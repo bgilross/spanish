@@ -1,1 +1,1 @@
-ALTER TABLE "public"."User" ADD COLUMN "image" TEXT NULL;
+ALTER TABLE "public"."User" ADD COLUMN IF NOT EXISTS "image" TEXT NULL;

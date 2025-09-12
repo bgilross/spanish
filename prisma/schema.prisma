@@ -26,6 +26,7 @@ model User {
   image     String?
   createdAt DateTime        @default(now())
   attempts  LessonAttempt[]
+  mixups    UserMixup[]
   accounts  Account[]
   sessions  Session[]
 }
@@ -43,6 +44,22 @@ model LessonAttempt {
   createdAt        DateTime @default(now())
 
   @@index([userId, lessonNumber])
+}
+
+// Aggregated per-user mixup counts for efficient querying in dashboards
+model UserMixup {
+  id        String   @id @default(cuid())
+  userId    String
+  expected  String
+  wrong     String
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, expected, wrong], name: "userId_expected_wrong")
+  @@index([userId, expected])
 }
 
 // --- NextAuth standard models ---

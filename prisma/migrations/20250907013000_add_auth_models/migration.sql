@@ -1,14 +1,14 @@
 -- Add auth columns to existing User table
-ALTER TABLE "public"."User"
-  ADD COLUMN "name" TEXT NULL,
-  ADD COLUMN "email" TEXT NULL,
-  ADD COLUMN "emailVerified" TIMESTAMP(3) NULL;
+-- Make column additions idempotent (skip if columns already exist)
+ALTER TABLE "public"."User" ADD COLUMN IF NOT EXISTS "name" TEXT NULL;
+ALTER TABLE "public"."User" ADD COLUMN IF NOT EXISTS "email" TEXT NULL;
+ALTER TABLE "public"."User" ADD COLUMN IF NOT EXISTS "emailVerified" TIMESTAMP(3) NULL;
 
 -- Unique index for email (NULL-able allowed multiple nulls in Postgres so we use partial unique)
 CREATE UNIQUE INDEX IF NOT EXISTS "User_email_unique" ON "public"."User"("email") WHERE email IS NOT NULL;
 
 -- Create Account table
-CREATE TABLE "public"."Account" (
+CREATE TABLE IF NOT EXISTS "public"."Account" (
   "id" TEXT NOT NULL,
   "userId" TEXT NOT NULL,
   "type" TEXT NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE "public"."Account" (
 );
 
 -- Create Session table
-CREATE TABLE "public"."Session" (
+CREATE TABLE IF NOT EXISTS "public"."Session" (
   "id" TEXT NOT NULL,
   "sessionToken" TEXT NOT NULL,
   "userId" TEXT NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE "public"."Session" (
 );
 
 -- Create VerificationToken table
-CREATE TABLE "public"."VerificationToken" (
+CREATE TABLE IF NOT EXISTS "public"."VerificationToken" (
   "identifier" TEXT NOT NULL,
   "token" TEXT NOT NULL,
   "expires" TIMESTAMP(3) NOT NULL
@@ -47,5 +47,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS "VerificationToken_token_key" ON "public"."Ver
 CREATE UNIQUE INDEX IF NOT EXISTS "VerificationToken_identifier_token_key" ON "public"."VerificationToken"("identifier", "token");
 
 -- FKs
-ALTER TABLE "public"."Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "public"."Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- Add FKs only if constraint names not already present
+DO $$ BEGIN
+  ALTER TABLE "public"."Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+  ALTER TABLE "public"."Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;

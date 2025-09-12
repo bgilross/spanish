@@ -45,6 +45,38 @@ export async function POST(req: NextRequest) {
 			},
 		})
 
+		// If mixupMap present in summary, upsert aggregated counts into UserMixup
+		try {
+			const s = summary as unknown as {
+				mixupMap?: Record<string, Record<string, number>>
+			}
+			const mixupMap = s.mixupMap || {}
+			interface UserMixupDelegate {
+				upsert(args: unknown): Promise<unknown>
+			}
+			const mixupDelegate = (
+				prisma as unknown as { userMixup?: UserMixupDelegate }
+			).userMixup
+			if (!mixupDelegate) {
+				console.error("Prisma client missing userMixup delegate")
+			} else {
+				for (const [expected, wrongs] of Object.entries(mixupMap)) {
+					if (!wrongs) continue
+					for (const [wrong, rawInc] of Object.entries(wrongs)) {
+						const inc = Number(rawInc) || 0
+						if (!inc) continue
+						await mixupDelegate.upsert({
+							where: { userId_expected_wrong: { userId, expected, wrong } },
+							create: { userId, expected, wrong, count: inc },
+							update: { count: { increment: inc } },
+						})
+					}
+				}
+			}
+		} catch (upsertErr) {
+			console.error("Failed to upsert mixups", upsertErr)
+		}
+
 		return NextResponse.json({ attempt }, { status: 201 })
 	} catch (err: unknown) {
 		console.error("POST /api/lessonAttempts error", err)

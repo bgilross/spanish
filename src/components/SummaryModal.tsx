@@ -40,8 +40,25 @@ const SummaryModal: React.FC<Props> = ({
 	const getLessonSummary = useDataStore((s) => s.getLessonSummary)
 
 	const [localSummary, setLocalSummary] = React.useState(summary)
+	const getMixupStats = useDataStore((s) => s.getMixupStats)
+	const clearMixups = useDataStore((s) => s.clearMixups)
+	const [mixups, setMixups] = React.useState<
+		Array<{ expected: string; wrong: string; count: number }>
+	>([])
 
 	React.useEffect(() => setLocalSummary(summary), [summary])
+	React.useEffect(() => {
+		// load mixups (filter to expected tokens in this lesson if possible)
+		const tokensInLesson = Array.from(
+			new Set(summary.incorrect.flatMap((s) => s.expected || []))
+		)
+		let rows = getMixupStats()
+		if (tokensInLesson.length > 0) {
+			// match any expected keys that intersect
+			rows = rows.filter((r) => tokensInLesson.includes(r.expected))
+		}
+		setMixups(rows.slice(0, 50))
+	}, [summary, getMixupStats])
 	if (!open) return null
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -113,6 +130,39 @@ const SummaryModal: React.FC<Props> = ({
 												))}
 											</ul>
 										)}
+										<div className="mt-3">
+											<div className="font-semibold">
+												Mixups (common wrong answers)
+											</div>
+											{mixups.length === 0 ? (
+												<div className="text-sm text-zinc-500">
+													No mixups recorded.
+												</div>
+											) : (
+												<ul className="list-decimal ml-5 text-sm">
+													{mixups.map((m, i) => (
+														<li
+															key={i}
+															className="mb-1"
+														>
+															<span className="font-medium">{m.expected}</span>:
+															“{m.wrong}” — {m.count}
+														</li>
+													))}
+												</ul>
+											)}
+											<div className="mt-2">
+												<button
+													className="px-2 py-1 text-xs rounded border bg-zinc-100"
+													onClick={() => {
+														clearMixups()
+														setMixups([])
+													}}
+												>
+													Clear Mixups
+												</button>
+											</div>
+										</div>
 									</li>
 								)
 							})}

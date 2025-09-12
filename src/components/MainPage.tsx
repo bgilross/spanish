@@ -27,6 +27,7 @@ const MainPage = () => {
 	const checkCurrentAnswer = useDataStore((s) => s.checkCurrentAnswer)
 	const isLessonComplete = useDataStore((s) => s.isLessonComplete)
 	const getLessonSummary = useDataStore((s) => s.getLessonSummary)
+	const mixupMap = useDataStore((s) => s.mixupMap)
 
 	const [showSummary, setShowSummary] = React.useState(false)
 	const [saveStatus, setSaveStatus] = React.useState<
@@ -125,6 +126,8 @@ const MainPage = () => {
 		if (!userId) return
 		if (!isLessonComplete()) return
 		const summary = getLessonSummary()
+		// Include current mixup stats so they persist with the saved attempt
+		const summaryWithMixups = { ...summary, mixupMap }
 		if (savedLessonNumbersRef.current.has(summary.lessonNumber)) return
 		savedLessonNumbersRef.current.add(summary.lessonNumber)
 		setShowSummary(true)
@@ -132,7 +135,7 @@ const MainPage = () => {
 		const payload = {
 			userId,
 			lessonNumber: summary.lessonNumber,
-			summary,
+			summary: summaryWithMixups,
 		}
 		fetch("/api/lessonAttempts", {
 			method: "POST",
@@ -158,6 +161,7 @@ const MainPage = () => {
 		currentSentenceIndex,
 		currentSentenceProgress,
 		getLessonSummary,
+		mixupMap,
 	])
 
 	const activeSectionOriginalIndex = React.useMemo(() => {

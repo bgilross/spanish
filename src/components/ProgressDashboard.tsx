@@ -2,8 +2,10 @@
 import React from "react"
 import { useSession } from "next-auth/react"
 import spanishWords from "@/data/spanishWords"
+import { expectedAnswers } from "@/lib/translation"
+import type { SubmissionLog, SentenceDataEntry, Sentence } from "@/data/types"
 
-// Reusable formatting for error/reference category keys
+// ---------- Helpers ----------
 const POS_LABELS: Record<string, string> = {
 	prep: "Preposition",
 	verb: "Verb",
@@ -29,13 +31,12 @@ export function formatErrorCategory(key: string): string {
 			groupId
 				.replace(/[_-]+/g, " ")
 				.replace(/(^|\s)\w/g, (c) => c.toUpperCase())
-		// Attempt to pull the actual word (with accents) from spanishWords data
 		try {
-			interface MinimalWord {
+			interface MW {
 				word?: string
 			}
-			interface MinimalGroup {
-				words?: Record<string, MinimalWord>
+			interface MG {
+				words?: Record<string, MW>
 			}
 			const groupsUnknown: unknown = spanishWords
 			if (
@@ -43,32 +44,26 @@ export function formatErrorCategory(key: string): string {
 				typeof groupsUnknown === "object" &&
 				groupId in (groupsUnknown as Record<string, unknown>)
 			) {
-				const group = (groupsUnknown as Record<string, MinimalGroup>)[groupId]
+				const group = (groupsUnknown as Record<string, MG>)[groupId]
 				const surface = group?.words?.[wordId]?.word || wordId
 				return `${surface} (${groupLabel})`
 			}
-		} catch {
-			// silent fallback
-		}
+		} catch {}
 		return `${wordId} (${groupLabel})`
 	}
 	return key
 }
-import { expectedAnswers } from "@/lib/translation"
-import type { SubmissionLog, SentenceDataEntry, Sentence } from "@/data/types"
 
+// ---------- Types ----------
 interface SentenceStat {
 	sentenceIndex: number
 	totalSections?: number
 	firstTryCorrectSections?: number[]
 	incorrectSections?: number[]
 }
-
 interface SummarySubmission extends SubmissionLog {
 	expected?: string[]
-	references?: string[]
 }
-
 interface AttemptSummary {
 	errorCategoryCounts?: Record<string, number>
 	incorrect?: SummarySubmission[]
@@ -76,8 +71,7 @@ interface AttemptSummary {
 	sentenceStats?: SentenceStat[]
 	[k: string]: unknown
 }
-
-type LessonAttempt = {
+export interface LessonAttempt {
 	id: string
 	userId: string
 	lessonNumber: number
@@ -87,6 +81,54 @@ type LessonAttempt = {
 	references: string[]
 	createdAt: string
 	summary: AttemptSummary
+}
+
+function ErrorCategoryRow({
+	k,
+	v,
+	explanations,
+}: {
+	k: string
+	v: number
+	explanations?: string[]
+}) {
+	const readable = React.useMemo(() => formatErrorCategory(k), [k])
+	const [open, setOpen] = React.useState(false)
+	return (
+		<div className="mb-1">
+			<button
+				data-expand
+				onClick={() => setOpen((o) => !o)}
+				className="text-xs w-full text-left flex justify-between items-center gap-2 hover:text-zinc-200"
+			>
+				<span>{readable}</span>
+				<span className="text-zinc-400 flex items-center gap-2">
+					{v}
+					<span className="text-[10px] px-1 py-0.5 rounded bg-zinc-700">
+						{open ? "-" : "+"}
+					</span>
+				</span>
+			</button>
+			{open && (
+				<div className="mt-1 space-y-1 pl-2 border-l border-zinc-700">
+					{explanations && explanations.length > 0 ? (
+						explanations.map((e, i) => (
+							<p
+								key={i}
+								className="text-[10px] text-zinc-400 leading-snug"
+							>
+								{e}
+							</p>
+						))
+					) : (
+						<p className="text-[10px] text-zinc-600">
+							No reference details found.
+						</p>
+					)}
+				</div>
+			)}
+		</div>
+	)
 }
 
 function AllErrorsBlock({
@@ -133,241 +175,14 @@ function AllErrorsBlock({
 	)
 }
 
-export function ProgressDashboard() {
-	const { data: session, status } = useSession()
-	let userId = (session?.user as { id?: string } | undefined)?.id
-	// Dev fallback user (same logic as MainPage) so dashboard works without OAuth locally
-	if (!userId && process.env.NODE_ENV === "development") {
-		const fake =
-			process.env.NEXT_PUBLIC_DEV_FAKE_USER_ID || process.env.DEV_FAKE_USER_ID
-		if (fake) userId = fake
-	}
-	const [attempts, setAttempts] = React.useState<LessonAttempt[] | null>(null)
-	const [loading, setLoading] = React.useState(false)
-	const [error, setError] = React.useState<string | null>(null)
-	const [deleting, setDeleting] = React.useState<string | null>(null)
-
-	const load = React.useCallback(async () => {
-		if (!userId) return
-		setLoading(true)
-		setError(null)
-		try {
-			const r = await fetch(
-				`/api/lessonAttempts?userId=${encodeURIComponent(userId)}&limit=50`,
-				{ cache: "no-store" }
-			)
-			if (!r.ok) throw new Error(await r.text().catch(() => r.statusText))
-			const data = await r.json()
-			setAttempts(data.attempts || [])
-		} catch (e: unknown) {
-			setError(e instanceof Error ? e.message : "Failed to load attempts")
-		} finally {
-			setLoading(false)
-		}
-	}, [userId])
-
-	React.useEffect(() => {
-		load()
-	}, [load])
-
-	const aggregate = React.useMemo(() => {
-		if (!attempts || attempts.length === 0) return null
-		const totalAttempts = attempts.length
-		let totalCorrect = 0
-		let totalAnswered = 0
-		const lessonsSet = new Set<number>()
-		const categoryTotals: Record<string, number> = {}
-		for (const a of attempts) {
-			lessonsSet.add(a.lessonNumber)
-			totalCorrect += a.correctCount
-			totalAnswered += a.correctCount + a.incorrectCount
-			const cats = a.summary?.errorCategoryCounts || {}
-			Object.entries(cats).forEach(([k, v]) => {
-				const n = typeof v === "number" ? v : 0
-				categoryTotals[k] = (categoryTotals[k] || 0) + n
-			})
-		}
-		const avgAccuracy = totalAnswered ? (totalCorrect / totalAnswered) * 100 : 0
-		const allCategories = Object.entries(categoryTotals).sort(
-			(a, b) => b[1] - a[1]
-		)
-		const topCategories = allCategories.slice(0, 5)
-		return {
-			totalAttempts,
-			lessonsCompleted: lessonsSet.size,
-			avgAccuracy,
-			topCategories,
-			allCategories,
-		}
-	}, [attempts])
-
-	// Build reference explanation map from spanishWords only (group info + word info)
-	const referenceInfoMap = React.useMemo(() => {
-		const map: Record<string, string[]> = {}
-		const groups = spanishWords as unknown as Record<
-			string,
-			{
-				id: string
-				info?: string[]
-				words?: Record<string, { id: string; info?: string[] }>
-			}
-		>
-		for (const maybeGroup of Object.values(groups)) {
-			if (
-				!maybeGroup ||
-				typeof maybeGroup !== "object" ||
-				!("id" in maybeGroup)
-			)
-				continue
-			const group = maybeGroup as {
-				id: string
-				info?: string[]
-				words?: Record<string, { id: string; info?: string[] }>
-			}
-			const gInfo = Array.isArray(group.info) ? group.info : []
-			const wordEntries = group.words || {}
-			for (const [key, w] of Object.entries(wordEntries)) {
-				const refKey = `${group.id}.words.${key}`
-				const wInfo = Array.isArray(w.info) ? w.info : []
-				const combined: string[] = []
-				for (const item of gInfo)
-					if (!combined.includes(item)) combined.push(item)
-				for (const item of wInfo)
-					if (!combined.includes(item)) combined.push(item)
-				map[refKey] = combined
-			}
-		}
-		return map
-	}, [])
-
-	if (status === "loading") {
-		return <div className="text-sm text-zinc-400">Loading session…</div>
-	}
-	const usingFallback =
-		!session?.user && !!userId && process.env.NODE_ENV === "development"
-
-	if (!userId) {
-		return (
-			<div className="text-sm text-zinc-400">
-				Sign in to view your progress.
-			</div>
-		)
-	}
-
-	const deleteAll = async () => {
-		if (!userId) return
-		if (!confirm("Delete ALL lesson attempts?")) return
-		setDeleting("ALL")
-		try {
-			await fetch(`/api/lessonAttempts?userId=${userId}`, { method: "DELETE" })
-			await load()
-		} finally {
-			setDeleting(null)
-		}
-	}
-
-	const deleteLesson = async (lessonNumber: number) => {
-		if (!userId) return
-		if (!confirm(`Delete attempts for lesson ${lessonNumber}?`)) return
-		setDeleting(String(lessonNumber))
-		try {
-			await fetch(
-				`/api/lessonAttempts?userId=${userId}&lessonNumber=${lessonNumber}`,
-				{ method: "DELETE" }
-			)
-			await load()
-		} finally {
-			setDeleting(null)
-		}
-	}
-
-	return (
-		<div className="space-y-8">
-			{usingFallback && (
-				<div className="text-[10px] rounded border border-indigo-500/40 bg-indigo-500/5 text-indigo-300 px-2 py-1 inline-block">
-					Using local dev fallback user:{" "}
-					<span className="font-mono">{userId}</span>
-				</div>
-			)}
-			<div className="flex items-center gap-3 flex-wrap">
-				<button
-					onClick={load}
-					className="px-3 py-1.5 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
-					disabled={loading || deleting !== null}
-				>
-					{loading ? "Refreshing…" : "Refresh"}
-				</button>
-				<button
-					onClick={deleteAll}
-					className="px-3 py-1.5 text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
-					disabled={deleting !== null || loading}
-				>
-					{deleting === "ALL" ? "Deleting…" : "Delete All"}
-				</button>
-				{error && <span className="text-xs text-rose-400">{error}</span>}
-			</div>
-
-			{aggregate && (
-				<div className="grid gap-3 grid-cols-2 sm:grid-cols-4 text-sm">
-					<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3">
-						<p className="text-zinc-400">Attempts</p>
-						<p className="text-lg font-semibold text-zinc-100">
-							{aggregate.totalAttempts}
-						</p>
-					</div>
-					<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3">
-						<p className="text-zinc-400">Lessons Completed</p>
-						<p className="text-lg font-semibold text-zinc-100">
-							{aggregate.lessonsCompleted}
-						</p>
-					</div>
-					<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3">
-						<p className="text-zinc-400">Avg Accuracy</p>
-						<p className="text-lg font-semibold text-emerald-400">
-							{aggregate.avgAccuracy.toFixed(1)}%
-						</p>
-					</div>
-					<AllErrorsBlock
-						aggregate={aggregate}
-						referenceInfoMap={referenceInfoMap}
-					/>
-				</div>
-			)}
-
-			<div>
-				<h2 className="text-sm font-medium text-zinc-300 mb-2">
-					Recent Attempts
-				</h2>
-				{!attempts && !error && (
-					<p className="text-xs text-zinc-500">Loading attempts…</p>
-				)}
-				{attempts && attempts.length === 0 && (
-					<p className="text-xs text-zinc-500">No attempts yet.</p>
-				)}
-				<ul className="space-y-2">
-					{attempts?.map((a, idx) => {
-						const accuracy =
-							a.correctCount + a.incorrectCount > 0
-								? (a.correctCount / (a.correctCount + a.incorrectCount)) * 100
-								: 0
-						return (
-							<AttemptRow
-								key={a.id}
-								attempt={a}
-								accuracy={accuracy}
-								attemptIndex={idx + 1}
-								referenceInfoMap={referenceInfoMap}
-								deleting={deleting}
-								onDeleteLesson={deleteLesson}
-							/>
-						)
-					})}
-				</ul>
-			</div>
-		</div>
-	)
+interface AttemptRowProps {
+	attempt: LessonAttempt
+	accuracy: number
+	referenceInfoMap: Record<string, string[]>
+	attemptIndex: number
+	deleting: string | null
+	onDeleteLesson: (lesson: number) => void | Promise<void>
 }
-
 function AttemptRow({
 	attempt,
 	accuracy,
@@ -375,21 +190,16 @@ function AttemptRow({
 	attemptIndex,
 	deleting,
 	onDeleteLesson,
-}: {
-	attempt: LessonAttempt
-	accuracy: number
-	referenceInfoMap: Record<string, string[]>
-	attemptIndex: number
-	deleting: string | null
-	onDeleteLesson: (lessonNumber: number) => void | Promise<void>
-}) {
+}: AttemptRowProps) {
 	const [open, setOpen] = React.useState(false)
 	const created = new Date(attempt.createdAt)
 	const cats = attempt.summary?.errorCategoryCounts || {}
-	const incorrect = attempt.summary?.incorrect?.length || attempt.incorrectCount
-	const sentenceStats = attempt.summary?.sentenceStats || []
-
-	// Build per-sentence detailed attempts: user inputs vs expected answers.
+	const sentenceStats = React.useMemo(
+		() => attempt.summary?.sentenceStats || [],
+		[attempt.summary?.sentenceStats]
+	)
+	const incorrectCount =
+		attempt.summary?.incorrect?.length ?? attempt.incorrectCount
 	const sentenceDetails = React.useMemo(() => {
 		const map = new Map<
 			number,
@@ -401,82 +211,79 @@ function AttemptRow({
 						phrase: string
 						attempts: { text: string; correct: boolean }[]
 						expected: string[]
-						references: string[]
-						referenceDetails?: { key: string; indices: (number | string)[] }[]
+						referenceDetails: { key: string; indices: (number | string)[] }[]
 					}
 				>
 			}
 		>()
-		const incorrectSubs = attempt.summary.incorrect || []
-		const correctSubs = attempt.summary.correct || []
-		const process = (subs: SummarySubmission[]) => {
+		const process = (subs: SummarySubmission[] | undefined) => {
+			if (!subs) return
 			for (const s of subs) {
 				if (
 					typeof s.sentenceIndex !== "number" ||
 					typeof s.sectionIndex !== "number"
 				)
 					continue
-				if (!map.has(s.sentenceIndex)) {
+				if (!map.has(s.sentenceIndex))
 					map.set(s.sentenceIndex, {
 						sentence: s.sentence as Sentence,
 						sections: {},
 					})
-				}
 				const sent = map.get(s.sentenceIndex)!
 				const secIdx = s.sectionIndex
-				const sections = sent.sections
-				if (!sections[secIdx]) {
+				if (!sent.sections[secIdx]) {
 					const entry = s.section as SentenceDataEntry
 					const expected =
-						s.expected && s.expected.length
+						(s.expected && s.expected.length
 							? s.expected
-							: expectedAnswers(entry)
+							: expectedAnswers(entry)) || []
 					const phrase =
-						(entry as { phrase?: string }).phrase || "Section " + (secIdx + 1)
-					const refs = (entry as { reference?: Record<string, unknown> })
-						.reference
-						? Object.keys(
-								(entry as { reference?: Record<string, unknown> }).reference!
-						  )
-						: []
+						(entry as { phrase?: string }).phrase || `Section ${secIdx + 1}`
 					const refObj =
 						(entry as { reference?: Record<string, (number | string)[]> })
 							.reference || {}
 					const referenceDetails = Object.entries(refObj).map(
 						([key, indices]) => ({ key, indices })
 					)
-					sections[secIdx] = {
+					sent.sections[secIdx] = {
 						phrase,
 						attempts: [],
 						expected,
-						references: refs,
 						referenceDetails,
 					}
 				}
-				// Append user input if new (track correctness)
 				if (typeof s.userInput === "string" && s.userInput.trim()) {
-					const arr = sections[secIdx].attempts
+					const arr = sent.sections[secIdx].attempts
 					const last = arr[arr.length - 1]
-					if (!last || last.text !== s.userInput) {
+					if (!last || last.text !== s.userInput)
 						arr.push({ text: s.userInput, correct: !!s.isCorrect })
-					}
 				}
 			}
 		}
-		process(incorrectSubs)
-		process(correctSubs)
-		// Return ordered array
+		process(attempt.summary?.incorrect as SummarySubmission[] | undefined)
+		process(attempt.summary?.correct as SummarySubmission[] | undefined)
 		return Array.from(map.entries())
 			.sort((a, b) => a[0] - b[0])
 			.map(([idx, val]) => ({ sentenceIndex: idx, ...val }))
 	}, [attempt.summary])
-
-	// Aggregate references across all sections for this attempt
+	const errorSentenceDetails = React.useMemo(
+		() =>
+			sentenceDetails.filter((sd) => {
+				const stat = sentenceStats.find(
+					(s) => s.sentenceIndex === sd.sentenceIndex
+				)
+				if (stat && (stat.incorrectSections?.length || 0) > 0) return true
+				for (const sec of Object.values(sd.sections))
+					if (sec.attempts.some((a) => !a.correct)) return true
+				return false
+			}),
+		[sentenceDetails, sentenceStats]
+	)
 	const aggregatedReferences = React.useMemo(() => {
 		const acc: Record<string, Set<number | string>> = {}
 		for (const sd of sentenceDetails) {
 			for (const sec of Object.values(sd.sections)) {
-				for (const rd of sec.referenceDetails || []) {
+				for (const rd of sec.referenceDetails) {
 					if (!acc[rd.key]) acc[rd.key] = new Set()
 					rd.indices.forEach((i) => acc[rd.key].add(i))
 				}
@@ -487,7 +294,6 @@ function AttemptRow({
 			indices: Array.from(set.values()),
 		}))
 	}, [sentenceDetails])
-
 	const getRefLines = React.useCallback(
 		(key: string, indices: (number | string)[]) => {
 			const parts = key.split(".")
@@ -498,17 +304,16 @@ function AttemptRow({
 				!groupsUnknown ||
 				typeof groupsUnknown !== "object" ||
 				!(groupId in (groupsUnknown as Record<string, unknown>))
-			) {
+			)
 				return []
-			}
-			interface MinimalWord {
+			interface MW {
 				info?: string[]
 			}
-			interface MinimalGroup {
-				words?: Record<string, MinimalWord>
+			interface MG {
+				words?: Record<string, MW>
 			}
-			const group = (groupsUnknown as Record<string, MinimalGroup>)[groupId]
-			if (!group || typeof group !== "object" || !group.words) return []
+			const group = (groupsUnknown as Record<string, MG>)[groupId]
+			if (!group || !group.words) return []
 			const word = group.words[wordId]
 			if (!word || !Array.isArray(word.info)) return []
 			const lines: string[] = []
@@ -525,7 +330,6 @@ function AttemptRow({
 		},
 		[]
 	)
-
 	return (
 		<li className="border border-zinc-700 rounded-md bg-zinc-800/40">
 			<button
@@ -552,7 +356,7 @@ function AttemptRow({
 						{accuracy.toFixed(1)}%
 					</span>
 					<span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700 text-zinc-200 leading-none">
-						{attempt.correctCount}/{attempt.correctCount + incorrect}
+						{attempt.correctCount}/{attempt.correctCount + incorrectCount}
 					</span>
 					<span className="text-[10px] px-1 py-0.5 rounded bg-zinc-700 text-zinc-300 leading-none">
 						{open ? "Hide" : "Show"}
@@ -584,7 +388,6 @@ function AttemptRow({
 										`/api/lessonAttempts?userId=${attempt.userId}&attemptId=${attempt.id}`,
 										{ method: "DELETE" }
 									)
-									// Soft close panel; parent refresh handled externally via manual refresh
 									setOpen(false)
 								} catch {}
 							}}
@@ -593,7 +396,6 @@ function AttemptRow({
 							Delete This Attempt
 						</button>
 					</div>
-					{/* Error Categories */}
 					<div className="space-y-2">
 						<p className="text-[11px] uppercase tracking-wide text-zinc-500">
 							Error Categories
@@ -612,7 +414,6 @@ function AttemptRow({
 							))}
 						</div>
 					</div>
-
 					{aggregatedReferences.length > 0 && (
 						<div className="space-y-2">
 							<p className="text-[11px] uppercase tracking-wide text-zinc-500">
@@ -643,14 +444,17 @@ function AttemptRow({
 							</div>
 						</div>
 					)}
-
-					{sentenceDetails.length > 0 && (
-						<div className="space-y-2">
-							<p className="text-[11px] uppercase tracking-wide text-zinc-500">
-								Sentence Performance & Details
+					<div className="space-y-2">
+						<p className="text-[11px] uppercase tracking-wide text-zinc-500">
+							Sentence Errors (Only)
+						</p>
+						{errorSentenceDetails.length === 0 ? (
+							<p className="text-[10px] text-zinc-500">
+								No sentence errors in this attempt.
 							</p>
+						) : (
 							<div className="space-y-3">
-								{sentenceDetails.map((sd) => {
+								{errorSentenceDetails.map((sd) => {
 									const stat = sentenceStats.find(
 										(s) => s.sentenceIndex === sd.sentenceIndex
 									)
@@ -724,35 +528,34 @@ function AttemptRow({
 																	</span>
 																))}
 															</p>
-															{sec.referenceDetails &&
-																sec.referenceDetails.length > 0 && (
-																	<div className="mt-1 space-y-1">
-																		{sec.referenceDetails.map((rd, i) => {
-																			const lines = getRefLines(
-																				rd.key,
-																				rd.indices
-																			)
-																			return (
-																				<div
-																					key={i}
-																					className="text-[10px]"
-																				>
-																					<p className="text-zinc-500 break-words">
-																						Ref: {formatErrorCategory(rd.key)}
+															{sec.referenceDetails.length > 0 && (
+																<div className="mt-1 space-y-1">
+																	{sec.referenceDetails.map((rd, i) => {
+																		const lines = getRefLines(
+																			rd.key,
+																			rd.indices
+																		)
+																		return (
+																			<div
+																				key={i}
+																				className="text-[10px]"
+																			>
+																				<p className="text-zinc-500 break-words">
+																					Ref: {formatErrorCategory(rd.key)}
+																				</p>
+																				{lines.map((l, li) => (
+																					<p
+																						key={li}
+																						className="text-zinc-400 leading-snug break-words"
+																					>
+																						{l}
 																					</p>
-																					{lines.map((l, li) => (
-																						<p
-																							key={li}
-																							className="text-zinc-400 leading-snug break-words"
-																						>
-																							{l}
-																						</p>
-																					))}
-																				</div>
-																			)
-																		})}
-																	</div>
-																)}
+																				))}
+																			</div>
+																		)
+																	})}
+																</div>
+															)}
 														</div>
 													))}
 											</div>
@@ -760,58 +563,290 @@ function AttemptRow({
 									)
 								})}
 							</div>
-						</div>
-					)}
+						)}
+					</div>
 				</div>
 			)}
 		</li>
 	)
 }
 
-function ErrorCategoryRow({
-	k,
-	v,
-	explanations,
-}: {
-	k: string
-	v: number
-	explanations?: string[]
-}) {
-	const readable = React.useMemo(() => formatErrorCategory(k), [k])
-	const [open, setOpen] = React.useState(false)
+export function ProgressDashboard() {
+	const { data: session, status } = useSession()
+	let userId = (session?.user as { id?: string } | undefined)?.id
+	if (!userId && process.env.NODE_ENV === "development") {
+		const fake =
+			process.env.NEXT_PUBLIC_DEV_FAKE_USER_ID || process.env.DEV_FAKE_USER_ID
+		if (fake) userId = fake
+	}
+	const [attempts, setAttempts] = React.useState<LessonAttempt[] | null>(null)
+	const [loading, setLoading] = React.useState(false)
+	const [error, setError] = React.useState<string | null>(null)
+	const [deleting, setDeleting] = React.useState<string | null>(null)
+	const [mixupsRows, setMixupsRows] = React.useState<
+		Array<{ expected: string; wrong: string; count: number }>
+	>([])
+	const [mixupPage, setMixupPage] = React.useState(1)
+	const [mixupLoading, setMixupLoading] = React.useState(false)
+	const loadMixups = React.useCallback(
+		async (page = 1) => {
+			if (!userId) return
+			setMixupLoading(true)
+			try {
+				const r = await fetch(
+					`/api/mixups?userId=${encodeURIComponent(
+						userId
+					)}&page=${page}&limit=50`
+				)
+				if (!r.ok) throw new Error(await r.text().catch(() => r.statusText))
+				const data = await r.json()
+				setMixupsRows(data.rows || [])
+				setMixupPage(page)
+			} catch (e) {
+				console.error("Failed to load mixups", e)
+			} finally {
+				setMixupLoading(false)
+			}
+		},
+		[userId]
+	)
+	const load = React.useCallback(async () => {
+		if (!userId) return
+		setLoading(true)
+		setError(null)
+		try {
+			const r = await fetch(
+				`/api/lessonAttempts?userId=${encodeURIComponent(userId)}&limit=50`,
+				{ cache: "no-store" }
+			)
+			if (!r.ok) throw new Error(await r.text().catch(() => r.statusText))
+			const data = await r.json()
+			setAttempts(data.attempts || [])
+		} catch (e) {
+			setError(e instanceof Error ? e.message : "Failed to load attempts")
+		} finally {
+			setLoading(false)
+		}
+	}, [userId])
+	React.useEffect(() => {
+		load()
+		loadMixups(1)
+	}, [load, loadMixups])
+	const aggregate = React.useMemo(() => {
+		if (!attempts || attempts.length === 0) return null
+		const lessonsSet = new Set<number>()
+		let totalCorrect = 0,
+			totalAnswered = 0
+		const categoryTotals: Record<string, number> = {}
+		for (const a of attempts) {
+			lessonsSet.add(a.lessonNumber)
+			totalCorrect += a.correctCount
+			totalAnswered += a.correctCount + a.incorrectCount
+			const cats = a.summary?.errorCategoryCounts || {}
+			Object.entries(cats).forEach(([k, v]) => {
+				categoryTotals[k] =
+					(categoryTotals[k] || 0) + (typeof v === "number" ? v : 0)
+			})
+		}
+		const avgAccuracy = totalAnswered ? (totalCorrect / totalAnswered) * 100 : 0
+		const allCategories = Object.entries(categoryTotals).sort(
+			(a, b) => b[1] - a[1]
+		)
+		const topCategories = allCategories.slice(0, 5)
+		return {
+			totalAttempts: attempts.length,
+			lessonsCompleted: lessonsSet.size,
+			avgAccuracy,
+			allCategories,
+			topCategories,
+		}
+	}, [attempts])
+	const referenceInfoMap = React.useMemo(() => {
+		const map: Record<string, string[]> = {}
+		const groups = spanishWords as unknown as Record<
+			string,
+			{
+				id: string
+				info?: string[]
+				words?: Record<string, { id: string; info?: string[] }>
+			}
+		>
+		for (const maybeGroup of Object.values(groups)) {
+			if (
+				!maybeGroup ||
+				typeof maybeGroup !== "object" ||
+				!("id" in maybeGroup)
+			)
+				continue
+			const group = maybeGroup as {
+				id: string
+				info?: string[]
+				words?: Record<string, { id: string; info?: string[] }>
+			}
+			const gInfo = Array.isArray(group.info) ? group.info : []
+			const wordEntries = group.words || {}
+			for (const [key, w] of Object.entries(wordEntries)) {
+				const refKey = `${group.id}.words.${key}`
+				const wInfo = Array.isArray(w.info) ? w.info : []
+				const combined: string[] = []
+				for (const item of gInfo)
+					if (!combined.includes(item)) combined.push(item)
+				for (const item of wInfo)
+					if (!combined.includes(item)) combined.push(item)
+				map[refKey] = combined
+			}
+		}
+		return map
+	}, [])
+	if (status === "loading")
+		return <div className="text-sm text-zinc-400">Loading session…</div>
+	const usingFallback =
+		!session?.user && !!userId && process.env.NODE_ENV === "development"
+	if (!userId)
+		return (
+			<div className="text-sm text-zinc-400">
+				Sign in to view your progress.
+			</div>
+		)
+	const deleteAll = async () => {
+		if (!userId) return
+		if (!confirm("Delete ALL lesson attempts?")) return
+		setDeleting("ALL")
+		try {
+			await fetch(`/api/lessonAttempts?userId=${userId}`, { method: "DELETE" })
+			await load()
+		} finally {
+			setDeleting(null)
+		}
+	}
+	const deleteLesson = async (lessonNumber: number) => {
+		if (!userId) return
+		if (!confirm(`Delete attempts for lesson ${lessonNumber}?`)) return
+		setDeleting(String(lessonNumber))
+		try {
+			await fetch(
+				`/api/lessonAttempts?userId=${userId}&lessonNumber=${lessonNumber}`,
+				{ method: "DELETE" }
+			)
+			await load()
+		} finally {
+			setDeleting(null)
+		}
+	}
 	return (
-		<div className="mb-1">
-			<button
-				data-expand
-				onClick={() => setOpen((o) => !o)}
-				className="text-xs w-full text-left flex justify-between items-center gap-2 hover:text-zinc-200"
-			>
-				<span>{readable}</span>
-				<span className="text-zinc-400 flex items-center gap-2">
-					{v}
-					<span className="text-[10px] px-1 py-0.5 rounded bg-zinc-700">
-						{open ? "-" : "+"}
-					</span>
-				</span>
-			</button>
-			{open && (
-				<div className="mt-1 space-y-1 pl-2 border-l border-zinc-700">
-					{explanations && explanations.length > 0 ? (
-						explanations.map((e, i) => (
-							<p
-								key={i}
-								className="text-[10px] text-zinc-400 leading-snug"
-							>
-								{e}
-							</p>
-						))
-					) : (
-						<p className="text-[10px] text-zinc-600">
-							No reference details found.
-						</p>
-					)}
+		<div className="space-y-8">
+			{usingFallback && (
+				<div className="text-[10px] rounded border border-indigo-500/40 bg-indigo-500/5 text-indigo-300 px-2 py-1 inline-block">
+					Using local dev fallback user:{" "}
+					<span className="font-mono">{userId}</span>
 				</div>
 			)}
+			<div className="flex items-center gap-3 flex-wrap">
+				<button
+					onClick={load}
+					className="px-3 py-1.5 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+					disabled={loading || deleting !== null}
+				>
+					{loading ? "Refreshing…" : "Refresh"}
+				</button>
+				<button
+					onClick={deleteAll}
+					className="px-3 py-1.5 text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
+					disabled={deleting !== null || loading}
+				>
+					{deleting === "ALL" ? "Deleting…" : "Delete All"}
+				</button>
+				{error && <span className="text-xs text-rose-400">{error}</span>}
+			</div>
+			{aggregate && (
+				<div className="grid gap-3 grid-cols-2 sm:grid-cols-4 text-sm">
+					<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3">
+						<p className="text-zinc-400">Attempts</p>
+						<p className="text-lg font-semibold text-zinc-100">
+							{aggregate.totalAttempts}
+						</p>
+					</div>
+					<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3">
+						<p className="text-zinc-400">Lessons Completed</p>
+						<p className="text-lg font-semibold text-zinc-100">
+							{aggregate.lessonsCompleted}
+						</p>
+					</div>
+					<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3">
+						<p className="text-zinc-400">Avg Accuracy</p>
+						<p className="text-lg font-semibold text-emerald-400">
+							{aggregate.avgAccuracy.toFixed(1)}%
+						</p>
+					</div>
+					<AllErrorsBlock
+						aggregate={aggregate}
+						referenceInfoMap={referenceInfoMap}
+					/>
+					<div className="rounded-md border border-zinc-700 bg-zinc-800/50 p-3 col-span-2 sm:col-span-4">
+						<div className="flex items-center justify-between mb-2">
+							<p className="text-zinc-400 text-sm">Top Mixups</p>
+							<div className="flex items-center gap-2">
+								<button
+									className="px-2 py-0.5 text-xs rounded border"
+									onClick={() => loadMixups(mixupPage > 1 ? mixupPage - 1 : 1)}
+								>
+									Prev
+								</button>
+								<button
+									className="px-2 py-0.5 text-xs rounded border"
+									onClick={() => loadMixups(mixupPage + 1)}
+								>
+									Next
+								</button>
+							</div>
+						</div>
+						<div className="max-h-56 overflow-auto pr-1 text-[10px] space-y-1">
+							{mixupLoading && <p className="text-zinc-500">Loading…</p>}
+							{!mixupLoading && mixupsRows.length === 0 && (
+								<p className="text-zinc-500">No mixups yet.</p>
+							)}
+							{mixupsRows.map((m, i) => (
+								<div
+									key={i}
+									className="flex justify-between gap-3 border border-zinc-700 rounded px-2 py-1 bg-zinc-900/40"
+								>
+									<span className="truncate">
+										<span className="text-zinc-300">{m.expected}</span>
+										<span className="text-zinc-500"> → </span>
+										<span className="text-rose-400">{m.wrong}</span>
+									</span>
+									<span className="text-zinc-400 font-mono">x{m.count}</span>
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+			)}
+			<div className="space-y-3">
+				<p className="text-[11px] uppercase tracking-wide text-zinc-500">
+					Recent Attempts
+				</p>
+				{(!attempts || attempts.length === 0) && (
+					<p className="text-[11px] text-zinc-500">No attempts yet.</p>
+				)}
+				<ul className="space-y-4">
+					{attempts?.map((a, idx) => (
+						<AttemptRow
+							key={a.id}
+							attempt={a}
+							attemptIndex={attempts.length - idx}
+							accuracy={
+								a.correctCount + a.incorrectCount
+									? (a.correctCount / (a.correctCount + a.incorrectCount)) * 100
+									: 0
+							}
+							referenceInfoMap={referenceInfoMap}
+							deleting={deleting}
+							onDeleteLesson={deleteLesson}
+						/>
+					))}
+				</ul>
+			</div>
 		</div>
 	)
 }

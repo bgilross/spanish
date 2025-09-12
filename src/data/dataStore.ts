@@ -19,6 +19,15 @@ interface DataStore {
 	errorLog: ErrorEntry[]
 	emptyLessonCompleted: Record<number, boolean>
 
+	// mixup tracking: expectedNormalized -> { wrongNormalized: count }
+	mixupMap: Record<string, Record<string, number>>
+
+	// Return mixup stats, optionally filtered to a specific expected token
+	getMixupStats: (
+		expected?: string
+	) => Array<{ expected: string; wrong: string; count: number }>
+	clearMixups: () => void
+
 	// sentences: Sentence[]
 	startNewLesson: (index: number) => void
 	markEmptyLessonComplete: (lessonNumber: number) => void
@@ -35,6 +44,18 @@ interface DataStore {
 }
 
 const lessons = spanishData.lessons
+
+// Read persisted mixups (browser localStorage). Return {} when not present / unavailable.
+function readMixupsFromStorage(): Record<string, Record<string, number>> {
+	try {
+		if (typeof window === "undefined" || !window.localStorage) return {}
+		const raw = window.localStorage.getItem("mixupMap:v1")
+		if (!raw) return {}
+		return JSON.parse(raw)
+	} catch {
+		return {}
+	}
+}
 // Start app on Lesson 3 by default (index 2)
 const currentLessonIndex = 2
 const currentSentenceIndex = 0
@@ -75,6 +96,8 @@ export const useDataStore = create<DataStore>((set, get) => ({
 	currentSentenceProgress,
 	submissionLog: [],
 	errorLog: [],
+	mixupMap: readMixupsFromStorage(),
+
 	emptyLessonCompleted,
 	startNewLesson: (index: number) => {
 		set({
@@ -185,6 +208,30 @@ export const useDataStore = create<DataStore>((set, get) => ({
 		set({ submissionLog: [...submissionLog, submission] })
 
 		if (!isCorrect) {
+			// Update mixup counts: for each expected answer, increment wrong->count
+			try {
+				const wrong = normalizeText(input)
+				for (const exp of answers) {
+					set((state) => {
+						const m = { ...state.mixupMap }
+						if (!m[exp]) m[exp] = {}
+						m[exp][wrong] = (m[exp][wrong] || 0) + 1
+						return { mixupMap: m }
+					})
+					// persist after update
+					try {
+						if (typeof window !== "undefined" && window.localStorage) {
+							window.localStorage.setItem(
+								"mixupMap:v1",
+								JSON.stringify(get().mixupMap)
+							)
+						}
+					} catch {}
+				}
+			} catch {
+				// noop
+			}
+
 			// Add error with references if present
 			const references = (
 				entry as { reference?: Record<string, (number | string)[]> }
@@ -235,6 +282,34 @@ export const useDataStore = create<DataStore>((set, get) => ({
 		const updatedSub = { ...sub, isCorrect: true }
 		const newSubs = [...submissionLog]
 		newSubs[idx] = updatedSub
+		// Decrement mixup counts for this forgiven wrong input
+		try {
+			const wrong = normalizeText(sub.userInput)
+			// expected answers for the section
+			const expected = expectedAnswers(sub.section)
+			set((state) => {
+				const m = { ...state.mixupMap }
+				for (const exp of expected) {
+					if (!m[exp]) continue
+					m[exp][wrong] = (m[exp][wrong] || 0) - 1
+					if (m[exp][wrong] <= 0) delete m[exp][wrong]
+					// remove empty maps
+					if (Object.keys(m[exp]).length === 0) delete m[exp]
+				}
+				return { mixupMap: m }
+			})
+			// persist after update
+			try {
+				if (typeof window !== "undefined" && window.localStorage) {
+					window.localStorage.setItem(
+						"mixupMap:v1",
+						JSON.stringify(get().mixupMap)
+					)
+				}
+			} catch {}
+		} catch {
+			// noop
+		}
 		// Remove related error entries (match by lesson/sentence/section/userInput)
 		const newErrors = errorLog.filter(
 			(e) =>
@@ -399,4 +474,20 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			errorCategoryCounts,
 		}
 	},
+
+	// Return aggregated mixup stats as array sorted by count desc
+	getMixupStats: (expected?: string) => {
+		const { mixupMap } = get()
+		const rows: Array<{ expected: string; wrong: string; count: number }> = []
+		for (const exp of Object.keys(mixupMap)) {
+			if (expected && expected !== exp) continue
+			for (const wrong of Object.keys(mixupMap[exp])) {
+				rows.push({ expected: exp, wrong, count: mixupMap[exp][wrong] })
+			}
+		}
+		rows.sort((a, b) => b.count - a.count)
+		return rows
+	},
+
+	clearMixups: () => set({ mixupMap: {} }),
 }))
