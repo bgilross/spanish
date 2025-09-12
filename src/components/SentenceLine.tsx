@@ -3,7 +3,7 @@
 import React from "react"
 import { approxChWidth, splitWordAndPunct } from "@/lib/text"
 import { spanishTarget } from "@/lib/translation"
-import type { Sentence } from "@/data/types"
+import type { Sentence, SentenceDataEntry } from "@/data/types"
 
 type Props = {
 	sentence: Sentence | undefined
@@ -24,6 +24,13 @@ const SentenceLine: React.FC<Props> = ({
 }) => {
 	if (!sentence) return null
 
+	// Determine if sentence-level deprecated flag should apply to all parts
+	const sentenceLevelNoPronoun = sentence.noPronoun
+	const anyPartHasFlag = sentence.data.some(
+		(p: SentenceDataEntry) =>
+			(p as SentenceDataEntry & { noPronoun?: boolean }).noPronoun === true
+	)
+
 	return (
 		<div className="mt-2 text-xl sm:text-2xl text-center flex flex-wrap justify-center text-zinc-100">
 			{sentence.data.map((part, i) => {
@@ -31,6 +38,10 @@ const SentenceLine: React.FC<Props> = ({
 				const isRevealed = translated.has(i)
 				const { base, punct } = splitWordAndPunct(part.phrase)
 				const isActive = i === activeIndex
+				const partObj = part as SentenceDataEntry & { noPronoun?: boolean }
+				const partNoPronoun =
+					partObj.noPronoun === true ||
+					(!anyPartHasFlag && sentenceLevelNoPronoun)
 				const spanish = spanishTarget(
 					part as unknown as import("@/data/types").SentenceDataEntry
 				)
@@ -46,23 +57,37 @@ const SentenceLine: React.FC<Props> = ({
 
 				const content =
 					shouldBeBlank && !isRevealed ? (
-						<span
-							className={
-								"inline-block align-baseline border-b-2 h-[1.1em] leading-[1.1em] mx-1 select-none " +
-								(isActive ? "border-blue-600" : "border-current")
-							}
-							style={{ width: `${approxChWidth(base, minCh, maxCh)}ch` }}
-							aria-label="blank"
-							aria-hidden="false"
-						/>
+						<span className="inline-flex flex-col items-center mx-1">
+							<span
+								className={
+									"inline-block align-baseline border-b-2 h-[1.1em] leading-[1.1em] w-full select-none " +
+									(isActive ? "border-blue-600" : "border-current")
+								}
+								style={{ width: `${approxChWidth(base, minCh, maxCh)}ch` }}
+								aria-label="blank"
+								aria-hidden="false"
+							/>
+							{partNoPronoun && (
+								<span className="mt-0.5 text-[8px] tracking-wide uppercase rounded px-1 py-px bg-amber-900/30 border border-amber-500/30 text-amber-300/80 whitespace-nowrap">
+									Pronoun ok omitted
+								</span>
+							)}
+						</span>
 					) : (
-						<span
-							className={
-								"inline-block align-baseline mx-1 " +
-								(isRevealed ? "text-emerald-300 font-medium" : "")
-							}
-						>
-							{isRevealed ? phraseTrans ?? spanish ?? base : base}
+						<span className="inline-flex flex-col items-center mx-1">
+							<span
+								className={
+									"inline-block align-baseline " +
+									(isRevealed ? "text-emerald-300 font-medium" : "")
+								}
+							>
+								{isRevealed ? phraseTrans ?? spanish ?? base : base}
+							</span>
+							{partNoPronoun && (
+								<span className="mt-0.5 text-[8px] tracking-wide uppercase rounded px-1 py-px bg-amber-900/30 border border-amber-500/30 text-amber-300/80 whitespace-nowrap">
+									Pronoun ok omitted
+								</span>
+							)}
 						</span>
 					)
 

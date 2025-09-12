@@ -2,7 +2,7 @@
 
 import React from "react"
 import { spanishWordCount } from "@/lib/translation"
-import type { Sentence } from "@/data/types"
+import type { Sentence, SentenceDataEntry } from "@/data/types"
 
 type Props = {
 	activeIndex: number | null
@@ -106,7 +106,12 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 			// No phraseTranslation: the user should type only Spanish for this section
 			englishCount = 0
 		}
-		return { spanishCount, englishCount }
+		// Determine pronoun optional flag (per-part overrides sentence-level)
+		const partFlag = (entry as SentenceDataEntry & { noPronoun?: boolean })
+			.noPronoun
+		const sentenceLevel = sentence?.noPronoun
+		const noPronoun = partFlag === true || (sentenceLevel && partFlag !== false)
+		return { spanishCount, englishCount, noPronoun }
 	})()
 
 	return (
@@ -136,6 +141,11 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 						and {info.englishCount} English word
 						{info.englishCount === 1 ? "" : "s"} expected
 					</p>
+					{info.noPronoun && activeIndex != null && (
+						<p className="mt-1 text-amber-300/80">
+							Subject pronoun not required here
+						</p>
+					)}
 				</div>
 			)}
 		</div>

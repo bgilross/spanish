@@ -4432,7 +4432,11 @@ const spanishData: { lessons: Lesson[] } = {
 					translation: "SON DE wood",
 					noPronoun: true,
 					data: [
-						{ phrase: "They are", translation: verb.words.ser.present.son },
+						{
+							phrase: "They are",
+							translation: verb.words.ser.present.son,
+							noPronoun: true,
+						},
 						{
 							phrase: "of wood",
 							phraseTranslation: "DE wood",
@@ -6628,6 +6632,44 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "here",
+						},
+					],
+				},
+			],
+		},
+		{
+			lesson: 18,
+			name: "Lesson 18",
+			details: "SER, Past tense conjugations",
+			info: [
+				"In this lesson we will learn the past tense conjugations of the verb SER, which is used to describe identity, origin, time, and other permanent characteristics.",
+				"The past tense conjugations of SER allow us to say things like 'I was', 'you were', 'he/she was', 'we were', and 'they were'.",
+				"Learning all these conjugations can be tricky, we recommend a three step process to learning Verb conjugations:",
+				"1. Make sure you've vividly memorizerd all the individual words, and aren't confusing them",
+				"2. Use these conjugations in rendomized sentence contexts, like in this quiz",
+				"3. Get so fast at recalling the correct conjugations that it becomes second nature",
+				"This quiz will have a lot of short drills on both tenses of SER to start, then will get into fuller sentences, (THIS may be split into different excersises in the future..",
+			],
+			wordBank: [
+				verb.words.ser.past.era,
+				verb.words.ser.past.eras,
+				verb.words.ser.past.eran,
+				verb.words.ser.past.eramos,
+				noun.words.amigo,
+				noun.words.amiga,
+				noun.words.chico,
+				noun.words.chica,
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "They are",
+					translation: "SON",
+					data: [
+						{
+							phrase: "They are",
+							translation: verb.words.ser.present.son,
+							noPronoun: true,
 						},
 					],
 				},

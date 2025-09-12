@@ -12,6 +12,11 @@ export interface Sentence {
 	sentence: string
 	translation: string
 	data: SentenceDataEntry[]
+	/**
+	 * @deprecated Use per-phrase `noPronoun` on individual SentenceDataEntry items instead.
+	 * Temporarily retained for backward compatibility; if true and no entries specify
+	 * their own `noPronoun`, UI will treat all parts as pronoun-optional.
+	 */
 	noPronoun?: boolean
 }
 
@@ -40,6 +45,8 @@ export type SentenceDataEntry =
 			phrase: string
 			translation?: WordObject | string
 			mixup?: WordObject | WordObject[] // For when a word might be confused with anotherw
+			/** If true, a subject pronoun is optional for this phrase */
+			noPronoun?: boolean
 	  }
 	| {
 			phrase: string
@@ -47,6 +54,8 @@ export type SentenceDataEntry =
 			translation: WordObject | WordObject[] | string
 			reference?: Record<string, (number | string)[]>
 			mixup?: WordObject
+			/** If true, a subject pronoun is optional for this phrase */
+			noPronoun?: boolean
 	  }
 
 // Helper types for your word structures
@@ -81,7 +90,7 @@ export interface VerbConjugation extends WordObject {
 export interface VerbRoot extends WordObject {
 	info: string[]
 	present: Record<string, VerbConjugation>
-	// past: Record<string, VerbConjugation>
+	past: Record<string, VerbConjugation>
 }
 
 export interface VerbGroup {
