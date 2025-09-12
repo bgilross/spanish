@@ -69,7 +69,7 @@ const SentenceLine: React.FC<Props> = ({
 							/>
 							{partNoPronoun && (
 								<span className="mt-0.5 text-[8px] tracking-wide uppercase rounded px-1 py-px bg-amber-900/30 border border-amber-500/30 text-amber-300/80 whitespace-nowrap">
-									Pronoun ok omitted
+									No subject pronoun.
 								</span>
 							)}
 						</span>

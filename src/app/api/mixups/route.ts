@@ -36,10 +36,8 @@ export async function GET(req: NextRequest) {
 		const delegate = (prisma as unknown as { userMixup?: UserMixupDelegate })
 			.userMixup
 		if (!delegate) {
-			return NextResponse.json(
-				{ error: "Mixup model not available in Prisma client" },
-				{ status: 500 }
-			)
+			// Graceful fallback: return empty rows with warning instead of 500
+			return NextResponse.json({ rows: [], warning: "mixup model missing" })
 		}
 		const rows = await delegate.findMany({
 			where: { userId },
@@ -75,9 +73,7 @@ export async function GET(req: NextRequest) {
 		return NextResponse.json({ rows })
 	} catch (err) {
 		console.error("GET /api/mixups error", err)
-		return NextResponse.json(
-			{ error: "Internal Server Error" },
-			{ status: 500 }
-		)
+		// Graceful fallback for anticipated runtime issues: surface message but keep 200
+		return NextResponse.json({ rows: [], warning: "mixups unavailable" })
 	}
 }

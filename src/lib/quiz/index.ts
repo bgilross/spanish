@@ -49,11 +49,18 @@ export function getSentenceTopicIndex(): SentenceTopicIndex {
 	const spanishData =
 		(spanishDataModule as unknown as { default?: SDLike }).default ||
 		(spanishDataModule as unknown as SDLike)
-	for (const raw of spanishData.lessons as unknown[]) {
+	const rawLessons = (spanishData as { lessons?: unknown }).lessons
+	let lessonsIterable: unknown[] = []
+	if (Array.isArray(rawLessons)) lessonsIterable = rawLessons
+	else if (rawLessons && typeof rawLessons === "object") {
+		// Support potential object map form { '1': {...}, '2': {...} }
+		lessonsIterable = Object.values(rawLessons as Record<string, unknown>)
+	}
+	for (const raw of lessonsIterable) {
+		if (!raw || typeof raw !== "object") continue
 		const lesson = raw as { sentences?: unknown }
 		if (!Array.isArray(lesson.sentences)) continue
 		for (const s of lesson.sentences as unknown[]) {
-			// Narrow minimal shape
 			const sent = s as Sentence
 			if (typeof sent.id !== "number" || !Array.isArray(sent.data)) continue
 			sentences.push(sent)

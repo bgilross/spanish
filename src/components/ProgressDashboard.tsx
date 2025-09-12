@@ -332,10 +332,19 @@ function AttemptRow({
 	)
 	return (
 		<li className="border border-zinc-700 rounded-md bg-zinc-800/40">
-			<button
+			<div
 				data-expand
+				role="button"
+				tabIndex={0}
 				onClick={() => setOpen((o) => !o)}
-				className="w-full text-left px-3 py-2 flex items-start sm:items-center justify-between gap-3 sm:gap-4 hover:bg-zinc-800/60"
+				onKeyDown={(e) => {
+					if (e.key === "Enter" || e.key === " ") {
+						e.preventDefault()
+						setOpen((o) => !o)
+					}
+				}}
+				className="w-full text-left px-3 py-2 flex items-start sm:items-center justify-between gap-3 sm:gap-4 hover:bg-zinc-800/60 cursor-pointer"
+				aria-expanded={open}
 			>
 				<span className="flex flex-col gap-1 min-w-0">
 					<span className="flex items-center gap-2">
@@ -375,7 +384,7 @@ function AttemptRow({
 							: "Delete Lesson"}
 					</button>
 				</span>
-			</button>
+			</div>
 			{open && (
 				<div className="px-3 sm:px-4 pb-4 pt-1 space-y-5 text-[11px] sm:text-xs text-zinc-300">
 					<div className="flex flex-wrap gap-2 justify-end text-[10px] mb-2">
@@ -588,22 +597,34 @@ export function ProgressDashboard() {
 	>([])
 	const [mixupPage, setMixupPage] = React.useState(1)
 	const [mixupLoading, setMixupLoading] = React.useState(false)
+	const [mixupError, setMixupError] = React.useState<string | null>(null)
 	const loadMixups = React.useCallback(
 		async (page = 1) => {
 			if (!userId) return
 			setMixupLoading(true)
+			setMixupError(null)
 			try {
 				const r = await fetch(
 					`/api/mixups?userId=${encodeURIComponent(
 						userId
 					)}&page=${page}&limit=50`
 				)
-				if (!r.ok) throw new Error(await r.text().catch(() => r.statusText))
+				if (!r.ok) {
+					let msg: string | undefined
+					try {
+						const maybeJson = await r.json()
+						msg = maybeJson?.error
+					} catch {
+						msg = await r.text().catch(() => r.statusText)
+					}
+					throw new Error(msg || `Failed (${r.status})`)
+				}
 				const data = await r.json()
 				setMixupsRows(data.rows || [])
 				setMixupPage(page)
 			} catch (e) {
 				console.error("Failed to load mixups", e)
+				setMixupError(e instanceof Error ? e.message : "Failed to load mixups")
 			} finally {
 				setMixupLoading(false)
 			}
@@ -802,6 +823,9 @@ export function ProgressDashboard() {
 						</div>
 						<div className="max-h-56 overflow-auto pr-1 text-[10px] space-y-1">
 							{mixupLoading && <p className="text-zinc-500">Loading…</p>}
+							{mixupError && !mixupLoading && (
+								<p className="text-rose-400">{mixupError}</p>
+							)}
 							{!mixupLoading && mixupsRows.length === 0 && (
 								<p className="text-zinc-500">No mixups yet.</p>
 							)}

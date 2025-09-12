@@ -131,8 +131,8 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 			/>
 			{/* Small hint for accent shortcuts */}
 			<div className="text-[10px] text-zinc-400 mt-1 w-full text-center">
-				Press Ctrl+Alt+e/i/o/u/a/n to insert accents (e.g. Ctrl+Alt+e → é). Use
-				Shift for uppercase.
+				Press Alt+e/i/o/u/a/n to insert accents (e.g. Alt+e → é). Use Shift+Alt
+				for uppercase.
 			</div>
 			{info && (
 				<div className="text-[10px] leading-snug px-2 py-1 rounded border border-zinc-700 bg-zinc-800/60 max-w-[40ch]">
@@ -142,9 +142,7 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 						{info.englishCount === 1 ? "" : "s"} expected
 					</p>
 					{info.noPronoun && activeIndex != null && (
-						<p className="mt-1 text-amber-300/80">
-							Subject pronoun not required here
-						</p>
+						<p className="mt-1 text-amber-300/80">No subject pronoun</p>
 					)}
 				</div>
 			)}

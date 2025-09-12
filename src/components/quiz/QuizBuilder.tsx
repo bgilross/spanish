@@ -34,6 +34,19 @@ const QuizBuilder: React.FC<QuizBuilderProps> = ({ onStart }) => {
 		}
 	}, [])
 
+	// When topics load, initialize collapsed map so all nodes are collapsed by default
+	React.useEffect(() => {
+		if (!topics) return
+		const map: Record<string, boolean> = {}
+		const walk = (ns: TopicNode[]) =>
+			ns.forEach((n) => {
+				map[n.id] = true
+				if (n.children) walk(n.children)
+			})
+		walk(topics)
+		setCollapsed(map)
+	}, [topics])
+
 	const toggleTopic = (id: string) => {
 		setSelected((prev) => {
 			const next = new Set(prev)
@@ -184,6 +197,45 @@ const QuizBuilder: React.FC<QuizBuilderProps> = ({ onStart }) => {
 						{loading ? "Generating…" : "Start Quiz"}
 					</button>
 				</div>
+			</div>
+			<div className="flex gap-2">
+				{/* Expand / Collapse all controls */}
+				<button
+					type="button"
+					onClick={() => {
+						if (!topics) return
+						// build map of ids and set to true (collapsed)
+						const map: Record<string, boolean> = {}
+						const walk = (ns: TopicNode[]) =>
+							ns.forEach((n) => {
+								map[n.id] = true
+								if (n.children) walk(n.children)
+							})
+						walk(topics)
+						setCollapsed(map)
+					}}
+					className="px-2 py-1 text-xs rounded bg-zinc-800 border border-zinc-700 hover:bg-zinc-700"
+				>
+					Collapse all
+				</button>
+				<button
+					type="button"
+					onClick={() => {
+						if (!topics) return
+						// build map of ids and set to false (expanded)
+						const map: Record<string, boolean> = {}
+						const walk = (ns: TopicNode[]) =>
+							ns.forEach((n) => {
+								map[n.id] = false
+								if (n.children) walk(n.children)
+							})
+						walk(topics)
+						setCollapsed(map)
+					}}
+					className="px-2 py-1 text-xs rounded bg-zinc-800 border border-zinc-700 hover:bg-zinc-700"
+				>
+					Expand all
+				</button>
 			</div>
 			{shortfall && (
 				<div className="text-xs text-amber-400 bg-amber-900/20 border border-amber-700/40 rounded p-2">
