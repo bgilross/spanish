@@ -6673,6 +6673,250 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 					],
 				},
+				{
+					id: 2,
+					sentence: "You were",
+					translation: "ERAS",
+					data: [
+						{
+							phrase: "You were",
+							translation: verb.words.ser.past.eras,
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 3,
+					sentence: "You are",
+					translation: "ERES",
+					data: [
+						{
+							phrase: "You are",
+							translation: verb.words.ser.present.eres,
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 4,
+					sentence: "I am",
+					translation: "SOY",
+					data: [
+						{
+							phrase: "I am",
+							translation: verb.words.ser.present.soy,
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 5,
+					sentence: "We were",
+					translation: "ÉRAMOS",
+					data: [
+						{
+							phrase: "We were",
+							translation: verb.words.ser.past.eramos,
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 6,
+					sentence: "We are",
+					translation: "SOMOS",
+					data: [
+						{
+							phrase: "We are",
+							translation: verb.words.ser.present.somos,
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 7,
+					sentence: "I was",
+					translation: "ERA",
+					data: [
+						{
+							phrase: "I was",
+							translation: verb.words.ser.past.era,
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 8,
+					sentence: "They were",
+					translation: "ERAN",
+					data: [
+						{
+							phrase: "They were",
+							translation: verb.words.ser.past.eran,
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 9,
+					sentence: "He was",
+					translation: "ERA",
+					data: [
+						{
+							phrase: "He was",
+							translation: verb.words.ser.past.era,
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 10,
+					sentence: "He is",
+					translation: "ES",
+					data: [
+						{
+							phrase: "He is",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 11,
+					sentence: "He and they were friends",
+					translation: "ÉL Y ELLOS ERAN AMIGOS",
+					data: [
+						{
+							phrase: "He and they",
+							translation: [
+								pron.subject.words.el,
+								conj.words.y,
+								pron.subject.words.ellos,
+							],
+						},
+						{
+							phrase: "were friends",
+							translation: [verb.words.ser.past.eran, noun.words.amigos],
+						},
+					],
+				},
+				{
+					id: 12,
+					sentence: "The guys were friends",
+					translation: "LOS CHICOS ERAN AMIGOS",
+					data: [
+						{
+							phrase: "The guys",
+							translation: [artcl.words.los, noun.words.chicos],
+						},
+						{
+							phrase: "were friends",
+							translation: [verb.words.ser.past.eran, noun.words.amigos],
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "She and I(F) are friends",
+					translation: "ELLA Y YO SOMOS AMIGAS",
+					data: [
+						{
+							phrase: "She and I(F)",
+							translation: [
+								pron.subject.words.ella,
+								conj.words.y,
+								pron.subject.words.yo,
+							],
+						},
+						{
+							phrase: "are friends",
+							translation: [verb.words.ser.present.somos, noun.words.amigas],
+						},
+					],
+				},
+				{
+					id: 14,
+					sentence: "You were the girl?",
+					translation: "ERAS LA CHICA?",
+					data: [
+						{
+							phrase: "You were",
+							translation: verb.words.ser.past.eras,
+							noPronoun: true,
+						},
+						{
+							phrase: "the girl?",
+							translation: [
+								verb.words.ser.past.eras,
+								artcl.words.la,
+								noun.words.chica,
+							],
+						},
+					],
+				},
+				{
+					id: 15,
+					sentence: "I said that he is the guy",
+					translation: "I said QUE ES EL CHICO",
+					data: [
+						{
+							phrase: "I said",
+						},
+						{
+							phrase: "that",
+							translation: conj.words.que,
+						},
+						{
+							phrase: "he is",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+						},
+						{
+							phrase: "the guy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+					],
+				},
+				{
+					id: 16,
+					sentence: "We(M) were very good friends",
+					translation: "NOSOTROS ÉRAMOS very good AMIGOS",
+					data: [
+						{
+							phrase: "We(M) were",
+							translation: [
+								pron.subject.words.nosotros,
+								verb.words.ser.past.eramos,
+							],
+						},
+						{
+							phrase: "very good",
+						},
+						{
+							phrase: "friends",
+							translation: noun.words.amigos,
+						},
+					],
+				},
+				{
+					id: 17,
+					sentence: "What are they(F)",
+					translation: "QUÉ SON ELLAS",
+					data: [
+						{
+							phrase: "What",
+							translation: pron.interrogative.words.que,
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.son,
+						},
+						{
+							phrase: "they(F)",
+							translation: pron.subject.words.ellas,
+						},
+					],
+				},
 			],
 		},
 	],
