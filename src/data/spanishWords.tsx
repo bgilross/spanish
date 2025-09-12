@@ -8,7 +8,7 @@ interface SpanishWords {
 	advrb: WordGroup
 	noun: WordGroup
 	verb: VerbGroup
-	dObj: WordGroup
+	// dObj: WordGroup
 }
 
 // idioms: [
@@ -133,13 +133,12 @@ const spanishWords: SpanishWords = {
 			},
 		},
 	},
-
 	pron: {
 		id: "pron",
 		name: "Pronoun",
 		info: ["PRONOUNS are INTERCHANGEABLE with NOUNS!"],
 		demonstrative: {
-			id: "demonstrative",
+			id: "pron.demonstrative",
 			name: "Demonstrative",
 			info: [],
 			words: {
@@ -157,7 +156,7 @@ const spanishWords: SpanishWords = {
 			},
 		},
 		interrogative: {
-			id: "interrogative",
+			id: "pron.interrogative",
 			name: "Interrogative",
 			info: [],
 			words: {
@@ -174,13 +173,74 @@ const spanishWords: SpanishWords = {
 			},
 		},
 		subject: {
-			id: "subject",
+			id: "pron.subject",
 			name: "Subject",
-			info: [],
-			words: {},
+			info: [
+				"Subject Pronouns are used as the SUBJECT of a sentence",
+				"There is no Spanish subject pronoun for 'it'. So 'It is a nice day' would be just 'Es un nice day', losing the it entirely.",
+				"Subject pronouns are often omitted in Spanish since the verb conjugation already indicates the subject.",
+			],
+			words: {
+				yo: {
+					id: "pron.subject.yo",
+					translations: ["I"],
+					word: "yo",
+					pos: "Pronoun",
+					info: [],
+				},
+				tu: {
+					id: "pron.subject.tu",
+					translations: ["you"],
+					word: "tú",
+					pos: "Pronoun",
+					info: [],
+				},
+				el: {
+					id: "pron.subject.el",
+					translations: ["he"],
+					word: "él",
+					pos: "Pronoun",
+					info: [],
+				},
+				ella: {
+					id: "pron.subject.ella",
+					translations: ["she"],
+					word: "ella",
+					pos: "Pronoun",
+					info: [],
+				},
+				nosotros: {
+					id: "pron.subject.nosotros",
+					translations: ["we (M)"],
+					word: "nosotros",
+					pos: "Pronoun",
+					info: [],
+				},
+				nosotras: {
+					id: "pron.subject.nosotras",
+					translations: ["we (F)"],
+					word: "nosotras",
+					pos: "Pronoun",
+					info: [],
+				},
+				ellos: {
+					id: "pron.subject.ellos",
+					translations: ["they (M)"],
+					word: "ellos",
+					pos: "Pronoun",
+					info: [],
+				},
+				ellas: {
+					id: "pron.subject.ellas",
+					translations: ["they (F)"],
+					word: "ellas",
+					pos: "Pronoun",
+					info: [],
+				},
+			},
 		},
 		dObj: {
-			id: "dObj",
+			id: "pron.dObj",
 			name: "Direct Object",
 			info: [
 				`If a pronoun is interchangeable with "him", it's probably a direct object pronoun. "We found it!" We found HIM`,
@@ -345,9 +405,9 @@ const spanishWords: SpanishWords = {
 					`POR means something like BY, but has so many uses that you shouldn't think of it as a single translation, more of a 3D concept!`,
 					`Picture a Stone Fountain in the forest POURING water from the top. The water is being produced BY/POR the fountain.`,
 					`DE seems like a replacement for POR, but POR implies CREATION or CAUSE as opposed to simply origin.`,
-					`Water produced BY/POR the fountain also exists BECAUSE OF the fountain, or POR the fountain!`,
+					`POR can mean BECAUSE OF: Water produced BY/POR the fountain also exists BECAUSE OF the fountain, or POR the fountain!`,
 					`POR is associated with DEEP questions, such as BECAUSE OF WHY something is the case`,
-					`Water is pooling AROUND, NEAR, or NEARBY the fountain also can mean POR`,
+					`POR can mean around: Water is pooling AROUND, NEAR, or NEARBY the fountain also can mean POR`,
 					`POR can mean ALONG: The water is running all ALONG/POR the sides of the fountain`,
 					`POR and the FOUNTAIN: always remember the image of flowing water produced BY the fountain, AROUND it, ALONG side, NEARBY it, and existing BECASUE of it!`,
 					"POR this Evening means: DURING the evening, in a general way, AROUND this evening.",
@@ -429,6 +489,7 @@ const spanishWords: SpanishWords = {
 					"SER and Physical Characteristics: Describing someone, like 'how tall' they are is considered part of their identity, or WHAT they are, and is used with SER.",
 					"SER shouldn't be used to describe something's location, like using CON to say WITH, or EN to say ON, or if POR is meaning NEAR/AROUND",
 					"SER shouldn't be used to describe what something/someone is doing. 'is raining' 'is sitting'",
+					"SER is used to describe WHAT something IS, or WHO someone IS, as a direct part of their Identity.",
 				],
 
 				present: {
@@ -486,65 +547,65 @@ const spanishWords: SpanishWords = {
 		},
 	},
 
-	dObj: {
-		id: "dObj",
-		name: "Direct Object",
-		info: [
-			`If a pronoun is interchangeable with "him", it's probably a direct object pronoun. "We found it!" We found HIM`,
-			`PLACEMENT: Whenever a DIRECT OBJECT PRONOUN occurs in Spanish, it ALWAYS occurs DIRECTLY before the verb. We found him = We HIM found, or We LO found.`,
-			` Spanish speakers don't say "I hugged him." Instead, they say "I him hugged." And they don't say "I brought her." They say "I her brought." And instead of "I did it", they say "I it did."`,
-			`When NO and LO are together: The Direct Object Pronoun is most important to be next to the verb.`,
-		],
-		words: {
-			lo: {
-				id: "dObj.lo",
+	// dObj: {
+	// 	id: "dObj",
+	// 	name: "Direct Object",
+	// 	info: [
+	// 		`If a pronoun is interchangeable with "him", it's probably a direct object pronoun. "We found it!" We found HIM`,
+	// 		`PLACEMENT: Whenever a DIRECT OBJECT PRONOUN occurs in Spanish, it ALWAYS occurs DIRECTLY before the verb. We found him = We HIM found, or We LO found.`,
+	// 		` Spanish speakers don't say "I hugged him." Instead, they say "I him hugged." And they don't say "I brought her." They say "I her brought." And instead of "I did it", they say "I it did."`,
+	// 		`When NO and LO are together: The Direct Object Pronoun is most important to be next to the verb.`,
+	// 	],
+	// 	words: {
+	// 		lo: {
+	// 			id: "dObj.lo",
 
-				translations: ["him", "it (M)"],
-				word: "lo",
-				pos: "Direct Object Pronoun",
-				gender: "masculine",
-				info: [],
-			},
-			los: {
-				id: "dObj.los",
-				translations: ["them (M)"],
-				word: "los",
-				pos: "Direct Object Pronoun",
-				gender: "masculine",
-				info: [],
-			},
-			la: {
-				id: "dObj.la",
-				translations: ["her", "it (F)"],
-				word: "la",
-				pos: "Direct Object Pronoun",
-				gender: "feminine",
-				info: [],
-			},
-			las: {
-				id: "dObj.las",
-				translations: ["them (F)"],
-				word: "las",
-				pos: "Direct Object Pronoun",
-				gender: "feminine",
-				info: [],
-			},
-			me: {
-				id: "dObj.me",
-				translations: ["me"],
-				word: "me",
-				pos: "Direct Object Pronoun",
-				info: [],
-			},
-			te: {
-				id: "dObj.te",
-				translations: ["you"],
-				word: "te",
-				pos: "Direct Object Pronoun",
-				info: [],
-			},
-		},
-	},
+	// 			translations: ["him", "it (M)"],
+	// 			word: "lo",
+	// 			pos: "Direct Object Pronoun",
+	// 			gender: "masculine",
+	// 			info: [],
+	// 		},
+	// 		los: {
+	// 			id: "dObj.los",
+	// 			translations: ["them (M)"],
+	// 			word: "los",
+	// 			pos: "Direct Object Pronoun",
+	// 			gender: "masculine",
+	// 			info: [],
+	// 		},
+	// 		la: {
+	// 			id: "dObj.la",
+	// 			translations: ["her", "it (F)"],
+	// 			word: "la",
+	// 			pos: "Direct Object Pronoun",
+	// 			gender: "feminine",
+	// 			info: [],
+	// 		},
+	// 		las: {
+	// 			id: "dObj.las",
+	// 			translations: ["them (F)"],
+	// 			word: "las",
+	// 			pos: "Direct Object Pronoun",
+	// 			gender: "feminine",
+	// 			info: [],
+	// 		},
+	// 		me: {
+	// 			id: "dObj.me",
+	// 			translations: ["me"],
+	// 			word: "me",
+	// 			pos: "Direct Object Pronoun",
+	// 			info: [],
+	// 		},
+	// 		te: {
+	// 			id: "dObj.te",
+	// 			translations: ["you"],
+	// 			word: "te",
+	// 			pos: "Direct Object Pronoun",
+	// 			info: [],
+	// 		},
+	// 	},
+	// },
 }
 
 export default spanishWords

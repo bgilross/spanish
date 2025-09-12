@@ -443,7 +443,7 @@ const spanishData: { lessons: Lesson[] } = {
 				{
 					id: 5,
 					sentence: "Are you tired of doing that?",
-					translation: "Are you tired DE doing QUE ESO?",
+					translation: "Are you tired DE doing ESO?",
 					data: [
 						{ phrase: "Are" },
 						{ phrase: "you" },
@@ -6062,14 +6062,576 @@ const spanishData: { lessons: Lesson[] } = {
 			name: "Lesson 17",
 			details: "Subject Pronouns: I, YOU, HE, SHE, WE, THEY",
 			info: [
+				"We learned in Lesson 14 that Subject pronouns are often omitted in Spanish because the verb conjugation already indicates who the subject is.",
+				" However, subject pronouns are used in certain situations, such as for emphasis or clarity.",
 				"Subject Pronouns HE, SHE, WE, I, YOU, and THEY",
 				"I = YO",
 				"HE = ÉL",
 				"SHE = ELLA",
 				"WE (M) = NOSOTROS, (F) = NOSOTRAS",
 				"THEY (M) = ELLOS, (F) = ELLAS",
+				"In this quiz I will let you know if the Subject Pronoun can be omitted, otherwise use it!",
 			],
-			wordBank: [],
+			wordBank: [
+				pron.subject.words.yo,
+				pron.subject.words.el,
+				pron.subject.words.ella,
+				pron.subject.words.nosotros,
+				pron.subject.words.nosotras,
+				pron.subject.words.ellos,
+				pron.subject.words.ellas,
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "He and she",
+					translation: "ÉL Y ELLA",
+					data: [
+						{
+							phrase: "He",
+							translation: pron.subject.words.el,
+						},
+						{
+							phrase: "and",
+							translation: conj.words.y,
+						},
+						{
+							phrase: "she",
+							translation: pron.subject.words.ella,
+						},
+					],
+				},
+				{
+					id: 2,
+					sentence: "You and I are from Columbia",
+					translation: "TÚ Y YO SOMOS DE Columbia",
+					data: [
+						{
+							phrase: "You",
+							translation: pron.subject.words.tu,
+						},
+						{
+							phrase: "and",
+							translation: conj.words.y,
+						},
+						{
+							phrase: "I",
+							translation: pron.subject.words.yo,
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.somos,
+						},
+						{
+							phrase: "from",
+							translation: prep.words.de,
+						},
+						{
+							phrase: "Columbia",
+						},
+					],
+				},
+				{
+					id: 3,
+					sentence: "They (M) are my friends",
+					translation: "ELLOS SON my friends",
+					data: [
+						{
+							phrase: "They (M)",
+							translation: pron.subject.words.ellos,
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.son,
+						},
+						{
+							phrase: "my friends",
+						},
+					],
+				},
+				{
+					id: 4,
+					sentence: "You and we are here now",
+					translation: "TÚ Y NOSOTROS are here now",
+					data: [
+						{
+							phrase: "You",
+							translation: pron.subject.words.tu,
+						},
+						{
+							phrase: "and",
+							translation: conj.words.y,
+						},
+						{
+							phrase: "we are",
+							translation: pron.subject.words.nosotros,
+							phraseTranslation: "NOSOTROS are",
+							reference: { "verb.words.ser": [5] },
+						},
+						{
+							phrase: "here now",
+						},
+					],
+				},
+				{
+					id: 5,
+					sentence: "She is my friend",
+					translation: "ELLA es my friend",
+					data: [
+						{
+							phrase: "She",
+							translation: pron.subject.words.ella,
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: { "verb.words.ser": [7] },
+						},
+						{
+							phrase: "my friend",
+						},
+					],
+				},
+				{
+					id: 6,
+					sentence: "The dog sees you",
+					translation: "The dog TE sees",
+					data: [
+						{
+							phrase: "The dog",
+						},
+						{
+							phrase: "sees you",
+							translation: pron.dObj.words.te,
+							phraseTranslation: "TE sees",
+							reference: { "pron.dObj": [1] },
+						},
+					],
+				},
+				{
+					id: 7,
+					sentence: "He sees me",
+					translation: "ÉL ME sees",
+					data: [
+						{
+							phrase: "He",
+							translation: pron.subject.words.el,
+						},
+						{
+							phrase: "sees me",
+							translation: pron.dObj.words.me,
+							phraseTranslation: "ME sees",
+							reference: { "pron.dObj": [1] },
+						},
+					],
+				},
+				{
+					id: 8,
+					sentence: "You know her",
+					translation: "TÚ LA know",
+					data: [
+						{
+							phrase: "You",
+							translation: pron.subject.words.tu,
+						},
+						{
+							phrase: "know her",
+							translation: pron.dObj.words.la,
+							phraseTranslation: "LA know",
+							reference: { "pron.dObj": [1] },
+						},
+					],
+				},
+				{
+					id: 9,
+					sentence: "I see you",
+					translation: "YO TE see",
+					data: [
+						{
+							phrase: "I",
+							translation: pron.subject.words.yo,
+						},
+						{
+							phrase: "see you",
+							translation: pron.dObj.words.te,
+							phraseTranslation: "TE see",
+							reference: { "pron.dObj": [1] },
+						},
+					],
+				},
+				{
+					id: 10,
+					sentence: "She knows him",
+					translation: "ELLA LO knows",
+					data: [
+						{
+							phrase: "She",
+							translation: pron.subject.words.ella,
+						},
+						{
+							phrase: "knows him",
+							translation: pron.dObj.words.lo,
+							phraseTranslation: "LO knows",
+							reference: { "pron.dObj": [1] },
+						},
+					],
+				},
+				{
+					id: 11,
+					sentence: "What are they(M)",
+					translation: "QUÉ SON ELLOS,",
+					data: [
+						{
+							phrase: "What",
+							translation: pron.interrogative.words.que,
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.son,
+							reference: { "verb.words.ser": [7] },
+						},
+						{
+							phrase: "they (M)",
+							translation: pron.subject.words.ellos,
+						},
+					],
+				},
+				{
+					id: 12,
+					sentence: "That is because of the girls",
+					translation: "ESO ES POR LAS girls",
+					data: [
+						{
+							phrase: "That",
+							translation: pron.demonstrative.words.eso,
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: { "verb.words.ser": [7] },
+						},
+						{
+							phrase: "because of",
+							translation: prep.words.por,
+							reference: { "prep.words.por": [3] },
+						},
+						{
+							phrase: "the",
+							translation: artcl.words.las,
+						},
+						{
+							phrase: "girls",
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "They (M) did it, but she didn't do it",
+					translation: "ELLOS LO did, but ELLA NO LO did",
+					data: [
+						{
+							phrase: "They (M)",
+							translation: pron.subject.words.ellos,
+						},
+						{
+							phrase: "did it",
+							translation: pron.dObj.words.lo,
+							phraseTranslation: "LO did",
+							reference: { "pron.dObj": [1] },
+						},
+						{
+							phrase: "but",
+						},
+						{
+							phrase: "she",
+							translation: pron.subject.words.ella,
+						},
+						{
+							phrase: "didn't do it",
+							translation: [advrb.words.no, pron.dObj.words.lo],
+							phraseTranslation: "NO LO did",
+							reference: { "pron.dObj": [1], "advrb.words.no": [6] },
+						},
+					],
+				},
+				{
+					id: 14,
+					sentence: "I'm not that, he is that",
+					translation: "YO NO SOY ESO, ÉL ES ESO",
+					data: [
+						{
+							phrase: "I'm not",
+							translation: [
+								pron.subject.words.yo,
+								advrb.words.no,
+								verb.words.ser.present.soy,
+							],
+							phraseTranslation: "YO NO SOY",
+							reference: { "advrb.words.no": [6] },
+						},
+						{
+							phrase: "that",
+							translation: pron.demonstrative.words.eso,
+						},
+						{
+							phrase: "he",
+							translation: pron.subject.words.el,
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: { "verb.words.ser": [7] },
+						},
+						{
+							phrase: "that",
+							translation: pron.demonstrative.words.eso,
+						},
+					],
+				},
+				{
+					id: 15,
+					sentence: "I think even she knows them (M)",
+					translation: "YO think QUE even ELLA LOS knows",
+					data: [
+						{
+							phrase: "I think",
+							phraseTranslation: "YO think QUE",
+							translation: [pron.subject.words.yo, conj.words.que],
+							reference: { "conj.words.que": [1] },
+						},
+						{
+							phrase: "even",
+						},
+						{
+							phrase: "she",
+							translation: pron.subject.words.ella,
+						},
+						{
+							phrase: "knows them (M)",
+							translation: pron.dObj.words.los,
+							phraseTranslation: "LOS knows",
+							reference: { "pron.dObj": [1] },
+						},
+					],
+				},
+				{
+					id: 16,
+					sentence: "Why are they (F) your friends?",
+					translation: "POR QUÉ SON ELLAS your friends?",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							phraseTranslation: "POR QUÉ",
+							reference: { "prep.words.por": [10] },
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.son,
+							reference: { "verb.words.ser": [7] },
+						},
+						{
+							phrase: "they (F)",
+							translation: pron.subject.words.ellas,
+						},
+						{
+							phrase: "your friends",
+						},
+					],
+				},
+				{
+					id: 17,
+					sentence: "They (F) can see them (F), but you can't see them (F)?",
+					translation: "ELLAS LAS can see, but TÚ NO LAS can see?",
+					data: [
+						{
+							phrase: "They (F)",
+							translation: pron.subject.words.ellas,
+						},
+						{
+							phrase: "can see them (F)",
+							translation: pron.dObj.words.las,
+							phraseTranslation: "LAS can see",
+							reference: { "pron.dObj": [1] },
+						},
+						{
+							phrase: "but",
+						},
+						{
+							phrase: "you",
+							translation: pron.subject.words.tu,
+						},
+						{
+							phrase: "can't see them (F)",
+							translation: [advrb.words.no, pron.dObj.words.las],
+							phraseTranslation: "NO LAS can see",
+							reference: { "pron.dObj": [1], "advrb.words.no": [6] },
+						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "They are by my favorite author",
+					translation: "SON POR my favorite author",
+					data: [
+						{
+							phrase: "They are (NO SUBJECT PRONOUN)",
+							translation: verb.words.ser.present.son,
+							reference: { "verb.words.ser": [7] },
+						},
+						{
+							phrase: "by",
+							translation: prep.words.por,
+						},
+						{
+							phrase: "my favorite author",
+						},
+					],
+				},
+				{
+					id: 19,
+					sentence: "We (M) aren't eating that",
+					translation: "NOSOTROS NO are eating ESO",
+					data: [
+						{
+							phrase: "We (M)",
+							translation: pron.subject.words.nosotros,
+						},
+						{
+							phrase: "aren't eating",
+							translation: advrb.words.no,
+							phraseTranslation: "NO are eating",
+							reference: {
+								"advrb.words.no": [6],
+								"verb.words.ser.present": [6],
+							},
+						},
+						{
+							phrase: "that",
+							translation: pron.demonstrative.words.eso,
+						},
+					],
+				},
+				{
+					id: 20,
+					sentence: "What are you for her family?",
+					translation: "QUÉ ERES TÚ PARA her family?",
+					data: [
+						{
+							phrase: "What",
+							translation: pron.interrogative.words.que,
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.eres,
+							reference: { "verb.words.ser": [7] },
+						},
+						{
+							phrase: "you",
+							translation: pron.subject.words.tu,
+						},
+						{
+							phrase: "for",
+							translation: prep.words.para,
+							reference: { "prep.words.para": [0] },
+						},
+						{ phrase: "her family" },
+					],
+				},
+				{
+					id: 21,
+					sentence: "He is much taller than we(F)",
+					translation: "ÉL ES much taller QUE NOSOTRAS",
+					data: [
+						{
+							phrase: "He",
+							translation: pron.subject.words.el,
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: { "verb.words.ser": [4] },
+						},
+						{
+							phrase: "much taller",
+						},
+						{
+							phrase: "than",
+							translation: prep.words.que,
+							reference: { "prep.words.que": [3] },
+						},
+						{
+							phrase: "we (F)",
+							translation: pron.subject.words.nosotras,
+						},
+					],
+				},
+				{
+					id: 22,
+					sentence: "Where are you from?",
+					translation: "DE where ERES",
+					data: [
+						{
+							phrase: "Where are you from? (NO SUBJECT PRONOUN)",
+							translation: [prep.words.de, verb.words.ser.present.eres],
+							phraseTranslation: "DE where ERES",
+							reference: { prep: [2], "verb.words.ser": [1] },
+						},
+					],
+				},
+				{
+					id: 23,
+					sentence: "No they (M) aren't the winners",
+					translation: "NO, ELLOS NO SON LOS winners",
+					data: [
+						{
+							phrase: "No",
+							translation: advrb.words.no,
+						},
+						{
+							phrase: "they (M)",
+							translation: pron.subject.words.ellos,
+						},
+						{
+							phrase: "aren't",
+							translation: advrb.words.no,
+							phraseTranslation: "NO SON",
+						},
+						{
+							phrase: "the winners",
+							translation: [artcl.words.los],
+							phraseTranslation: "LOS winners",
+						},
+					],
+				},
+				{
+					id: 24,
+					sentence: "I think that she is around here",
+					translation: "I think QUE ELLA is POR here",
+					data: [
+						{
+							phrase: "I think",
+						},
+						{
+							phrase: "that",
+							translation: conj.words.que,
+						},
+						{
+							phrase: "she",
+							translation: pron.subject.words.ella,
+						},
+						{
+							phrase: "is around",
+							translation: prep.words.por,
+							phraseTranslation: "is POR",
+							reference: { "prep.words.por": [5], "verb.words.ser": [5] },
+						},
+						{
+							phrase: "here",
+						},
+					],
+				},
+			],
 		},
 	],
 }
