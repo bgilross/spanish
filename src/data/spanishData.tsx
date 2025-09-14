@@ -4555,15 +4555,15 @@ const spanishData: { lessons: Lesson[] } = {
 			name: "Lesson 14",
 			details: "Disappearing Subject Pronouns",
 			info: [
-				"What is the reason you can form Spanish setntences WITHOUT using nouns OR pronouns? \nIt's all to do with a core difference between English and Spanish VERBS.",
+				"What is the reason you can form Spanish sentences WITHOUT using nouns OR pronouns? \nIt's all to do with a core difference between English and Spanish VERBS.",
 				"Think about the forms of SER we've learned. Spanish has FIVE different forms all specific to WHOME it's talking about. \nThat isn't true in English where we would say I AM, you ARE, we ARE, they ARE, she IS. Which is only THREE different words.",
 				"In Spanish those words are clearly distinct, specific to who it is that is being talked about. In English if you see 'are' out of context you wouldn't know who it's referring to.",
 				"However if you see the word SOMOS in spanish it can ONLY be referring to 'WE'",
 				"That allows the Subject Pronouns in Spanish to very often just disappear.",
-				"Subject prounouns are any word that is interchangeable with HE, like 'we' 'I' and 'she' etc.. Unlike the previously learned direct object pronouns which are interchangeable with HIM, like 'her' and 'them'.",
+				"Subject pronouns are any word that is interchangeable with HE, like 'we' 'I' and 'she' etc.. Unlike the previously learned direct object pronouns which are interchangeable with HIM, like 'her' and 'them'.",
 				"Consider the sentence: 'He hugged him' HE is the subj pron. and HIM is the dObj pron.",
 				"In English we don't leave out subject pronouns always saying things like 'We are friends', where is Spanish you could say simply 'SOMOS friends'",
-				"You are allowed to use subject prououns in Spanish, like 'You ERES a nice person' but why bother putting YOU in there, it's already clear from the specificity of ERES who it is you are talking to.",
+				"You are allowed to use subject pronouns in Spanish, like 'You ERES a nice person' but why bother putting YOU in there, it's already clear from the specificity of ERES who it is you are talking to.",
 				"Whether you use the subject pronoun in Spanish depends on how much information you need in the specific context. Say if the subject of the sentence is a whole named noun, you would still include it. Like: 'My DOG es my best friend', but if you have been talking about your dog and it's clear who you are referring to you would just say 'ES my best friend'",
 				"One situation in which you would make sure to keep the subject pronoun is when you need to differentiate between two people, like 'SHE no es una thief, HE es un thief'.",
 				"Another situation is if you are using emphasis, such as: 'THEY aren't your friends, I am you friend' , They NO SON your friends, I SOY your friend.",
@@ -4575,7 +4575,6 @@ const spanishData: { lessons: Lesson[] } = {
 					id: 1,
 					sentence: "They are of wood",
 					translation: "SON DE wood",
-					noPronoun: true,
 					data: [
 						{
 							phrase: "They are",
@@ -4593,7 +4592,6 @@ const spanishData: { lessons: Lesson[] } = {
 					id: 2,
 					sentence: "The girls are my daughters",
 					translation: "Las girls SON my daughters",
-					noPronoun: true,
 					data: [
 						{
 							phrase: "The",
@@ -4604,7 +4602,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "are",
-							mixup: verb.words.ser.present.son,
+							translation: verb.words.ser.present.son,
 						},
 						{
 							phrase: "my daughters",
@@ -4615,7 +4613,6 @@ const spanishData: { lessons: Lesson[] } = {
 					id: 3,
 					sentence: "The boys and I are brothers",
 					translation: "LOS boys Y I SOMOS brothers",
-					noPronoun: true,
 					data: [
 						{
 							phrase: "The",
@@ -4644,11 +4641,11 @@ const spanishData: { lessons: Lesson[] } = {
 					id: 4,
 					sentence: "I'm a local",
 					translation: "SOY a local",
-					noPronoun: true,
 					data: [
 						{
 							phrase: "I'm",
 							translation: verb.words.ser.present.soy,
+							noPronoun: true,
 						},
 						{
 							phrase: "a local",
@@ -4659,11 +4656,11 @@ const spanishData: { lessons: Lesson[] } = {
 					id: 5,
 					sentence: "He's a thief!",
 					translation: "ES UN thief!",
-					noPronoun: true,
 					data: [
 						{
 							phrase: "He's",
 							translation: verb.words.ser.present.es,
+							noPronoun: true,
 						},
 						{
 							phrase: "a",
@@ -4678,11 +4675,11 @@ const spanishData: { lessons: Lesson[] } = {
 					id: 6,
 					sentence: "I'm his son",
 					translation: "SOY his son",
-					noPronoun: true,
 					data: [
 						{
 							phrase: "I'm",
 							translation: verb.words.ser.present.soy,
+							noPronoun: true,
 						},
 						{
 							phrase: "his son",
@@ -4718,11 +4715,11 @@ const spanishData: { lessons: Lesson[] } = {
 					id: 8,
 					sentence: "You're the guy that saw him",
 					translation: "ERES EL guy QUE LO saw",
-					noPronoun: true,
 					data: [
 						{
 							phrase: "You're",
 							translation: verb.words.ser.present.eres,
+							noPronoun: true,
 						},
 						{
 							phrase: "the",
@@ -4778,7 +4775,6 @@ const spanishData: { lessons: Lesson[] } = {
 					id: 10,
 					sentence: "Yes, that's why you're my friend",
 					translation: "Yes, POR ESO ERES my friend",
-					noPronoun: true,
 					data: [
 						{ phrase: "Yes" },
 						{
@@ -4790,6 +4786,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "you're",
 							translation: verb.words.ser.present.eres,
+							noPronoun: true,
 						},
 						{
 							phrase: "my friend",
@@ -4854,11 +4851,11 @@ const spanishData: { lessons: Lesson[] } = {
 					id: 13,
 					sentence: "We're very good friends",
 					translation: "SOMOS very good friends",
-					noPronoun: true,
 					data: [
 						{
 							phrase: "We're",
 							translation: verb.words.ser.present.somos,
+							noPronoun: true,
 						},
 						{
 							phrase: "very good friends",
@@ -5095,6 +5092,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "your dad's sister",
 							phraseTranslation: "LA sister DE your dad",
 							translation: [artcl.words.la, prep.words.de],
+							reference: ref("dePossessionContractions"),
 						},
 					],
 				},
@@ -5124,12 +5122,13 @@ const spanishData: { lessons: Lesson[] } = {
 				{
 					id: 3,
 					sentence: "She and I are the first people in the place",
-					translation: "She Y I SOMOS the first people EN the place",
+					translation: "She Y I are the first people EN the place",
 					data: [
 						{
 							phrase: "She and I are",
 							translation: [verb.words.ser.present.somos, conj.words.y],
-							phraseTranslation: "She Y I SOMOS",
+							phraseTranslation: "She Y I are",
+							reference: ref("serNoLocation"),
 						},
 						{
 							phrase: "the first people",

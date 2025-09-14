@@ -2,6 +2,7 @@
 
 import React from "react"
 import { expectedAnswers } from "@/lib/translation"
+import { resolveReferenceList } from "@/lib/refs"
 import type { Sentence, SentenceDataEntry } from "@/data/types"
 
 export interface ImmediateFeedbackModalProps {
@@ -103,6 +104,31 @@ const ImmediateFeedbackModal: React.FC<ImmediateFeedbackModalProps> = ({
 									</li>
 								))}
 							</ul>
+						)}
+						{/* Show references if the section included any */}
+						{section && "reference" in section && section.reference && (
+							<div className="mt-3">
+								<div className="text-sm font-medium text-amber-300 mb-1">
+									Reference
+								</div>
+								<ul className="list-disc ml-5 text-sm text-zinc-200">
+									{resolveReferenceList(section.reference).map((r, idx) => (
+										<li
+											key={idx}
+											className="mb-2"
+										>
+											<div className="font-medium">{r.label}</div>
+											{r.info && r.info.length > 0 && (
+												<ul className="list-disc ml-5 text-xs text-zinc-300">
+													{r.info.map((line, i) => (
+														<li key={i}>{line}</li>
+													))}
+												</ul>
+											)}
+										</li>
+									))}
+								</ul>
+							</div>
 						)}
 					</div>
 				)}
