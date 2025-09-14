@@ -16,6 +16,7 @@ import WordBankModal from "@/components/WordBankModal"
 import OriginalSentenceLine from "./OriginalSentenceLine"
 import { APP_VERSION } from "@/lib/version"
 import ImmediateFeedbackModal from "@/components/ImmediateFeedbackModal"
+import SentenceCompleteModal from "@/components/SentenceCompleteModal"
 
 const MainPage = () => {
 	const lessons = useDataStore((s) => s.lessons)
@@ -33,6 +34,7 @@ const MainPage = () => {
 	const isLessonComplete = useDataStore((s) => s.isLessonComplete)
 	const getLessonSummary = useDataStore((s) => s.getLessonSummary)
 	const mixupMap = useDataStore((s) => s.mixupMap)
+	const submissionLog = useDataStore((s) => s.submissionLog)
 
 	const [showSummary, setShowSummary] = React.useState(false)
 	const [saveStatus, setSaveStatus] = React.useState<
@@ -47,6 +49,11 @@ const MainPage = () => {
 	const [hintRevealed, setHintRevealed] = React.useState(false)
 	const [lastIncorrectSectionIndex, setLastIncorrectSectionIndex] =
 		React.useState<number | null>(null)
+	const [showSentenceCompleteModal, setShowSentenceCompleteModal] =
+		React.useState(false)
+	const [completedSentenceIndex, setCompletedSentenceIndex] = React.useState<
+		number | null
+	>(null)
 	const savedLessonNumbersRef = React.useRef<Set<number>>(new Set())
 	// Start without the lesson info modal open by default
 	const [showIntro, setShowIntro] = React.useState(false)
@@ -184,6 +191,10 @@ const MainPage = () => {
 	const onSubmit = (text: string) => {
 		if (!hasSentences) return { correct: false }
 		const res = checkCurrentAnswer(text)
+		if (res.advanced) {
+			setCompletedSentenceIndex(currentSentenceIndex)
+			setShowSentenceCompleteModal(true)
+		}
 		if (!res.correct && immediateFeedbackMode) {
 			setLastIncorrectInput(text)
 			setHintRevealed(false)
@@ -309,6 +320,21 @@ const MainPage = () => {
 						// focus will return to input naturally via effect
 					}}
 					onClose={() => setShowImmediateModal(false)}
+				/>
+
+				<SentenceCompleteModal
+					open={showSentenceCompleteModal && !showSummary}
+					sentence={currentLesson.sentences?.[completedSentenceIndex ?? -1]}
+					submissions={submissionLog.filter(
+						(s) =>
+							s.lessonNumber === currentLesson.lesson &&
+							s.sentenceIndex === (completedSentenceIndex ?? -1)
+					)}
+					onClose={() => setShowSentenceCompleteModal(false)}
+					onNext={() => {
+						setShowSentenceCompleteModal(false)
+						useDataStore.getState().nextSentence()
+					}}
 				/>
 
 				<LessonIntroModal
