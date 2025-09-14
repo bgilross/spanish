@@ -71,6 +71,42 @@ export function expectedAnswers(entry: SentenceDataEntry): string[] {
 			)
 		)
 
+	// Morphological control flags
+	const expectedForm = (entry as { expectedForm?: string }).expectedForm
+	const allowForms = (entry as { allowForms?: boolean }).allowForms
+	const pluralRequired = (entry as { plural?: boolean }).plural
+
 	const target = spanishTarget(entry)
-	return target ? [normalizeText(target)] : []
+	const answers: string[] = []
+	if (target) answers.push(normalizeText(target))
+
+	// If translation is a WordObject or array of them, collect their forms
+	const t = (entry as { translation?: unknown }).translation
+	const addForms = (w: WordObject) => {
+		if (w.forms) for (const f of w.forms) answers.push(normalizeText(f))
+	}
+	if (t && typeof t === "object") {
+		if (isWordObject(t)) addForms(t)
+		else if (Array.isArray(t))
+			for (const item of t) if (isWordObject(item)) addForms(item)
+	}
+
+	// If a specific expectedForm is set, override and require only that form
+	if (expectedForm) return [normalizeText(expectedForm)]
+
+	// If plural flag set, filter to plural candidates only. Heuristic: any form present in forms[] not equal to base word; if multiple, all acceptable.
+	if (pluralRequired) {
+		// Base word assumed singular; forms[] may contain plurals. Collect only those that differ from base.
+		const base = answers.length ? answers[0] : null
+		const pluralForms = answers.filter((a) => a !== base)
+		if (pluralForms.length) return Array.from(new Set(pluralForms))
+		// Fallback: if no distinct plural found, still return base to avoid empty acceptable set
+		return base ? [base] : []
+	}
+
+	// If allowForms flagged, return unique set. Otherwise restrict to the base word only
+	if (allowForms) return Array.from(new Set(answers))
+
+	// No forms allowed: keep only the first (base target) if present
+	return answers.length ? [answers[0]] : []
 }

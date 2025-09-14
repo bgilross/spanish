@@ -7,20 +7,30 @@ export interface Lesson {
 	sentences?: Sentence[]
 }
 
+// ---------------------------------------------------------------------------
+// Core lesson + sentence structures
+// ---------------------------------------------------------------------------
+export interface Lesson {
+	lesson: number
+	name: string
+	details: string
+	info: string[]
+	wordBank?: WordObject[]
+	sentences?: Sentence[]
+}
+
 export interface Sentence {
 	id: number
 	sentence: string
 	translation: string
 	data: SentenceDataEntry[]
-	/**
-	 * @deprecated Use per-phrase `noPronoun` on individual SentenceDataEntry items instead.
-	 * Temporarily retained for backward compatibility; if true and no entries specify
-	 * their own `noPronoun`, UI will treat all parts as pronoun-optional.
-	 */
+	/** @deprecated legacy whole-sentence flag; prefer per-entry noPronoun */
 	noPronoun?: boolean
 }
 
-// Enhanced Word Object interface
+// ---------------------------------------------------------------------------
+// Words
+// ---------------------------------------------------------------------------
 export interface WordObject {
 	id: string
 	word: string
@@ -31,22 +41,24 @@ export interface WordObject {
 	person?: string
 	audio?: string
 	info: string[]
+	/** Optional acceptable surface variants (e.g. plurals) */
+	forms?: string[]
+	/** If set, treat this object as a fixed surface (e.g. cloned plural form) */
+	exactForm?: string
 }
 
-// For referencing words in translation objects
-export type WordReference = {
-	id: string
-	referenceIndices?: number[]
-}
-
-// Improved sentence data entry
+// ---------------------------------------------------------------------------
+// Sentence data entries (union allowing optional phraseTranslation or raw translation)
+// ---------------------------------------------------------------------------
 export type SentenceDataEntry =
 	| {
 			phrase: string
 			translation?: WordObject | string
-			mixup?: WordObject | WordObject[] // For when a word might be confused with anotherw
-			/** If true, a subject pronoun is optional for this phrase */
+			mixup?: WordObject | WordObject[]
 			noPronoun?: boolean
+			expectedForm?: string
+			allowForms?: boolean
+			plural?: boolean
 	  }
 	| {
 			phrase: string
@@ -54,11 +66,15 @@ export type SentenceDataEntry =
 			translation: WordObject | WordObject[] | string
 			reference?: Record<string, (number | string)[]>
 			mixup?: WordObject
-			/** If true, a subject pronoun is optional for this phrase */
 			noPronoun?: boolean
+			expectedForm?: string
+			allowForms?: boolean
+			plural?: boolean
 	  }
 
-// Helper types for your word structures
+// ---------------------------------------------------------------------------
+// Group Types
+// ---------------------------------------------------------------------------
 export type WordGroup = {
 	id: string
 	name: string
@@ -66,20 +82,16 @@ export type WordGroup = {
 	words: Record<string, WordObject>
 }
 
-// Pronouns are grouped (e.g., demonstrative, interrogative, subject, direct object)
-// while maintaining a backward-compatible `words` map for simple lookups.
 export type PronounGroup = {
 	id: string
 	name: string
 	info: string[]
-	// Back-compat bucket for simple pronouns (e.g., eso, qué)
 	words: Record<string, WordObject>
-	// Categorized groups behave like classic WordGroups
 	demonstrative: WordGroup
 	interrogative: WordGroup
-	// Sub-groups that behave like classic WordGroups
 	subject: WordGroup
 	dObj: WordGroup
+	attribute: WordGroup
 }
 
 export interface VerbConjugation extends WordObject {
@@ -100,6 +112,9 @@ export interface VerbGroup {
 	words: Record<string, VerbRoot>
 }
 
+// ---------------------------------------------------------------------------
+// Translation helpers + analytics structs
+// ---------------------------------------------------------------------------
 export type TranslatedWordEntry = {
 	index: number
 	words: string[]
@@ -135,10 +150,10 @@ export type SubmissionLog = {
 	sentenceIndex: number
 	sectionIndex: number | null
 	feedbackMode: boolean
+	hintRevealed?: boolean
 	sentence: Sentence
 	section: SentenceDataEntry
 	isCorrect: boolean
 	userInput: string
-	// optional id to identify submission entries for UI actions (mark-correct)
 	id?: string
 }

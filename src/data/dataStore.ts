@@ -18,6 +18,10 @@ interface DataStore {
 	submissionLog: SubmissionLog[]
 	errorLog: ErrorEntry[]
 	emptyLessonCompleted: Record<number, boolean>
+	// When true, wrong answers trigger an immediate feedback modal instead of only end-of-lesson summary
+	immediateFeedbackMode: boolean
+	// Flip immediate feedback mode (persisting can be added later if desired)
+	toggleImmediateFeedbackMode: () => void
 
 	// mixup tracking: expectedNormalized -> { wrongNormalized: count }
 	mixupMap: Record<string, Record<string, number>>
@@ -41,6 +45,8 @@ interface DataStore {
 	markSubmissionCorrect: (submissionId: string) => void
 	isLessonComplete: () => boolean
 	getLessonSummary: () => LessonSummary
+	// Mark the most recent (incorrect) submission as having revealed a hint
+	markLastSubmissionHintRevealed: () => void
 }
 
 const lessons = spanishData.lessons
@@ -97,6 +103,20 @@ export const useDataStore = create<DataStore>((set, get) => ({
 	submissionLog: [],
 	errorLog: [],
 	mixupMap: readMixupsFromStorage(),
+	immediateFeedbackMode: false,
+	toggleImmediateFeedbackMode: () =>
+		set((s) => ({ immediateFeedbackMode: !s.immediateFeedbackMode })),
+	markLastSubmissionHintRevealed: () => {
+		set((state) => {
+			if (state.submissionLog.length === 0) return {}
+			const last = state.submissionLog[state.submissionLog.length - 1]
+			if (last.isCorrect) return {}
+			const updated = { ...last, hintRevealed: true }
+			const newLog = [...state.submissionLog]
+			newLog[newLog.length - 1] = updated
+			return { submissionLog: newLog }
+		})
+	},
 
 	emptyLessonCompleted,
 	startNewLesson: (index: number) => {
@@ -174,6 +194,7 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			currentSentenceProgress,
 			submissionLog,
 			errorLog,
+			immediateFeedbackMode,
 		} = get()
 		const lesson = lessons[currentLessonIndex]
 		const sentence = lesson.sentences?.[currentSentenceIndex]
@@ -199,7 +220,7 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			lessonNumber: lesson.lesson,
 			sentenceIndex: currentSentenceIndex,
 			sectionIndex: next.index,
-			feedbackMode: false,
+			feedbackMode: immediateFeedbackMode,
 			sentence,
 			section: entry,
 			isCorrect,

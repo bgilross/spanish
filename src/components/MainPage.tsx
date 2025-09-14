@@ -15,6 +15,7 @@ import DebugPanel from "@/components/DebugPanel"
 import WordBankModal from "@/components/WordBankModal"
 import OriginalSentenceLine from "./OriginalSentenceLine"
 import { APP_VERSION } from "@/lib/version"
+import ImmediateFeedbackModal from "@/components/ImmediateFeedbackModal"
 
 const MainPage = () => {
 	const lessons = useDataStore((s) => s.lessons)
@@ -25,6 +26,10 @@ const MainPage = () => {
 	)
 	const currentSentenceProgress = useDataStore((s) => s.currentSentenceProgress)
 	const checkCurrentAnswer = useDataStore((s) => s.checkCurrentAnswer)
+	const immediateFeedbackMode = useDataStore((s) => s.immediateFeedbackMode)
+	const markLastSubmissionHintRevealed = useDataStore(
+		(s) => s.markLastSubmissionHintRevealed
+	)
 	const isLessonComplete = useDataStore((s) => s.isLessonComplete)
 	const getLessonSummary = useDataStore((s) => s.getLessonSummary)
 	const mixupMap = useDataStore((s) => s.mixupMap)
@@ -36,6 +41,12 @@ const MainPage = () => {
 		| { state: "saved"; id?: string }
 		| { state: "error"; message: string }
 	>({ state: "idle" })
+	// Immediate feedback modal state
+	const [showImmediateModal, setShowImmediateModal] = React.useState(false)
+	const [lastIncorrectInput, setLastIncorrectInput] = React.useState("")
+	const [hintRevealed, setHintRevealed] = React.useState(false)
+	const [lastIncorrectSectionIndex, setLastIncorrectSectionIndex] =
+		React.useState<number | null>(null)
 	const savedLessonNumbersRef = React.useRef<Set<number>>(new Set())
 	// Start without the lesson info modal open by default
 	const [showIntro, setShowIntro] = React.useState(false)
@@ -173,6 +184,13 @@ const MainPage = () => {
 	const onSubmit = (text: string) => {
 		if (!hasSentences) return { correct: false }
 		const res = checkCurrentAnswer(text)
+		if (!res.correct && immediateFeedbackMode) {
+			setLastIncorrectInput(text)
+			setHintRevealed(false)
+			// capture active section index for expected answers
+			setLastIncorrectSectionIndex(activeSectionOriginalIndex)
+			setShowImmediateModal(true)
+		}
 		return { correct: res.correct }
 	}
 
@@ -271,6 +289,27 @@ const MainPage = () => {
 						saveStatus={saveStatus}
 					/>
 				)}
+
+				<ImmediateFeedbackModal
+					open={showImmediateModal && !showSummary}
+					sentence={currentSentenceObject || null}
+					section={
+						lastIncorrectSectionIndex != null
+							? currentSentenceObject?.data[lastIncorrectSectionIndex] || null
+							: null
+					}
+					userInput={lastIncorrectInput}
+					revealed={hintRevealed}
+					onReveal={() => {
+						setHintRevealed(true)
+						markLastSubmissionHintRevealed()
+					}}
+					onRetry={() => {
+						setShowImmediateModal(false)
+						// focus will return to input naturally via effect
+					}}
+					onClose={() => setShowImmediateModal(false)}
+				/>
 
 				<LessonIntroModal
 					open={showIntro && !showSummary}

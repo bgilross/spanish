@@ -297,6 +297,35 @@ const spanishWords: SpanishWords = {
 				},
 			},
 		},
+		attribute: {
+			id: "pron.attribute",
+			name: "Attribute (Predicate Pro-form)",
+			info: [
+				"Used before a linking verb (SER, sometimes ESTAR/PARECER) to stand in for an understood reference so the verb isn't left bare. English: 'They aren't my friends, but he is.' => Spanish: 'Ellos no son my amigos, but él lo es.'",
+				"Think of this 'lo' as meaning 'that (previous idea)'. It is NOT a direct object here; it functions as the predicate complement.",
+				"Placement still follows normal clitic rules: it appears before the conjugated verb (No lo fue, Sí lo somos, Ojalá lo sea).",
+			],
+			words: {
+				lo: {
+					id: "pron.attribute.lo",
+					translations: [
+						"it",
+						"(that) is",
+						"is (it)",
+						"(pro-form for earlier idea)",
+					],
+					word: "lo",
+					pos: "Attribute Pronoun",
+					gender: "neuter",
+					info: [
+						"Acts as a stand-in for an omitted implied concept after a linking verb.",
+						"Contrast with direct object 'lo': Direct object replaces a noun receiving an action; attribute 'lo' replaces the referenced/implied phrase itself.",
+						"Common patterns: 'Sí, lo es.' 'No, no lo somos.' 'Ojalá lo fuera.' 'Algún día lo será.' 'Sí, lo parece.'",
+						"If your English sentence ends in a form of 'to be' because the rest is implied, Spanish usually inserts this 'lo' before the verb.",
+					],
+				},
+			},
+		},
 		// Back-compat: simple alias bucket for legacy references like pron.words.eso / pron.words.que
 		words: {
 			// These point to the categorized entries; keep ids consistent with new paths
@@ -338,8 +367,8 @@ const spanishWords: SpanishWords = {
 				info: [
 					"De  is mostly used as OF in one of these three ideas:\nORIGIN: 'The people OF the north!', or\nPOSSESION: 'The house OF my parents', or\nMATERIAL: 'The sheet OF paper'",
 					"ORIGIN: In english we say Sydney is a City in Australia, but Spanish would say Sydney is a city OF or DE Autralia. Other examples include: 'The birds of Africa', 'The wind from the cellar' 'My friend from Toronto', 'The largest cities of Columbia'",
-					"POSSESION: English says 'My friends father' but spanish would say 'The father OF my friend!' other examples include: 'The cap of the bottle', 'the door of the house' and 'the hand of the writer'",
-					"POSSESION2: English uses Contractions like 'The bottle's cap' but Spanish DOESN'T have this! You need to change the order and use DE",
+					"POSSESSION: English says 'My friends father' but spanish would say 'The father OF my friend!' other examples include: 'The cap of the bottle', 'the door of the house' and 'the hand of the writer'",
+					"DE POSSESSION2: English uses Contractions like 'The bottle's cap' but Spanish DOESN'T have this! You need to change the order and use DE, 'The cap of the bottle'",
 					"MATERIAL: The Statue DE Bronze. The Table DE Stone. The horse DE wood. etc!",
 				],
 				audio:
@@ -374,16 +403,17 @@ const spanishWords: SpanishWords = {
 			},
 			para: {
 				id: "prep.para",
-				translations: ["for"],
+				translations: ["for", "in order", "intended for", "so"],
 				word: "para",
 				pos: "Preposition",
 				info: [
 					`PARA roughly means FOR, implying some sort of INTENTION, or pointing at something. A 'gift' is PARA or 'intended for' someone`,
 					`Visualize PARA as an arrow, pointint at something specific, in a very direct, maybe even expectant way!`,
-					"PARA this Evening means: Do it BY this evening! We are emphasizing a point, meaking a due date",
+					"PARA/Deadlines: 'PARA this evening' means: Do it BY this evening! We are emphasizing a point, making a due date",
 					"PARA ESO means `Intended for that`",
-					"PARA qué means `intended for what`, or `for what intended use, for what purpose` ",
-					"'Para que' is an idiom which means 'So that' or 'In order that'",
+					"PARA QUÉ means `intended for what`, or `for what intended use' /  'for what purpose` ",
+					"'PARA QUE' is an idiom which means 'So that' or 'In order that', or even 'intending that'",
+					"'PARA SER' has the meaning: 'in order to be', 'intending to be' or even 'for being', ",
 				],
 			},
 			por: {
@@ -407,13 +437,14 @@ const spanishWords: SpanishWords = {
 					`DE seems like a replacement for POR, but POR implies CREATION or CAUSE as opposed to simply origin.`,
 					`POR can mean BECAUSE OF: Water produced BY/POR the fountain also exists BECAUSE OF the fountain, or POR the fountain!`,
 					`POR is associated with DEEP questions, such as BECAUSE OF WHY something is the case`,
-					`POR can mean around: Water is pooling AROUND, NEAR, or NEARBY the fountain also can mean POR`,
+					`POR/Location. POR can mean around: Water is pooling AROUND, NEAR, BY, or NEARBY the fountain also can mean POR`,
 					`POR can mean ALONG: The water is running all ALONG/POR the sides of the fountain`,
 					`POR and the FOUNTAIN: always remember the image of flowing water produced BY the fountain, AROUND it, ALONG side, NEARBY it, and existing BECASUE of it!`,
 					"POR this Evening means: DURING the evening, in a general way, AROUND this evening.",
 					"POR ESO mean 'Becasue of that', or 'That's Why'",
-					"POR qué' means 'Because of what', or 'Why'",
+					"POR QUÉ' means 'Because of what', or 'Why'",
 					"POR can mean FOR in the sense of 'For a long time', or 'For a while'",
+					"POR and SER Conjugations, a form of SER before POR indicates it's meaning is related to Identity not Location. BY(Because of) the author, not AROUND the author.",
 				],
 			},
 		},
@@ -439,7 +470,7 @@ const spanishWords: SpanishWords = {
 					"In Spanish verb types like CAN BE have to stick together, and the adverb NO must go first!",
 					"In Spanish DO HAVE isn't a real concept, we remove the word DO: I Don't Have that! = I no have that. 'Untie the Knot, and make the D Disappear!'",
 					"There are no contraction in Spanish. For verb types like Can't: Untie the NOT (can't be = can not be), then move not/NO to the front: NO CAN BE!",
-					"There are no contractions and no concept for DO or DID in Spanish (Do have, do say, do whatever). \nUntie the NOT (don't want = do not want), and make the Do DISAPPEAR! (no want)",
+					"There are no contractions and no concept for 'DO a verb' or 'DID a verb' in Spanish (Do have, do say, do want). \nUntie the NOT (don't want = do not want), and make the Do DISAPPEAR! (no want)",
 					"You might think NO should work like 'She can NO be' but adverbs don't work like this. Verb Structures like CAN BE have to stick together, and the adverb has to go first!",
 				],
 				audio:
@@ -460,6 +491,7 @@ const spanishWords: SpanishWords = {
 				id: "noun.amigo",
 				translations: ["friend"],
 				word: "amigo",
+				forms: ["amigos"],
 				pos: "Noun",
 				gender: "Masculine",
 				info: [],
@@ -468,6 +500,7 @@ const spanishWords: SpanishWords = {
 				id: "noun.amiga",
 				translations: ["friend"],
 				word: "amiga",
+				forms: ["amigas"],
 				pos: "Noun",
 				gender: "Feminine",
 				info: [],
@@ -476,6 +509,7 @@ const spanishWords: SpanishWords = {
 				id: "noun.chico",
 				translations: ["boy", "guy"],
 				word: "chico",
+				forms: ["chicos"],
 				pos: "Noun",
 				gender: "Masculine",
 				info: [],
@@ -484,13 +518,13 @@ const spanishWords: SpanishWords = {
 				id: "noun.chica",
 				translations: ["girl", "gal"],
 				word: "chica",
+				forms: ["chicas"],
 				pos: "Noun",
 				gender: "Feminine",
 				info: [],
 			},
 		},
 	},
-
 	verb: {
 		id: "verb",
 		name: "Verb",
@@ -512,7 +546,7 @@ const spanishWords: SpanishWords = {
 		words: {
 			ser: {
 				id: "verb.ser",
-				translations: ["to be, is, am, are, was, will, etc.", "ser"],
+				translations: ["to be", "being"],
 				word: "ser",
 				pos: "Verb",
 				info: [
@@ -524,6 +558,8 @@ const spanishWords: SpanishWords = {
 					"SER shouldn't be used to describe something's location, like using CON to say WITH, or EN to say ON, or if POR is meaning NEAR/AROUND",
 					"SER shouldn't be used to describe what something/someone is doing. 'is raining' 'is sitting'",
 					"SER is used to describe WHAT something IS, or WHO someone IS, as a direct part of their Identity.",
+					"SER is the infinitive form, and can be translated as TO BE or BEING",
+					"SER as an infinitive and Professions or Memberships:The article (a, an/ UN UNA) dissapears: Being a student = SER student, but only when referring to a profession or membership, not an adjective or description.",
 				],
 
 				present: {

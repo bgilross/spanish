@@ -1,7 +1,154 @@
 import type { Lesson } from "@/data/types"
 import words from "./spanishWords"
+// Optional plural surface helper
+import { asPlural } from "@/lib/wordForms"
 
 const { conj, pron, prep, advrb, noun, verb, artcl } = words
+
+// ---------------------------------------------------------------------------
+// Lightweight reference mapping helper
+// Purpose: avoid manually re-typing deep string paths + index arrays in each
+// sentence's `reference` field. Keeps current system intact while improving
+// authoring ergonomics.
+// ---------------------------------------------------------------------------
+
+type ReferenceEntry = { path: string; indices: number[] }
+
+// Add new items here as needed. "indices" corresponds to the positions inside
+// the relevant word's .info array you want to surface for that mistake/context.
+// Naming convention: camelCase describing the pedagogical concept.
+const referenceMap = {
+	attributeLo: {
+		path: "pron.attribute.words.lo",
+		indices: [1],
+	} as ReferenceEntry,
+	noContractions: {
+		path: "advrb.words.no",
+		indices: [6],
+	} as ReferenceEntry,
+	dObjPosition: {
+		path: "pron.dObj",
+		indices: [1],
+	} as ReferenceEntry,
+	serIdentity: {
+		path: "verb.words.ser",
+		indices: [7],
+	} as ReferenceEntry,
+	serOrigin: {
+		path: "verb.words.ser",
+		indices: [1],
+	} as ReferenceEntry,
+	paraSer: {
+		path: "prep.words.para",
+		indices: [6],
+	} as ReferenceEntry,
+	porBecauseOf: {
+		path: "prep.words.por",
+		indices: [3],
+	} as ReferenceEntry,
+	serBeing: {
+		path: "verb.words.ser",
+		indices: [8],
+	} as ReferenceEntry,
+	serNoArticle: {
+		path: "verb.words.ser",
+		indices: [9],
+	} as ReferenceEntry,
+	porQueWhy: {
+		path: "prep.words.por",
+		indices: [10],
+	} as ReferenceEntry,
+	serNoLocation: {
+		path: "verb.words.ser",
+		indices: [5],
+	} as ReferenceEntry,
+	serNoDoing: {
+		path: "verb.words.ser",
+		indices: [6],
+	} as ReferenceEntry,
+	noDoContractions: {
+		path: "advrb.words.no",
+		indices: [7],
+	} as ReferenceEntry,
+	dePossessionContractions: {
+		path: "prep.words.de",
+		indices: [3],
+	} as ReferenceEntry,
+	deMaterial: {
+		path: "prep.words.de",
+		indices: [4],
+	} as ReferenceEntry,
+	prepPosition: {
+		path: "prep",
+		indices: [2],
+	} as ReferenceEntry,
+	porAndSer: {
+		path: "prep.words.por",
+		indices: [12],
+	} as ReferenceEntry,
+	aAndTime: {
+		path: "prep.words.a",
+		indices: [0],
+	} as ReferenceEntry,
+	paraQueConj: {
+		path: "prep.words.para",
+		indices: [5],
+	} as ReferenceEntry,
+	serPhysical: {
+		path: "verb.words.ser",
+		indices: [4],
+	} as ReferenceEntry,
+	queAsThan: {
+		path: "conj.words.que",
+		indices: [3],
+	} as ReferenceEntry,
+	porLocation: {
+		path: "prep.words.por",
+		indices: [5],
+	} as ReferenceEntry,
+	porEso: {
+		path: "prep.words.por",
+		indices: [9],
+	} as ReferenceEntry,
+	paraFor: {
+		path: "prep.words.para",
+		indices: [0],
+	} as ReferenceEntry,
+	porFor: {
+		path: "prep.words.por",
+		indices: [11],
+	} as ReferenceEntry,
+	queExclamation: {
+		path: "pron.interrogative.words.que",
+		indices: [0],
+	} as ReferenceEntry,
+	porAlong: {
+		path: "prep.words.por",
+		indices: [6],
+	} as ReferenceEntry,
+	queConnector: {
+		path: "conj.words.que",
+		indices: [1],
+	} as ReferenceEntry,
+	paraDeadlines: {
+		path: "prep.words.para",
+		indices: [2],
+	} as ReferenceEntry,
+} as const
+
+type ReferenceKey = keyof typeof referenceMap
+
+// Build a reference object from one or more keys.
+// Usage: reference: ref("attributeLo") OR reference: ref("attributeLo", "adverbNoContractions")
+const ref = (...keys: ReferenceKey[]): Record<string, number[]> =>
+	keys.reduce((acc, k) => {
+		const { path, indices } = referenceMap[k]
+		acc[path] = indices
+		return acc
+	}, {} as Record<string, number[]>)
+
+// If you need the raw mapping (e.g., tooling / validation) you can export later.
+// export { referenceMap, ref }
 
 // (compat removed) All references migrated to new pron.* paths
 
@@ -7123,6 +7270,1386 @@ const spanishData: { lessons: Lesson[] } = {
 							translation: [verb.words.ser.past.eran],
 						},
 						{ phrase: "enemies" },
+					],
+				},
+			],
+		},
+		{
+			//this lesson probably needs to be split up or formatted differently it's very long and covers a lot.
+			lesson: 19,
+			name: "Lesson 19",
+			details: "SER: Advanced usage as a linking verb",
+			info: [
+				"In a perfect Spanish conversation with a native speaker, you're going to spend a lot of time talking about WHAT something is, or WHO someone is, and that's SER's job!",
+				"So far we've used SER to link two parts of a sentence, having some kind of NOUN before and after the SER conjugation, sometimes using prepositions such as DE, POR, and PARA, when they can indicate WHAT something is.",
+				"Examples include: 'That was that' = 'Eso ERA Eso', or 'The guy was from Argentina' = 'El chico ERA DE Argentina'.",
+				"BUT what about a sentence like this: 'The problem is that he wants even more' so where does SER fit in here?",
+				" We have the word IS, and in this case the word 'THAT' follows it. BUT this isn't a case of That=ESO, this is an example of a QUE phrase: 'The problem is QUE he wants even more'",
+				"We learned back in Lesson 11 that QUE phrases can be treated as one big noun, which is what's happening here: 'That he wants even more' is being treated as a noun",
+				"It's kind of like saying 'The problem is (The fact that he wants even more)'",
+				"So this passes the 'What it is' test, since we have 'The problem' on one side, and 'That he wants even more' on the other side, and we are equating them with on another",
+				"Since it's WHAT something is, we can safely use SER or it's conjugation ES here: 'The problem ES QUE ÉL wants even more'",
+				"In fact, you will often see a QUE phrase right after a conjugation of SER, even if we are talking about Abstract Ideas, we are still describing WHAT THEY ARE, and that's SER's job!",
+				"Now, is it possible for a linking verb like SER to NOT go between the two things being linked? Consider this sentence: 'Is your dog a good boy?'",
+				"In English, when we phrase this as a question suddenly the linking verb IS goes to the front of the sentence, and the nouns get paired up next to each other.",
+				"In some cases we can do the same thing in Spanish. We could actually translate that sentence in TWO DIFFERENT ways! 'Your dog ES UN good CHICO?' OR 'ES your dog UN good CHICO'",
+				"This particularly happens in Spanish when we ask more complex 'Why' questions, like: 'Why is she your friend?' We are still using is/SER to equate two things, (She and Your Friend).",
+				"BUT we would never ask is like: 'Why she is your friend?', instead it's phrased as: 'Why is... she... your friend?' with the two things being equated NEXT to each other, and is/SER or our equals sign, coming before both of them",
+				"SO even though SER is the linking verb in many questions, the link between the two parts happens before both parts are even named",
+				"Another question, is it possible to END a sentence with SER? We do it all the time in English: 'They aren't my friends, but he is', this is basically 'They aren't my friends, but he is my friend' but we leave off the last phrase since it's clearly implied.",
+				"The thing is, in Spanish, you CANNOT do this!, you can't use a linking verb like SER without attaching SOMETHING to it, BUT that doesn't mean we have to use all those extra words.",
+				"Spanish uses a different kind of shortcut in this case: 'They aren't my friends, but he is it', this sounds strange in English, but it occurs ALL THE TIME in Spanish",
+				"We specifically use the word LO in these situations, the same structure as if it was the direct object pronoun, and LO/it, represents 'all that stuff I mentioned earlier'.",
+				"This form of LO is actually an 'Attribute' a technical term meaning it's not referring to a person, but rather to 'all that stuff mentioned earlier in the sentence', very simillar to uses of ESO we've explored already",
+				"Now this may seem like the sentence needs to end in LO, since we need to attach something to SER at the end of a sentence, but LO still follows the Direct Obj placement rules here, and is placed BEFORE the linking verb",
+				"'They aren't my friends, but he is it' = 'Ellos no son my amigos, but Él LO es'",
+				"This seems eccentric and obscure to English speakers but it's perfectly natural in Spanish, so don't worry if it takes some time getting used to! Anytime you would end with a form or 'to be' in English, you put LO before it in Spanish!",
+				"This concept always uses the word LO even if the concept we are referring to is feminied/pluralized or any other variation: 'He's a friend, she isn't' = 'Él es un amigo, ella no LO es'",
+				"One last concept to cover here: consider the sentence: 'To be a student is a fun thing' = 'SER a student ES a fun thing'. This is an odd sentence in English, we would more commonly say 'BEING a student is a fun thing'",
+				"This highlights that SER means literally 'to be' but can be translated as 'BEING'. Especially when 'BEING' is being used as a noun, or at the start of a noun phrase.",
+				"Additionally, in Spanish we wouldn't say 'SER a student', the article actually dissappears and this because just 'SER student'. When SER is used before certain nouns used to describe people, like professions, the article isn't used.",
+				"Examples: 'is a pilot' = 'es pilot', 'was a member' = 'era member'. We don't use 'UN' or 'UNA' in these cases.",
+				"This 'BEING a student' or 'SER student' or any SER phrase like this is a noun phrase and can be placed in sentences as such.",
+				"Remember prepositions are always used before nouns, so consider these examples: 'I did it PARA SER student' = 'I did it IN ORDER TO BE a student', or 'I did it POR SER student' = 'I did it BECUASE OF BEING a student'.",
+				"Other preposition examples: 'What is the point of being a good student?' = 'What ES the point DE SER a good student' or 'We aren't fans of being bad people' = 'We NO SOMOS fans DE SER bad people'",
+				"EN and CON can be used, though rarely, here as well: 'A lot of pride comes with being a good student' = 'A lot of pride come CON SER student' and 'We put emphasis on being a good student' = 'We put emphasis EN SER student'",
+				"Don't worry about remembering all the specific contexts, the overall point is: Phrases that startwith SER can be treated as a noun in basically every way, including after prepositions.",
+				"This form of the verb is called the INFINITIVE, a form that's typically used not as very function in a sentence, but as NOUN function. When we get to other verbs you will see a preposition used right before an infinitive ALL THE TIME in Spanish!",
+			],
+			wordBank: [pron.attribute.words.lo],
+			sentences: [
+				{
+					id: 1,
+					sentence: "They aren't my friends, but he is",
+					translation: "ELLOS NO SON my amigos, but ÉL LO ES",
+					data: [
+						{ phrase: "They", translation: pron.subject.words.ellos },
+						{
+							phrase: "aren't",
+							translation: [advrb.words.no, verb.words.ser.present.son],
+							reference: ref("noContractions", "serIdentity"),
+						},
+						{ phrase: "my" },
+						{ phrase: "friends", translation: noun.words.amigos },
+						{ phrase: "but" },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "is",
+							translation: [pron.attribute.words.lo, verb.words.ser.present.es],
+							reference: ref("attributeLo"),
+						},
+					],
+				},
+				{
+					id: 2,
+					sentence: "The guy was from Argentina",
+					translation: "EL CHICO ERA DE Argentina",
+					data: [
+						{
+							phrase: "The guy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serOrigin"),
+						},
+						{ phrase: "from", translation: prep.words.de },
+						{ phrase: "Argentina", translation: noun.words.argentina },
+					],
+				},
+				{
+					id: 3,
+					sentence: "I did it in order to be a student",
+					translation: "I LO did PARA SER student",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "did it",
+							translation: pron.dObj.words.lo,
+							reference: ref("dObjPosition"),
+							phraseTranslation: "LO did",
+						},
+						{
+							phrase: "in order to be",
+							translation: [prep.words.para, verb.words.ser],
+							reference: ref("paraSer"),
+						},
+						{ phrase: "student" },
+					],
+				},
+				{
+					id: 4,
+					sentence: "I did it because of being a student",
+					translation: "I LO did POR SER student",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "did it",
+							translation: pron.dObj.words.lo,
+							reference: ref("dObjPosition"),
+							phraseTranslation: "LO did",
+						},
+						{
+							phrase: "because of being",
+							translation: [prep.words.por, verb.words.ser],
+							reference: ref("porBecauseOf", "serBeing"),
+						},
+						{ phrase: "student" },
+					],
+				},
+				{
+					id: 5,
+					sentence: "We weren't friends, but they(M) were",
+					translation: "NOSOTROS NO ÉRAMOS amigos, but ELLOS LO ERAN",
+					data: [
+						{ phrase: "We", translation: pron.subject.words.nosotros },
+						{
+							phrase: "weren't",
+							translation: [advrb.words.no, verb.words.ser.past.eramos],
+							reference: ref("noContractions", "serIdentity"),
+						},
+						{ phrase: "friends", translation: noun.words.amigos },
+						{ phrase: "but" },
+						{ phrase: "they(M)", translation: pron.subject.words.ellos },
+						{
+							phrase: "were",
+							translation: [pron.attribute.words.lo, verb.words.ser.past.eran],
+							reference: ref("attributeLo", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 6,
+					sentence: "That was because of being a jerk(F)",
+					translation: "ESO ERA POR SER UNA jerk",
+					data: [
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "because of being",
+							translation: [prep.words.por, verb.words.ser],
+							reference: ref("porBecauseOf", "serBeing"),
+						},
+						{
+							phrase: "a jerk(F)",
+							translation: [artcl.words.una],
+							reference: ref("serNoArticle"),
+						},
+					],
+				},
+				{
+					id: 7,
+					sentence: "He's a friend. She isn't",
+					translation: "ÉL ES UN amigo. ELLA NO LO ES",
+					data: [
+						{
+							phrase: "He's",
+							translation: [pron.subject.words.el, verb.words.ser.present.es],
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "a friend",
+							translation: [artcl.words.un, noun.words.amigo],
+							reference: ref("serNoArticle"),
+						},
+						{
+							phrase: "She",
+							translation: pron.subject.words.ella,
+						},
+						{
+							phrase: "isn't",
+							translation: [
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.ser.present.es,
+							],
+							reference: ref("noContractions", "attributeLo", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 8,
+					sentence: "The best thing was that he was my teacher",
+					translation: "The best thing ERA QUE ÉL ERA my teacher",
+					data: [
+						{ phrase: "The best thing" },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "that",
+							translation: conj.words.que,
+						},
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "my teacher" },
+					],
+				},
+				{
+					id: 9,
+					sentence: "Why is she your friend?",
+					translation: "POR QUÉ ES ELLA your friend?",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							reference: ref("porQueWhy"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{ phrase: "your friend" },
+					],
+				},
+				{
+					id: 10,
+					sentence: "I wasn't a member, but he was",
+					translation: "YO NO ERA member, but ÉL LO ERA",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "wasn't a member",
+							translation: [advrb.words.no, verb.words.ser.past.era],
+							reference: ref("noContractions", "serIdentity", "serNoArticle"),
+							phraseTranslation: "NO ERA member",
+						},
+
+						{ phrase: "but" },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "was",
+							translation: [pron.attribute.words.lo, verb.words.ser.past.era],
+							reference: ref("attributeLo", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 11,
+					sentence: "He isn't astudent, but I am",
+					translation: "ÉL NO ES student, but YO LO SOY",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{
+							phrase: "isn't a student",
+							translation: [advrb.words.no, verb.words.ser.present.es],
+							reference: ref("noContractions", "serIdentity", "serNoArticle"),
+							phraseTranslation: "NO ES student",
+						},
+						{ phrase: "but" },
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "am",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.ser.present.soy,
+							],
+							reference: ref("attributeLo", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 12,
+					sentence: "A lot of pride comes with being a student",
+					translation: "A lot of pride comes CON SER student",
+					data: [
+						{ phrase: "A lot of pride comes" },
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "being a student",
+							translation: verb.words.ser,
+							phraseTranslation: "SER student",
+							reference: ref("serBeing", "serNoArticle"),
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "The issue is that he isn't here",
+					translation: "The issue ES QUE ÉL NO is here",
+					data: [
+						{ phrase: "The issue" },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "he isn't here",
+							translation: [pron.subject.words.el, advrb.words.no],
+							phraseTranslation: "ÉL NO is here",
+							reference: ref("serIdentity", "serNoLocation", "noContractions"),
+						},
+					],
+				},
+				{
+					id: 14,
+					sentence: "That was that",
+					translation: "ESO ERA ESO",
+					data: [
+						{ phrase: "That", translation: pron.demonstrative.words.eso },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
+					],
+				},
+				{
+					id: 15,
+					sentence: "The problem is that he wants even more",
+					translation: "The problem ES QUE ÉL wants even more",
+					data: [
+						{ phrase: "The problem" },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{ phrase: "wants even more" },
+					],
+				},
+				{
+					id: 16,
+					sentence: "Why were you the teacher(M)?",
+					translation: "POR QUÉ ERAS TÚ EL teacher(M)?",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							reference: ref("porQueWhy"),
+						},
+						{
+							phrase: "were",
+							translation: verb.words.ser.past.eras,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{
+							phrase: "the teacher(M)",
+							translation: [artcl.words.el],
+							phraseTranslation: "EL teacher(M)",
+						},
+					],
+				},
+				{
+					id: 17,
+					sentence: "I want to be a teacher",
+					translation: "I want SER teacher",
+					data: [
+						{ phrase: "I want" },
+						{
+							phrase: "to be a teacher",
+							translation: verb.words.ser,
+							phraseTranslation: "SER teacher",
+							reference: ref("serBeing", "serNoArticle", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "Is your do a good boy?",
+					translation: "ES your dog UN good CHICO?",
+					data: [
+						{
+							phrase: "Is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "your dog" },
+						{
+							phrase: "a",
+							translation: [artcl.words.un],
+						},
+						{
+							phrase: "good boy",
+							translation: [noun.words.chico],
+							phraseTranslation: "good CHICO",
+						},
+					],
+				},
+				{
+					id: 19,
+					sentence: "Why weren't we friends(M)",
+					translation: "POR QUÉ NO ÉRAMOS NOSOTROS AMIGOS",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							reference: ref("porQueWhy"),
+						},
+						{
+							phrase: "weren't",
+							translation: [advrb.words.no, verb.words.ser.past.eramos],
+							reference: ref("serIdentity", "noContractions"),
+						},
+						{ phrase: "we", translation: pron.subject.words.nosotros },
+						{
+							phrase: "friends(M)",
+							translation: [noun.words.amigo],
+							plural: true,
+						},
+					],
+				},
+				{
+					id: 20,
+					sentence: "Why is that a problem",
+					translation: "POR QUÉ ES ESO a problem",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							reference: ref("porQueWhy"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
+						{ phrase: "a problem" },
+					],
+				},
+				{
+					id: 21,
+					sentence: "The girl is my friend",
+					translation: "LA CHICA ES my AMIGA",
+					data: [
+						{
+							phrase: "The girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "my" },
+						{ phrase: "friend", translation: noun.words.amiga },
+					],
+				},
+				{
+					id: 22,
+					sentence: "We put emphasis on being a student",
+					translation: "We put emphasis EN SER student",
+					data: [
+						{ phrase: "We put emphasis" },
+						{ phrase: "on", translation: prep.words.en },
+						{
+							phrase: "being a student",
+							translation: verb.words.ser,
+							phraseTranslation: "SER student",
+							reference: ref("serBeing", "serNoArticle", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 23,
+					sentence: "My concern was that she didn't listen",
+					translation: "My concern ERA QUE ELLA NO listened",
+					data: [
+						{ phrase: "My concern" },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{
+							phrase: "didn't listen",
+							translation: [advrb.words.no],
+							phraseTranslation: "NO listened",
+							reference: ref("noDoContractions"),
+						},
+					],
+				},
+				{
+					id: 24,
+					sentence: "We aren't  fans of being unappreciated people",
+					translation: "NOSOTROS NO SOMOS fans DE SER unappreciated people",
+					data: [
+						{ phrase: "We", translation: pron.subject.words.nosotros },
+						{
+							phrase: "aren't",
+							translation: [advrb.words.no, verb.words.ser.present.somos],
+							reference: ref("noContractions", "serIdentity"),
+						},
+						{ phrase: "fans" },
+						{
+							phrase: "of being",
+							translation: [prep.words.de, verb.words.ser],
+							reference: ref("serBeing", "serIdentity"),
+						},
+						{
+							phrase: "unappreciated people",
+						},
+					],
+				},
+				{
+					id: 25,
+					sentence: "To be a student is a fun thing",
+					translation: "SER student ES a fun thing",
+					data: [
+						{
+							phrase: "To be a student",
+							translation: verb.words.ser,
+							phraseTranslation: "SER student",
+							reference: ref("serBeing", "serNoArticle", "serIdentity"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "a fun thing" },
+					],
+				},
+				{
+					id: 26,
+					sentence: "We did it in order to be the winners(M)",
+					translation: "NOSOTROS LO did PARA SER LOS winners",
+					data: [
+						{ phrase: "We", translation: pron.subject.words.nosotros },
+						{
+							phrase: "did it",
+							translation: pron.dObj.words.lo,
+							reference: ref("dObjPosition"),
+							phraseTranslation: "LO did",
+						},
+						{
+							phrase: "in order to be",
+							translation: [prep.words.para, verb.words.ser],
+							reference: ref("paraSer", "serBeing", "serIdentity"),
+						},
+						{
+							phrase: "the winners(M)",
+							translation: [artcl.words.los],
+							phraseTranslation: "LOS winners",
+						},
+					],
+				},
+			],
+		},
+		{
+			lesson: 20,
+			name: "Lesson 20",
+			details: "Full Quiz Review of all previous lessons",
+			info: [
+				"Today we’re going to practice everything we’ve learned so far, with emphasis on the advanced uses of Ser that we learned in the last lesson.",
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "The guys are coming from over there",
+					translation: "LOS CHICOS are coming DE over there",
+					data: [
+						{
+							phrase: "The guys are coming",
+							translation: [artcl.words.los, noun.words.chicos],
+							phraseTranslation: "LOS CHICOS are coming",
+							reference: ref("serNoDoing"),
+						},
+						{
+							phrase: "from",
+							translation: prep.words.de,
+						},
+						{ phrase: "over there" },
+					],
+				},
+				{
+					id: 2,
+					sentence: "The problem was that he didn't know her",
+					translation: "The problem ERA QUE ÉL NO LA knew",
+					data: [
+						{
+							phrase: "The problem",
+						},
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "didn't know her",
+							translation: [advrb.words.no, pron.dObj.words.la],
+							phraseTranslation: "NO LA knew",
+							reference: ref("noDoContractions", "dObjPosition"),
+						},
+					],
+				},
+				{
+					id: 3,
+					sentence: "It's the girl's friend(M)",
+					translation: "ES EL AMIGO DE LA CHICA",
+					data: [
+						{
+							phrase: "It's",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "the", translation: artcl.words.el },
+						{
+							phrase: "girl's friend(M)",
+							translation: [
+								noun.words.amigo,
+								prep.words.de,
+								artcl.words.la,
+								noun.words.chica,
+							],
+							reference: ref("dePossessionContractions"),
+						},
+					],
+				},
+				{
+					id: 4,
+					sentence: "What is your paper cup on?",
+					translation: "EN QUÉ ES your cup DE paper?",
+					data: [
+						{
+							phrase: "What is your paper cup on?",
+							translation: [
+								prep.words.en,
+								pron.interrogative.words.que,
+								verb.words.ser.present.es,
+								prep.words.de,
+							],
+							phraseTranslation: "EN QUÉ ES your cup DE paper?",
+							reference: ref("prepPosition", "serIdentity", "deMaterial"),
+						},
+					],
+				},
+				{
+					id: 5,
+					sentence: "My concern is that my friend isn't here",
+					translation: "My concern ES QUE my AMIGO NO is here",
+					data: [
+						{ phrase: "My concern" },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "my" },
+						{ phrase: "friend", translation: noun.words.amigo },
+						{
+							phrase: "isn't here",
+							translation: [advrb.words.no],
+							phraseTranslation: "NO is here",
+							reference: ref("noContractions", "serNoLocation"),
+						},
+					],
+				},
+				{
+					id: 6,
+					sentence: "You are with the guy?",
+					translation: "TÚ are CON EL CHICO?",
+					data: [
+						{ phrase: "You", translation: pron.subject.words.tu },
+						{
+							phrase: "are with",
+							translation: prep.words.con,
+							phraseTranslation: "are CON",
+							reference: ref("serNoLocation"),
+						},
+						{
+							phrase: "the guy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+					],
+				},
+				{
+					id: 7,
+					sentence: "It was by my favorite author",
+					translation: "ERA POR my favorite author",
+					data: [
+						{
+							phrase: "It was",
+							translation: verb.words.ser.past.era,
+							noPronoun: true,
+						},
+						{
+							phrase: "by",
+							translation: prep.words.por,
+							reference: ref("porAndSer"),
+						},
+						{ phrase: "my favorite author" },
+					],
+				},
+				{
+					id: 8,
+					sentence: "It's because of that",
+					translation: "ES POR ESO",
+					data: [
+						{
+							phrase: "It's",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "because of",
+							translation: prep.words.por,
+							reference: ref("porBecauseOf", "porAndSer"),
+						},
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
+					],
+				},
+				{
+					id: 9,
+					sentence: "Are they friends? We are",
+					translation: "SON AMIGOS? NOSOTROS LO SOMOS",
+					data: [
+						{
+							phrase: "Are they",
+							translation: [verb.words.ser.present.son],
+							phraseTranslation: "SON",
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "friends", translation: noun.words.amigo, plural: true },
+						{
+							phrase: "We",
+							translation: pron.subject.words.nosotros,
+						},
+						{
+							phrase: "are",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.ser.present.somos,
+							],
+							reference: ref("attributeLo", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 10,
+					sentence: "Why are you here at 6?",
+					translation: "POR QUÉ are TÚ here A 6?",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							reference: ref("porQueWhy"),
+						},
+						{
+							phrase: "are you here",
+							translation: [pron.subject.words.tu],
+							phraseTranslation: "are TÚ here",
+							reference: ref("serNoLocation"),
+						},
+						{
+							phrase: "at",
+							translation: prep.words.a,
+							reference: ref("aAndTime"),
+						},
+					],
+				},
+				{
+					id: 11,
+					sentence: "We were friends so that you could have that",
+					translation: "ÉRAMOS AMIGOS PARA QUE TÚ could have ESO",
+					data: [
+						{ phrase: "We", translation: pron.subject.words.nosotros },
+						{
+							phrase: "were",
+							translation: verb.words.ser.past.eramos,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "friends", translation: noun.words.amigo, plural: true },
+						{
+							phrase: "so that",
+							translation: [prep.words.para, conj.words.que],
+							reference: ref("paraQueConj"),
+						},
+						{
+							phrase: "you",
+							translation: pron.subject.words.tu,
+						},
+						{ phrase: "could have" },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
+					],
+				},
+				{
+					id: 12,
+					sentence: "You said that you(M) were a friend.",
+					translation: "TÚ said QUE ERAS UN amigo",
+					data: [
+						{
+							phrase: "You",
+							translation: pron.subject.words.tu,
+						},
+						{ phrase: "said" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you were",
+							translation: verb.words.ser.past.eras,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "a friend(M)",
+							translation: [artcl.words.un, noun.words.amigo],
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "It's because of the girls",
+					translation: "ES POR LAS CHICAS",
+					data: [
+						{
+							phrase: "It's",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "because of",
+							translation: prep.words.por,
+							reference: ref("porBecauseOf", "porAndSer"),
+						},
+						{
+							phrase: "the",
+							translation: [artcl.words.las],
+						},
+						{
+							phrase: "girls",
+							translation: [noun.words.chica],
+							plural: true,
+						},
+					],
+				},
+				{
+					id: 14,
+					sentence: "The girls are here in order to be your friends",
+					translation: "LAS CHICAS are here PARA SER your AMIGAS",
+					data: [
+						{
+							phrase: "The",
+							translation: [artcl.words.las],
+						},
+						{
+							phrase: "girls",
+							translation: [noun.words.chica],
+							plural: true,
+						},
+						{
+							phrase: "are here",
+						},
+						{
+							phrase: "in order to be",
+							translation: [prep.words.para, verb.words.ser],
+							reference: ref("paraSer", "serBeing", "serIdentity"),
+						},
+						{ phrase: "your" },
+						{ phrase: "friends", translation: noun.words.amiga, plural: true },
+					],
+				},
+				{
+					id: 15,
+					sentence: "She is taller than he",
+					translation: "ELLA ES taller QUE ÉL",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity", "serPhysical"),
+						},
+						{ phrase: "taller" },
+						{
+							phrase: "than",
+							translation: conj.words.que,
+							reference: ref("queAsThan"),
+						},
+						{ phrase: "he", translation: pron.subject.words.el },
+					],
+				},
+				{
+					id: 16,
+					sentence: "He's from Chile",
+					translation: "ES DE Chile",
+					data: [
+						{
+							phrase: "He's",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+						},
+						{ phrase: "from", translation: prep.words.de },
+						{ phrase: "Chile" },
+					],
+				},
+				{
+					id: 17,
+					sentence: "I wasn't their friend(F), but she was.",
+					translation: "YO NO ERA their AMIGA, but ELLA LO ERA.",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "wasn't",
+							translation: [advrb.words.no, verb.words.ser.past.era],
+							reference: ref("noContractions", "serIdentity"),
+						},
+						{
+							phrase: "their",
+						},
+						{ phrase: "friend(F)", translation: noun.words.amiga },
+						{ phrase: "but" },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{
+							phrase: "was",
+							translation: [pron.attribute.words.lo, verb.words.ser.past.era],
+							reference: ref("attributeLo", "serIdentity"),
+							phraseTranslation: "LO ERA",
+						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "I'm a girl",
+					translation: "SOY UNA CHICA",
+					data: [
+						{
+							phrase: "I'm",
+							translation: [verb.words.ser.present.soy],
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "a", translation: [artcl.words.una] },
+						{ phrase: "girl", translation: [noun.words.chica] },
+					],
+				},
+				{
+					id: 19,
+					sentence: "And that was because of being his friend(M)",
+					translation: "Y ESO ERA POR SER his AMIGO",
+					data: [
+						{ phrase: "And", translation: conj.words.y },
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "because of being",
+							translation: [prep.words.por, verb.words.ser],
+							reference: ref("porBecauseOf", "serBeing"),
+						},
+						{ phrase: "his" },
+						{ phrase: "friend(M)", translation: noun.words.amigo },
+					],
+				},
+				{
+					id: 20,
+					sentence: "They(F) knew me, they were my friends(F)",
+					translation: "ELLAS ME knew, ERAN my AMIGAS",
+					data: [
+						{ phrase: "They(F)", translation: pron.subject.words.ellas },
+						{
+							phrase: "knew me",
+							translation: [pron.dObj.words.me],
+							reference: ref("dObjPosition", "serIdentity"),
+							phraseTranslation: "ME knew",
+						},
+						{
+							phrase: "they were",
+							translation: verb.words.ser.past.eran,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "my" },
+						{
+							phrase: "friends(F)",
+							translation: noun.words.amiga,
+							plural: true,
+						},
+					],
+				},
+				{
+					id: 21,
+					sentence: "I was at the station because of being a thief(M)",
+					translation: "YO was EN the station POR SER UN thief",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "was at",
+							translation: [prep.words.en],
+							phraseTranslation: "was EN",
+							reference: ref("serNoLocation"),
+						},
+						{
+							phrase: "the station",
+						},
+						{
+							phrase: "because of being",
+							translation: [prep.words.por, verb.words.ser],
+							reference: ref("porBecauseOf", "serBeing"),
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{ phrase: "thief(M)" },
+					],
+				},
+				{
+					id: 22,
+					sentence: "The girl that knows you has that",
+					translation: "LA CHICA QUE TE knows has ESO",
+					data: [
+						{
+							phrase: "the girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "that",
+							translation: [conj.words.que],
+						},
+						{
+							phrase: "knows you",
+							translation: [pron.dObj.words.te],
+							phraseTranslation: "TE knows",
+							reference: ref("dObjPosition"),
+						},
+						{
+							phrase: "has",
+						},
+						{ phrase: "that", translation: pron.demonstrative.words.eso },
+					],
+				},
+				{
+					id: 23,
+					sentence: "My concern is that he ran to the store.",
+					translation: "My concern ES QUE ÉL ran A the store.",
+					data: [
+						{ phrase: "My concern" },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{ phrase: "ran" },
+						{
+							phrase: "to",
+							translation: prep.words.a,
+						},
+						{ phrase: "the store" },
+					],
+				},
+				{
+					id: 24,
+					sentence: "The guy is around here",
+					translation: "EL CHICO is POR here",
+					data: [
+						{
+							phrase: "The guy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+						{
+							phrase: "is around",
+							translation: [prep.words.por],
+							phraseTranslation: "is POR",
+							reference: ref("serNoLocation", "porAndSer", "porLocation"),
+						},
+						{ phrase: "here" },
+					],
+				},
+				{
+					id: 25,
+					sentence: "What is the point of being friends(M)?",
+					translation: "What ES the point DE SER AMIGOS?",
+					data: [
+						{ phrase: "What" },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "the point" },
+						{ phrase: "of", translation: prep.words.de },
+						{
+							phrase: "being",
+							translation: verb.words.ser,
+							reference: ref("serBeing"),
+						},
+						{
+							phrase: "friends(M)",
+							translation: noun.words.amigo,
+							plural: true,
+						},
+					],
+				},
+				{
+					id: 26,
+					sentence: "It was a friend, that's why she watched him",
+					translation: "ERA UN AMIGO, POR ESO ELLA LO watched",
+					data: [
+						{
+							phrase: "It was",
+							translation: verb.words.ser.past.era,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "a friend",
+							translation: [artcl.words.un, noun.words.amigo],
+						},
+						{
+							phrase: "that's why",
+							translation: [prep.words.por, pron.demonstrative.words.eso],
+							reference: ref("porEso"),
+						},
+						{
+							phrase: "she",
+							translation: pron.subject.words.ella,
+						},
+						{
+							phrase: "watched him",
+							translation: [pron.dObj.words.lo],
+							phraseTranslation: "LO watched",
+							reference: ref("dObjPosition"),
+						},
+					],
+				},
+				{
+					id: 27,
+					sentence: "I met them(M) in order to be friends",
+					translation: "YO LOS met PARA SER AMIGOS",
+					data: [
+						{
+							phrase: "I",
+							translation: pron.subject.words.yo,
+						},
+						{
+							phrase: "met them(M)",
+							translation: [pron.dObj.words.los],
+							phraseTranslation: "LOS met",
+							reference: ref("dObjPosition"),
+						},
+						{
+							phrase: "in order to be",
+							translation: [prep.words.para, verb.words.ser],
+							reference: ref("paraSer", "serBeing", "serIdentity"),
+						},
+						{
+							phrase: "friends(M)",
+							translation: noun.words.amigo,
+							plural: true,
+						},
+					],
+				},
+				{
+					id: 28,
+					sentence: "You and we(F) were friends(F)",
+					translation: "TÚ Y NOSOTRAS ÉRAMOS AMIGAS",
+					data: [
+						{
+							phrase: "You",
+							translation: pron.subject.words.tu,
+						},
+						{ phrase: "and", translation: conj.words.y },
+						{ phrase: "we(F)", translation: pron.subject.words.nosotras },
+						{
+							phrase: "were",
+							translation: verb.words.ser.past.eramos,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "friends(F)",
+							translation: noun.words.amiga,
+							plural: true,
+						},
+					],
+				},
+				{
+					id: 29,
+					sentence: "Why were you his friend(M)",
+					translation: "POR QUÉ ERAS TÚ his AMIGO",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.subject.words.que],
+							reference: ref("porQueWhy"),
+						},
+						{
+							phrase: "were",
+							translation: verb.words.ser.past.eras,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{ phrase: "his" },
+						{ phrase: "friend(M)", translation: noun.words.amigo },
+					],
+				},
+				{
+					id: 30,
+					sentence: "It's for the girl's friends(M)",
+					translation: "ES PARA LOS AMIGOS DE LA CHICA",
+					data: [
+						{
+							phrase: "It's",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "for",
+							translation: prep.words.para,
+							reference: ref("paraFor"),
+						},
+						{
+							phrase: "the girl's friends(M)",
+							translation: [
+								artcl.words.los,
+								asPlural(noun.words.amigo),
+								prep.words.de,
+								artcl.words.la,
+								noun.words.chica,
+							],
+							reference: ref("dePossessionContractions"),
+						},
+					],
+				},
+				{
+					id: 31,
+					sentence: "They were friends for many years",
+					translation: "ERAN AMIGOS POR many years",
+					data: [
+						{
+							phrase: "They were",
+							translation: verb.words.ser.past.eran,
+							noPronoun: true,
+						},
+						{ phrase: "friends", translation: asPlural(noun.words.amigo) },
+						{
+							phrase: "for",
+							translation: prep.words.por,
+							reference: ref("porFor"),
+						},
+						{
+							phrase: "many years",
+						},
+					],
+				},
+				{
+					id: 32,
+					sentence: "How strange that he's in the car",
+					translation: "QUÉ strange QUE ÉL is EN the car",
+					data: [
+						{
+							phrase: "How strange",
+							translation: [pron.interrogative.words.que],
+							reference: ref("queExclamation"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "is in",
+							translation: prep.words.en,
+							phraseTranslation: "is EN",
+							reference: ref("serNoLocation"),
+						},
+						{ phrase: "the car" },
+					],
+				},
+				{
+					id: 33,
+					sentence: "I was the girl that walked along this street",
+					translation: "YO ERA LA CHICA QUE walked POR this street",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "the girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "that",
+							translation: conj.words.que,
+						},
+						{ phrase: "walked" },
+						{
+							phrase: "along",
+							translation: prep.words.por,
+							reference: ref("porAlong"),
+						},
+						{ phrase: "this street" },
+					],
+				},
+				{
+					id: 34,
+					sentence: "She isn't a friend, you are",
+					translation: "ELLA NO is UN AMIGA, TÚ LO ARE",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "isn't",
+							translation: [advrb.words.no, verb.words.ser.present.es],
+							reference: ref("serIdentity", "noContractions"),
+						},
+						{
+							phrase: "a friend",
+							translation: [artcl.words.un, noun.words.amiga],
+						},
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{
+							phrase: "are",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.ser.present.soy,
+							],
+							reference: ref("attributeLo", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 35,
+					sentence: "I said that needs to be here by tonight",
+					translation: "YO said QUE ESO NEEDS to be here PARA tonight",
+					data: [
+						{
+							phrase: "I said that",
+							phraseTranslation: "YO said QUE ESO",
+							translation: [
+								pron.subject.words.yo,
+								conj.words.que,
+								pron.demonstrative.words.eso,
+							],
+							reference: ref("queConnector"),
+						},
+						{ phrase: "needs to be here" },
+						{
+							phrase: "by tonight",
+							translation: [prep.words.para],
+							phraseTranslation: "PARA tonight",
+							reference: ref("paraDeadlines"),
+						},
 					],
 				},
 			],

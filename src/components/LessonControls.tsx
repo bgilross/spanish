@@ -22,6 +22,10 @@ const LessonControls: React.FC<Props> = ({
 	const initializeSentenceProgress = useDataStore(
 		(s) => s.initializeSentenceProgress
 	)
+	const immediateFeedbackMode = useDataStore((s) => s.immediateFeedbackMode)
+	const toggleImmediateFeedbackMode = useDataStore(
+		(s) => s.toggleImmediateFeedbackMode
+	)
 
 	const [simulating, setSimulating] = React.useState(false)
 	const [isMobile, setIsMobile] = React.useState(false)
@@ -129,6 +133,21 @@ const LessonControls: React.FC<Props> = ({
 						: "Simulate lesson (wrong+right)"}
 				</button>
 			)}
+			<label
+				className={
+					"flex items-center gap-1 cursor-pointer select-none " +
+					(compact ? "text-[11px]" : "text-xs")
+				}
+				title="When enabled, incorrect answers open a feedback modal with optional hints before you can continue"
+			>
+				<input
+					type="checkbox"
+					checked={immediateFeedbackMode}
+					onChange={toggleImmediateFeedbackMode}
+					className="accent-emerald-600"
+				/>
+				<span>Immediate feedback</span>
+			</label>
 		</div>
 	)
 }
