@@ -8653,6 +8653,19 @@ const spanishData: { lessons: Lesson[] } = {
 				},
 			],
 		},
+		{
+			lesson: 21,
+			name: "Lesson 21",
+			details: "Usted: The formal 'You' subject pronoun",
+			info: [
+				"We are introducing the 'formal' subject pronoun 'Usted' today. Unlike all the other subject pronoun this is a person that doesn't exist in Spanish! ",
+				"Let's say you walk into a store and want to speak with the store owner, it's considered very informal to use the normal way of saying 'you' (tú) with someone you don't know, so we use 'usted' instead.",
+				"To double down on this quirk here: when using the formal 'you' (usted), we also don't use the verb conjugation that goes with 'you' (eres) but rather the conjugation for he/she/it (es).",
+				"So 'you are' in a formal way is 'usted es' (not 'usted eres').",
+				"This is also very dependent on what region of Spanish you’re dealing with. For example, in Argentina, the usted form is very rarely used, but there are also regional dialects in some other parts of South America where the tú form is rarely used and most people speak in usted most of the time except with very intimate acquaintances.",
+				"For English speakers this feels like a whole new thing to worry about, since we don't separate formal from informal ways of talking in a grammatical sense.",
+			],
+		},
 	],
 }
 
