@@ -143,7 +143,22 @@ const MainPage = () => {
 	])
 
 	React.useEffect(() => {
-		if (!userId) return
+		// Debugging: log why summary may not open
+		console.debug("[LessonSummaryCheck] userId:", userId)
+		console.debug(
+			"[LessonSummaryCheck] isLessonComplete():",
+			isLessonComplete()
+		)
+		console.debug(
+			"[LessonSummaryCheck] currentLessonIndex, currentSentenceIndex:",
+			currentLessonIndex,
+			currentSentenceIndex
+		)
+		console.debug(
+			"[LessonSummaryCheck] savedLessonNumbersRef:",
+			Array.from(savedLessonNumbersRef.current)
+		)
+		// If lesson not complete, nothing to do
 		if (!isLessonComplete()) return
 		const summary = getLessonSummary()
 		// Include current mixup stats so they persist with the saved attempt
@@ -151,29 +166,61 @@ const MainPage = () => {
 		if (savedLessonNumbersRef.current.has(summary.lessonNumber)) return
 		savedLessonNumbersRef.current.add(summary.lessonNumber)
 		setShowSummary(true)
-		setSaveStatus({ state: "saving" })
-		const payload = {
-			userId,
-			lessonNumber: summary.lessonNumber,
-			summary: summaryWithMixups,
-		}
-		fetch("/api/lessonAttempts", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(payload),
-		})
-			.then(async (r) => {
-				if (!r.ok) {
-					const txt = await r.text().catch(() => "")
-					throw new Error(`Request failed ${r.status}: ${txt}`)
+		// If we have a user id, persist to DB; otherwise persist locally
+		if (userId) {
+			setSaveStatus({ state: "saving" })
+			const payload = {
+				userId,
+				lessonNumber: summary.lessonNumber,
+				summary: summaryWithMixups,
+			}
+			fetch("/api/lessonAttempts", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			})
+				.then(async (r) => {
+					if (!r.ok) {
+						const txt = await r.text().catch(() => "")
+						throw new Error(`Request failed ${r.status}: ${txt}`)
+					}
+					const data = await r.json()
+					setSaveStatus({ state: "saved", id: data.attempt?.id })
+				})
+				.catch((e) => {
+					console.error("[LessonAttempt] Save failed", e)
+					setSaveStatus({ state: "error", message: e.message })
+				})
+		} else {
+			// Local-only persistence for anonymous users: save to localStorage
+			try {
+				const key = "lessonAttempts:local"
+				const raw = localStorage.getItem(key)
+				const arr = raw ? JSON.parse(raw) : []
+				const attempt = {
+					id: `local:${Date.now()}`,
+					userId: null,
+					lessonNumber: summary.lessonNumber,
+					correctCount: summary.correctCount || 0,
+					incorrectCount: summary.incorrectCount || 0,
+					totalSubmissions: summary.totalSubmissions || 0,
+					references: [],
+					createdAt: new Date().toISOString(),
+					summary: summaryWithMixups,
 				}
-				const data = await r.json()
-				setSaveStatus({ state: "saved", id: data.attempt?.id })
-			})
-			.catch((e) => {
-				console.error("[LessonAttempt] Save failed", e)
-				setSaveStatus({ state: "error", message: e.message })
-			})
+				arr.unshift(attempt)
+				try {
+					localStorage.setItem(key, JSON.stringify(arr.slice(0, 200)))
+				} catch {}
+				setSaveStatus({ state: "saved", id: attempt.id })
+			} catch (e) {
+				console.error("Local lessonAttempt save failed", e)
+				setSaveStatus({
+					state: "error",
+					message: e instanceof Error ? e.message : String(e),
+				})
+			}
+		}
 	}, [
 		userId,
 		isLessonComplete,
@@ -217,6 +264,62 @@ const MainPage = () => {
 		if (currentLessonIndex < lessons.length - 1) {
 			useDataStore.getState().startNewLesson(currentLessonIndex + 1)
 			setShowIntro(true)
+		}
+	}
+
+	// Report issue modal state
+	const [showReportModal, setShowReportModal] = React.useState(false)
+	const [reportSaving, setReportSaving] = React.useState(false)
+	const [reportForm, setReportForm] = React.useState({
+		reporterName: "",
+		typo: false,
+		missingReference: false,
+		incorrectReference: false,
+		notes: "",
+	})
+
+	const openReportModal = () => {
+		setReportForm({
+			reporterName: "",
+			typo: false,
+			missingReference: false,
+			incorrectReference: false,
+			notes: "",
+		})
+		setShowReportModal(true)
+	}
+
+	const submitReport = async () => {
+		if (!currentLesson) return
+		setReportSaving(true)
+		try {
+			const payload = {
+				userId: typeof userId === "string" ? userId : undefined,
+				reporterName: reportForm.reporterName || undefined,
+				lessonNumber: currentLesson.lesson,
+				sentenceIndex: currentSentenceIndex,
+				typo: !!reportForm.typo,
+				missingReference: !!reportForm.missingReference,
+				incorrectReference: !!reportForm.incorrectReference,
+				notes: reportForm.notes || undefined,
+			}
+			const res = await fetch("/api/issues", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			})
+			if (!res.ok) {
+				const txt = await res.text().catch(() => "")
+				throw new Error(`Request failed ${res.status}: ${txt}`)
+			}
+			await res.json()
+			setShowReportModal(false)
+			alert("Report submitted — thanks!")
+		} catch (e) {
+			console.error("Report save failed", e)
+			alert("Failed to submit report")
+		} finally {
+			setReportSaving(false)
 		}
 	}
 
@@ -275,8 +378,9 @@ const MainPage = () => {
 
 				{!userId && (
 					<div className="mt-4 p-3 text-xs rounded border border-amber-500/40 bg-amber-500/5 text-amber-300">
-						Sign in to record your progress. Lesson attempts won&#39;t be saved
-						while signed out.
+						You can use the dashboard locally while signed out — progress will
+						be saved to your browser only and will not be persisted to the
+						server.
 					</div>
 				)}
 				{!session?.user && userId && process.env.NODE_ENV === "development" && (
@@ -410,6 +514,13 @@ const MainPage = () => {
 							>
 								Word Bank
 							</button>
+							<button
+								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
+								onClick={() => openReportModal()}
+								title="Report an issue with this sentence"
+							>
+								Report issue
+							</button>
 							<div className="flex gap-2 ml-auto">
 								<button
 									className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 disabled:opacity-40"
@@ -493,6 +604,98 @@ const MainPage = () => {
 						}
 					/>
 				</section>
+
+				{/* Report issue modal */}
+				{showReportModal && (
+					<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+						<div className="w-full max-w-lg bg-zinc-950 border border-zinc-700 rounded-lg p-6">
+							<h2 className="text-lg font-semibold mb-3">Report an issue</h2>
+							<div className="space-y-2 text-sm text-zinc-300">
+								<label className="block">
+									<span className="text-xs text-zinc-400">
+										Your name (optional)
+									</span>
+									<input
+										value={reportForm.reporterName}
+										onChange={(e) =>
+											setReportForm({
+												...reportForm,
+												reporterName: e.target.value,
+											})
+										}
+										className="mt-1 w-full bg-zinc-900 border border-zinc-700 px-2 py-1 rounded text-sm"
+									/>
+								</label>
+								<div className="flex gap-4">
+									<label className="inline-flex items-center gap-2">
+										<input
+											type="checkbox"
+											checked={reportForm.typo}
+											onChange={(e) =>
+												setReportForm({ ...reportForm, typo: e.target.checked })
+											}
+										/>
+										<span className="text-sm">Typo</span>
+									</label>
+									<label className="inline-flex items-center gap-2">
+										<input
+											type="checkbox"
+											checked={reportForm.missingReference}
+											onChange={(e) =>
+												setReportForm({
+													...reportForm,
+													missingReference: e.target.checked,
+												})
+											}
+										/>
+										<span className="text-sm">Missing reference</span>
+									</label>
+									<label className="inline-flex items-center gap-2">
+										<input
+											type="checkbox"
+											checked={reportForm.incorrectReference}
+											onChange={(e) =>
+												setReportForm({
+													...reportForm,
+													incorrectReference: e.target.checked,
+												})
+											}
+										/>
+										<span className="text-sm">Incorrect reference</span>
+									</label>
+								</div>
+								<label className="block">
+									<span className="text-xs text-zinc-400">
+										Notes (optional)
+									</span>
+									<textarea
+										value={reportForm.notes}
+										onChange={(e) =>
+											setReportForm({ ...reportForm, notes: e.target.value })
+										}
+										className="mt-1 w-full bg-zinc-900 border border-zinc-700 px-2 py-1 rounded text-sm"
+										rows={4}
+									/>
+								</label>
+								<div className="flex items-center gap-3 justify-end">
+									<button
+										onClick={() => setShowReportModal(false)}
+										className="px-3 py-1.5 rounded border border-zinc-700"
+									>
+										Cancel
+									</button>
+									<button
+										onClick={submitReport}
+										disabled={reportSaving}
+										className="px-3 py-1.5 rounded bg-emerald-600 text-black font-medium"
+									>
+										{reportSaving ? "Submitting…" : "Submit report"}
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	)

@@ -641,11 +641,26 @@ export function ProgressDashboard() {
 		},
 		[userId]
 	)
+	const loadLocalAttempts = React.useCallback(() => {
+		try {
+			const raw = localStorage.getItem("lessonAttempts:local")
+			const arr = raw ? JSON.parse(raw) : []
+			setAttempts(Array.isArray(arr) ? arr : [])
+		} catch (e) {
+			console.error("Failed to load local attempts", e)
+			setAttempts([])
+		}
+	}, [])
+
 	const load = React.useCallback(async () => {
-		if (!userId) return
 		setLoading(true)
 		setError(null)
 		try {
+			if (!userId) {
+				// Anonymous users: load local-only attempts
+				loadLocalAttempts()
+				return
+			}
 			const r = await fetch(
 				`/api/lessonAttempts?userId=${encodeURIComponent(userId)}&limit=50`,
 				{ cache: "no-store" }
@@ -658,7 +673,7 @@ export function ProgressDashboard() {
 		} finally {
 			setLoading(false)
 		}
-	}, [userId])
+	}, [userId, loadLocalAttempts])
 	React.useEffect(() => {
 		load()
 		loadMixups(1)
@@ -733,17 +748,22 @@ export function ProgressDashboard() {
 		return <div className="text-sm text-zinc-400">Loading session…</div>
 	const usingFallback =
 		!session?.user && !!userId && process.env.NODE_ENV === "development"
-	if (!userId)
-		return (
-			<div className="text-sm text-zinc-400">
-				Sign in to view your progress.
-			</div>
-		)
+	// Allow anonymous users to view a local-only dashboard
+	if (!userId) {
+		// Note: we still render the dashboard UI; content will be loaded from localStorage
+	}
 	const deleteAll = async () => {
-		if (!userId) return
 		if (!confirm("Delete ALL lesson attempts?")) return
 		setDeleting("ALL")
 		try {
+			if (!userId) {
+				// Clear local attempts
+				try {
+					localStorage.removeItem("lessonAttempts:local")
+				} catch {}
+				loadLocalAttempts()
+				return
+			}
 			await fetch(`/api/lessonAttempts?userId=${userId}`, { method: "DELETE" })
 			await load()
 		} finally {
@@ -751,10 +771,25 @@ export function ProgressDashboard() {
 		}
 	}
 	const deleteLesson = async (lessonNumber: number) => {
-		if (!userId) return
 		if (!confirm(`Delete attempts for lesson ${lessonNumber}?`)) return
 		setDeleting(String(lessonNumber))
 		try {
+			if (!userId) {
+				// Delete from local attempts
+				try {
+					const raw = localStorage.getItem("lessonAttempts:local")
+					const arr = raw ? JSON.parse(raw) : []
+					const parsedArr: unknown[] = Array.isArray(arr)
+						? (arr as unknown[])
+						: []
+					const filtered = parsedArr.filter(
+						(a) => (a as LessonAttempt).lessonNumber !== lessonNumber
+					)
+					localStorage.setItem("lessonAttempts:local", JSON.stringify(filtered))
+				} catch {}
+				loadLocalAttempts()
+				return
+			}
 			await fetch(
 				`/api/lessonAttempts?userId=${userId}&lessonNumber=${lessonNumber}`,
 				{ method: "DELETE" }
@@ -766,6 +801,13 @@ export function ProgressDashboard() {
 	}
 	return (
 		<div className="space-y-8">
+			{!userId && (
+				<div className="p-3 text-sm rounded border border-amber-500/30 bg-amber-500/5 text-amber-300">
+					You are viewing a local-only dashboard. Progress is saved to your
+					browser&apos;s storage and will not be synced to the server or other
+					devices. Sign in to enable server persistence.
+				</div>
+			)}
 			{usingFallback && (
 				<div className="text-[10px] rounded border border-indigo-500/40 bg-indigo-500/5 text-indigo-300 px-2 py-1 inline-block">
 					Using local dev fallback user:{" "}

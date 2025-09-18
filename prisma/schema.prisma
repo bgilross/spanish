@@ -26,6 +26,7 @@ model User {
   image     String?
   createdAt DateTime        @default(now())
   attempts  LessonAttempt[]
+  issues    Issue[]
   mixups    UserMixup[]
   accounts  Account[]
   sessions  Session[]
@@ -60,6 +61,23 @@ model UserMixup {
 
   @@unique([userId, expected, wrong], name: "userId_expected_wrong")
   @@index([userId, expected])
+}
+
+// Reports submitted by users about specific sentences (typos, missing refs, etc.)
+model Issue {
+  id                String   @id @default(cuid())
+  userId            String?  // optional: anonymous reports allowed
+  user              User?    @relation(fields: [userId], references: [id])
+  reporterName      String?
+  lessonNumber      Int
+  sentenceIndex     Int
+  typo              Boolean  @default(false)
+  missingReference  Boolean  @default(false)
+  incorrectReference Boolean @default(false)
+  notes             String?
+  createdAt         DateTime @default(now())
+
+  @@index([lessonNumber, sentenceIndex])
 }
 
 // --- NextAuth standard models ---

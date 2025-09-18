@@ -6289,8 +6289,8 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "for",
-							translation: prep.words.para,
-							reference: { "prep.words.para": [11] },
+							translation: prep.words.por,
+							reference: ref("porFor"),
 						},
 						{
 							phrase: "a while",
