@@ -45,31 +45,42 @@ export async function POST(req: NextRequest) {
 			},
 		})
 
-		// If mixupMap present in summary, upsert aggregated counts into UserMixup
+		// If mixupMap present in summary, batch upsert aggregated counts into UserMixup
 		try {
 			const s = summary as unknown as {
 				mixupMap?: Record<string, Record<string, number>>
 			}
 			const mixupMap = s.mixupMap || {}
-			interface UserMixupDelegate {
-				upsert(args: unknown): Promise<unknown>
+			// Collapse counts per (expected, wrong) so we only upsert once per pair
+			const agg = new Map<
+				string,
+				{ expected: string; wrong: string; count: number }
+			>()
+			for (const [expected, wrongs] of Object.entries(mixupMap)) {
+				if (!wrongs) continue
+				for (const [wrong, rawInc] of Object.entries(wrongs)) {
+					const inc = Number(rawInc) || 0
+					if (!inc) continue
+					const key = `${expected}|||${wrong}`
+					const prev = agg.get(key)
+					if (prev) prev.count += inc
+					else agg.set(key, { expected, wrong, count: inc })
+				}
 			}
-			const mixupDelegate = (
-				prisma as unknown as { userMixup?: UserMixupDelegate }
-			).userMixup
-			if (!mixupDelegate) {
+
+			// Use the generated prisma delegate directly
+			if (!prisma.userMixup) {
 				console.error("Prisma client missing userMixup delegate")
 			} else {
-				for (const [expected, wrongs] of Object.entries(mixupMap)) {
-					if (!wrongs) continue
-					for (const [wrong, rawInc] of Object.entries(wrongs)) {
-						const inc = Number(rawInc) || 0
-						if (!inc) continue
-						await mixupDelegate.upsert({
+				for (const { expected, wrong, count } of agg.values()) {
+					try {
+						await prisma.userMixup.upsert({
 							where: { userId_expected_wrong: { userId, expected, wrong } },
-							create: { userId, expected, wrong, count: inc },
-							update: { count: { increment: inc } },
+							create: { userId, expected, wrong, count },
+							update: { count: { increment: count } },
 						})
+					} catch (e) {
+						console.error("Failed to upsert userMixup for", expected, wrong, e)
 					}
 				}
 			}

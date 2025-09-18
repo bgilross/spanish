@@ -38,6 +38,19 @@ const MainPage = () => {
 	const submissionLog = useDataStore((s) => s.submissionLog)
 
 	const [showSummary, setShowSummary] = React.useState(false)
+	// Minimal typing for lesson summary snapshot used by the modal
+	type LessonSummaryLike = {
+		lessonNumber: number
+		correctCount: number
+		incorrectCount: number
+		totalSubmissions: number
+		correct: unknown[]
+		incorrect: unknown[]
+		references?: string[]
+		mixupMap?: Record<string, Record<string, number>>
+	}
+	const [currentSummary, setCurrentSummary] =
+		React.useState<LessonSummaryLike | null>(null)
 	const [saveStatus, setSaveStatus] = React.useState<
 		| { state: "idle" }
 		| { state: "saving" }
@@ -166,6 +179,9 @@ const MainPage = () => {
 		const summaryWithMixups = { ...summary, mixupMap }
 		if (savedLessonNumbersRef.current.has(summary.lessonNumber)) return
 		savedLessonNumbersRef.current.add(summary.lessonNumber)
+		// Keep a snapshot of the summary (including mixups) for the modal so
+		// the modal shows per-quiz mixup stats rather than the global aggregate.
+		setCurrentSummary(summaryWithMixups)
 		setShowSummary(true)
 		// If we have a user id, persist to DB; otherwise persist locally
 		if (userId) {
@@ -381,6 +397,8 @@ const MainPage = () => {
 								Open Dashboard
 							</button>
 						)}
+						{/* If lesson complete but summary is closed, allow reopening summary */}
+						{/* Open Quiz Summary removed per request */}
 						{/* Lesson controls forced to next line on very narrow screens */}
 						<div
 							className="flex-grow basis-full h-0 sm:hidden"
@@ -410,8 +428,15 @@ const MainPage = () => {
 				{showSummary && (
 					<SummaryModal
 						open={showSummary}
-						onClose={() => setShowSummary(false)}
-						summary={getLessonSummary()}
+						onClose={() => {
+							setShowSummary(false)
+							setCurrentSummary(null)
+						}}
+						summary={
+							(currentSummary as unknown as ReturnType<
+								typeof getLessonSummary
+							>) || getLessonSummary()
+						}
 						saveStatus={saveStatus}
 					/>
 				)}

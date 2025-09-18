@@ -5,6 +5,7 @@ import { isWordObject } from "@/lib/translation"
 export type ResolvedRef = {
 	key: string
 	label: string
+	groupName?: string
 	word?: WordObject
 	info?: string[]
 }
@@ -69,7 +70,7 @@ export function resolveReference(
 		if (!info) info = wordObj.info.slice(0, 2)
 	}
 
-	return { key, label, word: wordObj, info }
+	return { key, label, groupName, word: wordObj, info }
 }
 
 export function resolveReferenceList(
