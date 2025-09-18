@@ -1,8 +1,15 @@
 "use client"
 import { signIn, signOut, useSession } from "next-auth/react"
+import React from "react"
 
 export function AuthButton() {
 	const { data: session, status } = useSession()
+	const [mounted, setMounted] = React.useState(false)
+	React.useEffect(() => setMounted(true), [])
+
+	// Avoid rendering different HTML on server vs client. Render nothing until mounted.
+	if (!mounted) return null
+
 	if (status === "loading")
 		return <button className="text-xs opacity-70">Auth...</button>
 	if (!session?.user) {
@@ -18,6 +25,14 @@ export function AuthButton() {
 	const userId = (session.user as { id?: string } | undefined)?.id
 	return (
 		<div className="flex items-center gap-2">
+			{userId && (
+				<a
+					href="/dashboard"
+					className="px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+				>
+					Dashboard
+				</a>
+			)}
 			<span
 				className="text-xs text-zinc-300 max-w-[140px] truncate"
 				title={session.user.email || session.user.name || userId || "User"}

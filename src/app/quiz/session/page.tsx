@@ -243,8 +243,26 @@ export default function QuizSessionPage() {
 				<div className="w-full max-w-3xl space-y-6">
 					<div className="flex justify-between items-center">
 						<h1 className="text-xl font-semibold">Custom Quiz</h1>
-						<div className="text-[10px] text-zinc-400 font-mono">
-							{index + 1}/{quiz.questions.length}
+						<div className="flex items-center gap-3">
+							<div className="text-[10px] text-zinc-400 font-mono">
+								{index + 1}/{quiz.questions.length}
+							</div>
+							{/* Sentence picker: select which sentence to jump to */}
+							<select
+								aria-label="Select sentence"
+								value={index}
+								onChange={(e) => setIndex(Number(e.target.value))}
+								className="text-sm bg-zinc-900 border border-zinc-700 px-2 py-1 rounded"
+							>
+								{Array.from({ length: quiz.questions.length }).map((_, i) => (
+									<option
+										key={i}
+										value={i}
+									>
+										{i + 1}
+									</option>
+								))}
+							</select>
 						</div>
 					</div>
 					{current && (

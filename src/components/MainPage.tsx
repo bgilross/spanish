@@ -59,6 +59,8 @@ const MainPage = () => {
 	const [showIntro, setShowIntro] = React.useState(false)
 	const [showWordBank, setShowWordBank] = React.useState(false)
 	const { data: session } = useSession()
+	const [mounted, setMounted] = React.useState(false)
+	React.useEffect(() => setMounted(true), [])
 	let userId = (session?.user as { id?: string } | undefined)?.id
 	// Dev fallback (allows local testing of persistence without Google OAuth)
 	if (!userId && process.env.NODE_ENV === "development") {
@@ -229,15 +231,7 @@ const MainPage = () => {
 						</span>
 					</h1>
 					<div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
-						{userId && (
-							<a
-								href="/dashboard"
-								className="px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800"
-							>
-								Dashboard
-							</a>
-						)}
-						{process.env.NODE_ENV === "development" && userId && (
+						{mounted && process.env.NODE_ENV === "development" && userId && (
 							<button
 								onClick={async () => {
 									if (!confirm("Clear ALL lesson attempts for this user?"))
@@ -266,7 +260,7 @@ const MainPage = () => {
 								Clear History
 							</button>
 						)}
-						<AuthButton />
+						{mounted && <AuthButton />}
 						{/* Lesson controls forced to next line on very narrow screens */}
 						<div
 							className="flex-grow basis-full h-0 sm:hidden"
@@ -375,6 +369,33 @@ const MainPage = () => {
 									  }`
 									: "—"}
 							</span>
+							{/* Sentence selector dropdown */}
+							{hasSentences && (
+								<select
+									aria-label="Select sentence"
+									value={currentSentenceIndex}
+									onChange={(e) => {
+										const v = Number(e.target.value)
+										// Update store directly to jump to sentence
+										useDataStore.setState({
+											currentSentenceIndex: v,
+											currentSentenceProgress: null,
+										})
+									}}
+									className="ml-3 bg-zinc-900 border border-zinc-700 text-sm px-2 py-1 rounded"
+								>
+									{Array.from({
+										length: currentLesson.sentences?.length || 0,
+									}).map((_, i) => (
+										<option
+											key={i}
+											value={i}
+										>
+											{i + 1}
+										</option>
+									))}
+								</select>
+							)}
 						</span>
 						<span className="flex items-center gap-2 mt-2 w-full">
 							<button
