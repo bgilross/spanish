@@ -367,7 +367,7 @@ const spanishWords: SpanishWords = {
 				info: [
 					"De  is mostly used as OF in one of these three ideas:\nORIGIN: 'The people OF the north!', or\nPOSSESION: 'The house OF my parents', or\nMATERIAL: 'The sheet OF paper'",
 					"ORIGIN: In english we say Sydney is a City in Australia, but Spanish would say Sydney is a city OF or DE Autralia. Other examples include: 'The birds of Africa', 'The wind from the cellar' 'My friend from Toronto', 'The largest cities of Columbia'",
-					"POSSESSION: English says 'My friends father' but spanish would say 'The father OF my friend!' other examples include: 'The cap of the bottle', 'the door of the house' and 'the hand of the writer'",
+					"POSSESSION: English says 'My friend's father' but spanish would say 'The father OF my friend!' other examples include: 'The cap of the bottle', 'the door of the house' and 'the hand of the writer'",
 					"DE POSSESSION2: English uses Contractions like 'The bottle's cap' but Spanish DOESN'T have this! You need to change the order and use DE, 'The cap of the bottle'",
 					"MATERIAL: The Statue DE Bronze. The Table DE Stone. The horse DE wood. etc!",
 				],
@@ -440,11 +440,12 @@ const spanishWords: SpanishWords = {
 					`POR/Location. POR can mean around: Water is pooling AROUND, NEAR, BY, or NEARBY the fountain also can mean POR`,
 					`POR can mean ALONG: The water is running all ALONG/POR the sides of the fountain`,
 					`POR and the FOUNTAIN: always remember the image of flowing water produced BY the fountain, AROUND it, ALONG side, NEARBY it, and existing BECASUE of it!`,
-					"POR this Evening means: DURING the evening, in a general way, AROUND this evening.",
+					"POR this Evening means: DURING the evening, in a general way, you can think of it as AROUND this evening.",
 					"POR ESO mean 'Becasue of that', or 'That's Why'",
 					"POR QUÉ' means 'Because of what', or 'Why'",
 					"POR can mean FOR in the sense of 'For a long time', or 'For a while'",
 					"POR and SER Conjugations, a form of SER before POR indicates it's meaning is related to Identity not Location. BY(Because of) the author, not AROUND the author.",
+					"POR means BY not just in the location sense, but in the 'created by' sense as well, 'the book is POR the author'",
 				],
 			},
 		},
@@ -541,6 +542,7 @@ const spanishWords: SpanishWords = {
 			"Verbs have different forms called conjugations which depend on the person, plurality, and tense of the verb.",
 			"This is because verbs aren't really just one words, but a whole family of words, all meaning the same thing, but appearing in different ways depending on the context.",
 			'For the majority of the Spanish speaking world there are five types of PEOPLE associated with any verb. "I", "YOU", "HE/SHE/IT", "WE", and "THEY"',
+			"There isn't a concept of 'DO/DID have', 'DO/DID say', or 'DO/DID' preceding any Verb in Spanish. Instead of saying 'I do have it' you would say 'I have it', and instead of 'I don't have it' you would say 'I no have it'. Untie the NOT, and make the DO disappear!",
 		],
 
 		words: {
