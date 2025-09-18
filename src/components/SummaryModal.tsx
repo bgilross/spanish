@@ -74,12 +74,34 @@ const SummaryModal: React.FC<Props> = ({
 							v{APP_VERSION}
 						</span>
 					</h3>
-					<button
-						className="px-2 py-1 text-sm border rounded"
-						onClick={onClose}
-					>
-						Close
-					</button>
+					<div className="flex items-center gap-2">
+						<button
+							className="px-2 py-1 text-sm border rounded"
+							onClick={onClose}
+						>
+							Close
+						</button>
+						<button
+							className="px-2 py-1 text-sm border rounded"
+							onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+						>
+							Open Quiz Summary
+						</button>
+						<button
+							className="px-2 py-1 text-sm border rounded bg-emerald-600 text-white"
+							onClick={() => {
+								// advance to next lesson if available
+								try {
+									const lessonsEl = document.querySelector("[data-next-lesson]")
+									if (lessonsEl) {
+										;(lessonsEl as HTMLElement).click()
+									}
+								} catch {}
+							}}
+						>
+							Next Lesson
+						</button>
+					</div>
 				</div>
 				{saveStatus && (
 					<div className="mb-3 text-xs">

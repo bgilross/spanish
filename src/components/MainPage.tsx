@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react"
 import { AuthButton } from "@/components/AuthButton"
 import { useDataStore } from "@/data/dataStore"
 import LessonControls from "@/components/LessonControls"
+import { useRouter } from "next/navigation"
 import SentenceLine from "@/components/SentenceLine"
 import AnswerInput from "@/components/AnswerInput"
 import SummaryModal from "@/components/SummaryModal"
@@ -231,6 +232,12 @@ const MainPage = () => {
 		mixupMap,
 	])
 
+	React.useEffect(() => {
+		const onOpen = () => setShowSummary(true)
+		window.addEventListener("openLessonSummary", onOpen)
+		return () => window.removeEventListener("openLessonSummary", onOpen)
+	}, [])
+
 	const activeSectionOriginalIndex = React.useMemo(() => {
 		const sections = currentSentenceProgress?.translationSections || []
 		const next = sections.find((s) => !s.isTranslated)
@@ -266,6 +273,8 @@ const MainPage = () => {
 			setShowIntro(true)
 		}
 	}
+
+	const router = useRouter()
 
 	// Report issue modal state
 	const [showReportModal, setShowReportModal] = React.useState(false)
@@ -364,6 +373,14 @@ const MainPage = () => {
 							</button>
 						)}
 						{mounted && <AuthButton />}
+						{!session?.user && (
+							<button
+								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
+								onClick={() => router.push("/dashboard")}
+							>
+								Open Dashboard
+							</button>
+						)}
 						{/* Lesson controls forced to next line on very narrow screens */}
 						<div
 							className="flex-grow basis-full h-0 sm:hidden"
@@ -530,7 +547,10 @@ const MainPage = () => {
 									Prev Lesson
 								</button>
 								<button
-									className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 disabled:opacity-40"
+									data-next-lesson
+									className={`px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 disabled:opacity-40 ${
+										isLessonComplete() ? "ring-2 ring-emerald-500" : ""
+									}`}
 									onClick={goNextLesson}
 									disabled={currentLessonIndex >= lessons.length - 1}
 								>

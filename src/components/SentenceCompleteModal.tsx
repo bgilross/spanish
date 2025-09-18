@@ -150,10 +150,22 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 				)}
 				<div className="flex gap-2 mt-4">
 					<button
-						onClick={onNext}
+						onClick={() => {
+							onNext()
+						}}
 						className="px-3 py-1.5 text-sm rounded border bg-emerald-600 text-white"
 					>
 						Next sentence
+					</button>
+					<button
+						onClick={() => {
+							// try to open lesson summary in parent (MainPage holds summary state)
+							const ev = new CustomEvent("openLessonSummary")
+							window.dispatchEvent(ev)
+						}}
+						className="px-3 py-1.5 text-sm rounded border"
+					>
+						Open Summary
 					</button>
 					<button
 						onClick={onClose}
