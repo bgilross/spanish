@@ -237,6 +237,17 @@ const spanishWords: SpanishWords = {
 					pos: "Pronoun",
 					info: [],
 				},
+				usted: {
+					id: "pron.subject.usted",
+					translations: ["you (formal)"],
+					word: "usted",
+					pos: "Pronoun",
+					info: [
+						"When using Formal, we use the 3rd person conjugation (He/she/It) of the verb, even though we are talking to 'you'",
+						"Just like other Subject Pronouns, Usted can be ommitted if the verb conjugation (3rd person: ES/He/she/it) makes it clear based on context.",
+						"Formal Direct Objects: If the formal person you are referring to is used as a direct object you don't use 'You/Te' but the third person again: him/her/it: 'lo/la'",
+					],
+				},
 			},
 		},
 		dObj: {
