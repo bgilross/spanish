@@ -301,6 +301,7 @@ const MainPage = () => {
 		missingReference: false,
 		incorrectReference: false,
 		wrongTranslation: false,
+		wrongGender: false,
 		other: false,
 		notes: "",
 	})
@@ -312,6 +313,7 @@ const MainPage = () => {
 			missingReference: false,
 			incorrectReference: false,
 			wrongTranslation: false,
+			wrongGender: false,
 			other: false,
 			notes: "",
 		})
@@ -342,6 +344,7 @@ const MainPage = () => {
 				wrongTranslation: !!reportForm.wrongTranslation,
 				other: !!reportForm.other,
 				notes: reportForm.notes || undefined,
+				wrongGender: !!reportForm.wrongGender,
 			}
 			const res = await fetch("/api/issues", {
 				method: "POST",
@@ -379,6 +382,19 @@ const MainPage = () => {
 								onClick={async () => {
 									if (!confirm("Clear ALL lesson attempts for this user?"))
 										return
+									;<label className="inline-flex items-center gap-2">
+										<input
+											type="checkbox"
+											checked={reportForm.wrongGender}
+											onChange={(e) =>
+												setReportForm({
+													...reportForm,
+													wrongGender: e.target.checked,
+												})
+											}
+										/>
+										<span className="text-sm">Wrong gender</span>
+									</label>
 									try {
 										const res = await fetch(
 											`/api/lessonAttempts?userId=${userId}`,

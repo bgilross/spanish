@@ -3700,19 +3700,20 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "that's why",
-							translation: [prep.words.para, pron.demonstrative.words.eso],
+							translation: [prep.words.por, pron.demonstrative.words.eso],
 							phraseTranslation: "POR ESO",
-							reference: { "prep.words.para": [9] },
+							reference: ref("porEso"),
 						},
 						{
 							phrase: "the book",
 						},
 						{
-							phrase: "is on the table",
+							phrase: "is on",
 							translation: [prep.words.en],
-							phraseTranslation: "is ON the table",
-							mixup: verb.words.ser.present.es,
+							phraseTranslation: "is EN",
+							reference: ref("serNoLocation"),
 						},
+						{ phrase: "the table" },
 					],
 				},
 				{
@@ -3728,7 +3729,7 @@ const spanishData: { lessons: Lesson[] } = {
 							translation: verb.words.ser.present.es,
 						},
 						{
-							phrase: "my mom's dog",
+							phrase: "my mom's dog(F)",
 							translation: [artcl.words.la, prep.words.de],
 							phraseTranslation: "LA dog DE my mom",
 						},
@@ -3741,16 +3742,13 @@ const spanishData: { lessons: Lesson[] } = {
 
 					data: [
 						{
-							phrase: "He is here",
-							mixup: verb.words.ser.present.es,
+							phrase: "He is here during",
+							phraseTranslation: "He is here POR",
+							translation: prep.words.por,
+							reference: ref("serNoLocation", "porDuring"),
 						},
 						{
-							phrase: "during",
-							translation: prep.words.para,
-							reference: { "prep.words.para": [8] },
-						},
-						{
-							phrase: "the mornings	",
+							phrase: "the mornings",
 						},
 					],
 				},
@@ -3795,17 +3793,17 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "Why",
-							translation: [prep.words.para, pron.interrogative.words.que],
+							translation: [prep.words.por, pron.interrogative.words.que],
 							phraseTranslation: "POR QUE",
-							reference: { "prep.words.para": [10] },
+							reference: ref("porQueWhy"),
 						},
 						{
 							phrase: "did you walk",
 						},
 						{
 							phrase: "along",
-							translation: prep.words.para,
-							reference: { "prep.words.para": [6] },
+							translation: prep.words.por,
+							reference: ref("porAlong"),
 						},
 						{
 							phrase: "this road",
@@ -3838,16 +3836,19 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "paper book",
 							phraseTranslation: "book DE paper",
 							translation: prep.words.de,
+							reference: ref("deMaterial"),
 						},
 						{
 							phrase: "by",
-							translation: prep.words.para,
-							reference: { "prep.words.para": [1] },
+							translation: prep.words.por,
+							reference: ref("porCauseBy"),
 						},
 						{
-							phrase: "a young author",
+							phrase: "a",
 							translation: [artcl.words.un],
-							phraseTranslation: "UN young author",
+						},
+						{
+							phrase: "young author(M)",
 						},
 					],
 				},
@@ -3875,6 +3876,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "met them",
 							translation: pron.dObj.words.los,
 							phraseTranslation: "LOS met",
+							reference: ref("dObjPosition"),
 						},
 					],
 				},
@@ -3898,7 +3900,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "than",
 							translation: conj.words.que,
-							reference: { "conj.words.que": [3] },
+							reference: ref("queAsThan"),
 						},
 						{
 							phrase: "that",
@@ -3912,8 +3914,10 @@ const spanishData: { lessons: Lesson[] } = {
 					translation: "He is always EN work A 7:00",
 					data: [
 						{
-							phrase: "He is always",
-							mixup: verb.words.ser.present.es,
+							phrase: "He is always at",
+							translation: prep.words.en,
+							phraseTranslation: "He is always EN",
+							reference: ref("serNoLocation"),
 						},
 						{
 							phrase: "at",
@@ -3950,8 +3954,8 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "because of",
-							translation: prep.words.para,
-							reference: { "prep.words.para": [3] },
+							translation: prep.words.por,
+							reference: ref("porBecauseOf"),
 						},
 						{
 							phrase: "your good work",
@@ -3966,17 +3970,15 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "How strange",
 							translation: pron.interrogative.words.que,
-							phraseTranslation: "Que strange",
+							phraseTranslation: "Qué strange",
 							reference: { "pron.interrogative.words.que": [0] },
 						},
 						{
 							phrase: "that",
 							translation: conj.words.que,
-							reference: { "conj.words.que": [3] },
 						},
 						{
 							phrase: "this is translated into Spanglish",
-							mixup: verb.words.ser.present.es,
 						},
 					],
 				},
@@ -3989,11 +3991,13 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "Sara's son",
 							translation: [artcl.words.el, prep.words.de],
 							phraseTranslation: "EL son DE sara",
+							reference: ref("dePossession"),
 						},
 						{
-							phrase: "saw them",
+							phrase: "saw them(M)",
 							translation: pron.dObj.words.los,
 							phraseTranslation: "LOS saw",
+							reference: ref("dObjPosition"),
 						},
 						{
 							phrase: "with",
@@ -4030,7 +4034,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "by",
 							translation: prep.words.para,
-							reference: { "prep.words.para": [2] },
+							reference: ref("paraDeadlines"),
 						},
 						{
 							phrase: "tonight",
@@ -4050,19 +4054,15 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "girl",
 						},
 						{
-							phrase: "that",
+							phrase: "that is walking",
 							translation: conj.words.que,
-						},
-						{
-							phrase: "is",
-						},
-						{
-							phrase: "walking",
+							phraseTranslation: "QUE is walking",
+							reference: ref("serNoDoing"),
 						},
 						{
 							phrase: "near",
-							translation: prep.words.para,
-							reference: { "prep.words.para": [5] },
+							translation: prep.words.por,
+							reference: ref("porLocation"),
 						},
 						{
 							phrase: "the park",
@@ -4237,15 +4237,15 @@ const spanishData: { lessons: Lesson[] } = {
 				{
 					id: 9,
 					sentence: "What is there in the kitchen?",
-					translation: "QUE is there in the kitchen?",
+					translation: "QUÉ is there in the kitchen?",
 					data: [
 						{
-							phrase: "QUE",
+							phrase: "What is there",
 							translation: pron.interrogative.words.que,
+							reference: ref("serNoLocation"),
 						},
 						{
-							phrase: "is there in the kitchen?",
-							mixup: verb.words.ser.present.es,
+							phrase: "in the kitchen?",
 						},
 					],
 				},
@@ -4314,12 +4314,10 @@ const spanishData: { lessons: Lesson[] } = {
 					translation: "I am working CON them",
 					data: [
 						{
-							phrase: "I am working",
-							mixup: verb.words.ser.present.soy,
-						},
-						{
-							phrase: "with",
+							phrase: "I am working with",
 							translation: prep.words.con,
+							phraseTranslation: "I am working CON",
+							reference: ref("serNoDoing"),
 						},
 						{
 							phrase: "them",
@@ -4376,13 +4374,13 @@ const spanishData: { lessons: Lesson[] } = {
 							reference: { "conj.words.que": [1] },
 						},
 						{
-							phrase: "they are running",
-							mixup: verb.words.ser.present.son,
+							phrase: "they",
 						},
 						{
-							phrase: "POR",
-							translation: prep.words.para,
-							reference: { "prep.words.para": [5] },
+							phrase: "are running around",
+							phraseTranslation: "are running POR",
+							translation: prep.words.por,
+							reference: ref("serNoDoing", "porLocation"),
 						},
 						{
 							phrase: "here.",
@@ -4467,7 +4465,7 @@ const spanishData: { lessons: Lesson[] } = {
 							translation: artcl.words.una,
 						},
 						{
-							phrase: "model student",
+							phrase: "model student(F)",
 						},
 					],
 				},
@@ -4477,12 +4475,10 @@ const spanishData: { lessons: Lesson[] } = {
 					translation: "You are EN the wrong place",
 					data: [
 						{
-							phrase: "You are",
-							mixup: verb.words.ser.present.eres,
-						},
-						{
-							phrase: "in",
+							phrase: "You are in",
 							translation: prep.words.en,
+							phraseTranslation: "You are EN",
+							reference: ref("serNoLocation"),
 						},
 						{
 							phrase: "the wrong place",
@@ -4495,11 +4491,13 @@ const spanishData: { lessons: Lesson[] } = {
 					translation: "ESO is slipping away",
 					data: [
 						{
-							phrase: "That",
+							phrase: "That is slipping",
 							translation: pron.demonstrative.words.eso,
+							phraseTranslation: "ESO is slipping",
+							reference: ref("serNoDoing"),
 						},
 						{
-							phrase: "is slipping away",
+							phrase: "away",
 						},
 					],
 				},
@@ -4533,9 +4531,10 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "ladies",
 						},
 						{
-							phrase: "know them",
+							phrase: "know them(F)",
 							translation: pron.dObj.words.las,
 							phraseTranslation: "LAS know",
+							reference: ref("dObjPosition"),
 						},
 					],
 				},
@@ -4565,22 +4564,18 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "Why",
-							translation: [prep.words.para, pron.interrogative.words.que],
+							translation: [prep.words.por, pron.interrogative.words.que],
 							phraseTranslation: "POR QUE",
-							reference: { "prep.words.para": [10] },
+							reference: ref("porQueWhy"),
 						},
 						{
 							phrase: "didn't the girl",
-							translation: [
-								artcl.words.la,
-								advrb.words.no,
-								pron.dObj.words.los,
-							],
-							phraseTranslation: "LA girl NO",
+							translation: [artcl.words.la, advrb.words.no],
+							phraseTranslation: "NO did LA girl",
 							reference: { "advrb.words.no": [7] },
 						},
 						{
-							phrase: "see them",
+							phrase: "see them(M)",
 							translation: pron.dObj.words.los,
 							phraseTranslation: "LOS saw",
 						},
@@ -4599,12 +4594,10 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "guys",
 						},
 						{
-							phrase: "are",
-							mixup: verb.words.ser.present.son,
-						},
-						{
-							phrase: "with",
+							phrase: "are with",
 							translation: prep.words.con,
+							phraseTranslation: "are CON",
+							reference: ref("serNoLocation"),
 						},
 						{
 							phrase: "someone",
@@ -4621,7 +4614,7 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{
 							phrase: "are",
-							mixup: verb.words.ser.present.somps,
+							mixup: verb.words.ser.present.somos,
 						},
 						{
 							phrase: "friends",
