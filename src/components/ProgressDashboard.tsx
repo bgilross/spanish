@@ -181,7 +181,6 @@ interface AttemptRowProps {
 	referenceInfoMap: Record<string, string[]>
 	attemptIndex: number
 	deleting: string | null
-	onDeleteLesson: (lesson: number) => void | Promise<void>
 }
 function AttemptRow({
 	attempt,
@@ -189,7 +188,6 @@ function AttemptRow({
 	referenceInfoMap,
 	attemptIndex,
 	deleting,
-	onDeleteLesson,
 }: AttemptRowProps) {
 	const [open, setOpen] = React.useState(false)
 	const created = new Date(attempt.createdAt)
@@ -381,17 +379,22 @@ function AttemptRow({
 						{open ? "Hide" : "Show"}
 					</span>
 					<button
-						onClick={(e) => {
+						onClick={async (e) => {
 							e.stopPropagation()
-							onDeleteLesson(attempt.lessonNumber)
+							if (!confirm("Delete ONLY this attempt?")) return
+							try {
+								await fetch(
+									`/api/lessonAttempts?userId=${attempt.userId}&attemptId=${attempt.id}`,
+									{ method: "DELETE" }
+								)
+								setOpen(false)
+							} catch {}
 						}}
 						disabled={deleting !== null}
 						className="text-[10px] px-1.5 py-0.5 rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
-						title="Delete all attempts for this lesson"
+						title="Delete this attempt"
 					>
-						{deleting === String(attempt.lessonNumber)
-							? "Deleting…"
-							: "Delete Lesson"}
+						Delete Attempt
 					</button>
 				</span>
 			</div>
@@ -770,35 +773,7 @@ export function ProgressDashboard() {
 			setDeleting(null)
 		}
 	}
-	const deleteLesson = async (lessonNumber: number) => {
-		if (!confirm(`Delete attempts for lesson ${lessonNumber}?`)) return
-		setDeleting(String(lessonNumber))
-		try {
-			if (!userId) {
-				// Delete from local attempts
-				try {
-					const raw = localStorage.getItem("lessonAttempts:local")
-					const arr = raw ? JSON.parse(raw) : []
-					const parsedArr: unknown[] = Array.isArray(arr)
-						? (arr as unknown[])
-						: []
-					const filtered = parsedArr.filter(
-						(a) => (a as LessonAttempt).lessonNumber !== lessonNumber
-					)
-					localStorage.setItem("lessonAttempts:local", JSON.stringify(filtered))
-				} catch {}
-				loadLocalAttempts()
-				return
-			}
-			await fetch(
-				`/api/lessonAttempts?userId=${userId}&lessonNumber=${lessonNumber}`,
-				{ method: "DELETE" }
-			)
-			await load()
-		} finally {
-			setDeleting(null)
-		}
-	}
+
 	return (
 		<div className="space-y-8">
 			{!userId && (
@@ -830,6 +805,16 @@ export function ProgressDashboard() {
 					{deleting === "ALL" ? "Deleting…" : "Delete All"}
 				</button>
 				{error && <span className="text-xs text-rose-400">{error}</span>}
+				{userId && (
+					<a
+						href={`/api/lessonAttempts?userId=${encodeURIComponent(userId)}`}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="px-3 py-1.5 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+					>
+						View API Attempts
+					</a>
+				)}
 			</div>
 			{aggregate && (
 				<div className="grid gap-3 grid-cols-2 sm:grid-cols-4 text-sm">
@@ -918,7 +903,6 @@ export function ProgressDashboard() {
 							}
 							referenceInfoMap={referenceInfoMap}
 							deleting={deleting}
-							onDeleteLesson={deleteLesson}
 						/>
 					))}
 				</ul>

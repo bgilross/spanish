@@ -442,19 +442,22 @@ const MainPage = () => {
 					</div>
 				</header>
 
-				{!userId && (
+				{mounted && !userId && (
 					<div className="mt-4 p-3 text-xs rounded border border-amber-500/40 bg-amber-500/5 text-amber-300">
 						You can use the dashboard locally while signed out — progress will
 						be saved to your browser only and will not be persisted to the
 						server.
 					</div>
 				)}
-				{!session?.user && userId && process.env.NODE_ENV === "development" && (
-					<div className="mt-3 p-2 text-[10px] rounded border border-indigo-500/40 bg-indigo-500/5 text-indigo-300">
-						Using local dev fallback user:{" "}
-						<span className="font-mono">{userId}</span>
-					</div>
-				)}
+				{mounted &&
+					!session?.user &&
+					userId &&
+					process.env.NODE_ENV === "development" && (
+						<div className="mt-3 p-2 text-[10px] rounded border border-indigo-500/40 bg-indigo-500/5 text-indigo-300">
+							Using local dev fallback user:{" "}
+							<span className="font-mono">{userId}</span>
+						</div>
+					)}
 
 				{showSummary && (
 					<SummaryModal

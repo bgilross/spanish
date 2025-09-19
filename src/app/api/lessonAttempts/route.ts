@@ -72,15 +72,47 @@ export async function POST(req: NextRequest) {
 			if (!prisma.userMixup) {
 				console.error("Prisma client missing userMixup delegate")
 			} else {
-				for (const { expected, wrong, count } of agg.values()) {
-					try {
-						await prisma.userMixup.upsert({
-							where: { userId_expected_wrong: { userId, expected, wrong } },
-							create: { userId, expected, wrong, count },
-							update: { count: { increment: count } },
-						})
-					} catch (e) {
-						console.error("Failed to upsert userMixup for", expected, wrong, e)
+				// Check whether the UserMixup table actually exists in the database
+				// (helps avoid Prisma P2021 when migrations haven't been applied)
+				let userMixupTableExists = true
+				try {
+					// PostgreSQL: to_regclass returns null when the table doesn't exist
+					const res: unknown = await prisma.$queryRaw`
+						SELECT to_regclass('public."UserMixup"') as t
+					`
+					// Handle driver return shapes
+					const maybe = res as unknown
+					let t: unknown = null
+					if (Array.isArray(maybe)) t = (maybe[0] as { t?: unknown })?.t
+					else if (maybe && typeof maybe === "object")
+						t = (maybe as { t?: unknown })?.t
+					userMixupTableExists = !!t
+				} catch (e) {
+					userMixupTableExists = false
+					console.warn(
+						"Could not detect UserMixup table, skipping mixup upserts",
+						e
+					)
+				}
+
+				if (!userMixupTableExists) {
+					console.warn("Skipping userMixup upserts because table is missing")
+				} else {
+					for (const { expected, wrong, count } of agg.values()) {
+						try {
+							await prisma.userMixup.upsert({
+								where: { userId_expected_wrong: { userId, expected, wrong } },
+								create: { userId, expected, wrong, count },
+								update: { count: { increment: count } },
+							})
+						} catch (e) {
+							console.error(
+								"Failed to upsert userMixup for",
+								expected,
+								wrong,
+								e
+							)
+						}
 					}
 				}
 			}

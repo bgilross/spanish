@@ -41,6 +41,59 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 The app persists lesson attempt summaries and authentication state in Postgres via Prisma + NextAuth.
 
+### Database Setup & Migrations (Recommended Flow)
+
+This repo uses Prisma Migrate. Use the following workflows to keep your database in sync across environments.
+
+- New environment (local or CI/prod):
+
+  - Apply checked-in migrations only:
+    ```bash
+    npx prisma migrate deploy
+    npx prisma generate
+    ```
+  - Verify status:
+    ```bash
+    npx prisma migrate status
+    ```
+
+- Active local development (you are changing the schema):
+
+  - Create a new migration and apply it to your dev DB:
+    ```bash
+    npx prisma migrate dev --name <feature_or_change>
+    ```
+  - Commit the generated folder under `prisma/migrations/<timestamp>_<name>/`.
+
+- When migrate dev fails due to shadow DB conflicts (P3006):
+
+  - Prefer to resolve locally via reset if you can afford data loss:
+    ```bash
+    npx prisma migrate reset   # DANGER: wipes local DB
+    ```
+  - If you cannot reset and only need to reconcile schema (e.g., shared dev DB), use:
+    ```bash
+    npx prisma db push
+    npx prisma generate
+    ```
+    Then create a proper migration afterwards (in a clean environment) to capture changes for others.
+
+- Quick verification commands:
+
+  ```bash
+  # Confirm table existence (psql example)
+  psql "$DATABASE_URL" -c "\d+ \"UserMixup\""
+
+  # Check Prisma sees no pending migrations
+  npx prisma migrate status
+  ```
+
+Notes:
+
+- Production and CI should always run `npx prisma migrate deploy` on startup/deploy.
+- `db push` is fine to unblock local development but does not create a migration; don’t use it in production.
+- Adding new tables or constraints locally? Create a migration with `migrate dev` and commit it.
+
 ### 1. Copy environment file
 
 ```
@@ -109,13 +162,15 @@ In Google Cloud Console > Credentials:
 
 ### 6. Troubleshooting
 
-| Symptom                        | Fix                                                                                                                   |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| `P1001` (database unreachable) | Check container running; correct host/port in `DATABASE_URL`.                                                         |
-| `Error: NEXTAUTH_SECRET`       | Provide a value in `.env`.                                                                                            |
-| OAuth "redirect_uri_mismatch"  | Ensure redirect URI exactly matches in Google console.                                                                |
-| No attempts saved locally      | Confirm you are signed in; check API route logs in terminal.                                                          |
-| Migration errors (shadow DB)   | Use `npx prisma migrate dev --name temp --create-only` then inspect or `prisma migrate reset` (will wipe local data). |
+| Symptom                        | Fix                                                                                                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `P1001` (database unreachable) | Check container running; correct host/port in `DATABASE_URL`.                                                                                           |
+| `Error: NEXTAUTH_SECRET`       | Provide a value in `.env`.                                                                                                                              |
+| OAuth "redirect_uri_mismatch"  | Ensure redirect URI exactly matches in Google console.                                                                                                  |
+| No attempts saved locally      | Confirm you are signed in; check API route logs in terminal.                                                                                            |
+| Migration errors (shadow DB)   | Prefer `npx prisma migrate reset` (local only). If blocked by shared DB, use `npx prisma db push` to reconcile, then follow up with a proper migration. |
+| P2021 (table does not exist)   | Ensure migrations were applied: `npx prisma migrate deploy`. For local-only fixes, `npx prisma db push` then `npx prisma generate`.                     |
+| P3006 (shadow DB conflict)     | Run `npx prisma migrate reset` (local dev), or temporarily `npx prisma db push` and later generate a migration in a clean env.                          |
 
 ### 7. Switching between Local and Vercel
 
