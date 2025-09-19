@@ -26,6 +26,8 @@ export interface Sentence {
 	data: SentenceDataEntry[]
 	/** @deprecated legacy whole-sentence flag; prefer per-entry noPronoun */
 	noPronoun?: boolean
+	/** Optional flag indicating this sentence/section should be translated in the formal register */
+	isFormal?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -67,6 +69,7 @@ export type SentenceDataEntry =
 			reference?: Record<string, (number | string)[]>
 			mixup?: WordObject
 			noPronoun?: boolean
+			isFormal?: boolean
 			expectedForm?: string
 			allowForms?: boolean
 			plural?: boolean

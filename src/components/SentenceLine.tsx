@@ -31,6 +31,13 @@ const SentenceLine: React.FC<Props> = ({
 			(p as SentenceDataEntry & { noPronoun?: boolean }).noPronoun === true
 	)
 
+	// Determine sentence-level formal flag and whether any part sets it
+	const sentenceLevelFormal = sentence.isFormal
+	const anyPartHasFormal = sentence.data.some(
+		(p: SentenceDataEntry) =>
+			(p as SentenceDataEntry & { isFormal?: boolean }).isFormal === true
+	)
+
 	return (
 		<div className="mt-2 text-xl sm:text-2xl text-center flex flex-wrap justify-center text-zinc-100">
 			{sentence.data.map((part, i) => {
@@ -38,10 +45,16 @@ const SentenceLine: React.FC<Props> = ({
 				const isRevealed = translated.has(i)
 				const { base, punct } = splitWordAndPunct(part.phrase)
 				const isActive = i === activeIndex
-				const partObj = part as SentenceDataEntry & { noPronoun?: boolean }
+				const partObj = part as SentenceDataEntry & {
+					noPronoun?: boolean
+					isFormal?: boolean
+				}
 				const partNoPronoun =
 					partObj.noPronoun === true ||
 					(!anyPartHasFlag && sentenceLevelNoPronoun)
+				const partFormal =
+					partObj.isFormal === true ||
+					(!anyPartHasFormal && sentenceLevelFormal)
 				const spanish = spanishTarget(
 					part as unknown as import("@/data/types").SentenceDataEntry
 				)
@@ -72,6 +85,11 @@ const SentenceLine: React.FC<Props> = ({
 									No subject pronoun.
 								</span>
 							)}
+							{partFormal && (
+								<span className="mt-0.5 ml-1 text-[8px] tracking-wide uppercase rounded px-1 py-px bg-sky-900/20 border border-sky-500/20 text-sky-300/80 whitespace-nowrap">
+									Formal
+								</span>
+							)}
 						</span>
 					) : (
 						<span className="inline-flex flex-col items-center mx-1">
@@ -86,6 +104,11 @@ const SentenceLine: React.FC<Props> = ({
 							{partNoPronoun && (
 								<span className="mt-0.5 text-[8px] tracking-wide uppercase rounded px-1 py-px bg-amber-900/30 border border-amber-500/30 text-amber-300/80 whitespace-nowrap">
 									Pronoun ok omitted
+								</span>
+							)}
+							{partFormal && (
+								<span className="mt-0.5 ml-1 text-[8px] tracking-wide uppercase rounded px-1 py-px bg-sky-900/20 border border-sky-500/20 text-sky-300/80 whitespace-nowrap">
+									Formal
 								</span>
 							)}
 						</span>

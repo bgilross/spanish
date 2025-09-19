@@ -140,7 +140,14 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 			.noPronoun
 		const sentenceLevel = sentence?.noPronoun
 		const noPronoun = partFlag === true || (sentenceLevel && partFlag !== false)
-		return { spanishCount, englishCount, noPronoun }
+
+		// Determine formal/register flag (per-part overrides sentence-level)
+		const partFormal = (entry as SentenceDataEntry & { isFormal?: boolean })
+			.isFormal
+		const sentenceFormal = sentence?.isFormal
+		const isFormal =
+			partFormal === true || (sentenceFormal && partFormal !== false)
+		return { spanishCount, englishCount, noPronoun, isFormal }
 	})()
 
 	return (
@@ -173,6 +180,11 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 					</p>
 					{info.noPronoun && activeIndex != null && (
 						<p className="mt-1 text-amber-300/80">No subject pronoun</p>
+					)}
+					{info?.isFormal && activeIndex != null && (
+						<p className="mt-1 text-sky-300/80">
+							Formal/register: use formal translation
+						</p>
 					)}
 				</div>
 			)}
