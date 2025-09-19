@@ -154,6 +154,18 @@ const referenceMap = {
 		path: "verb",
 		indices: [12],
 	} as ReferenceEntry,
+	usted3rdPerson: {
+		path: "pron.subject.usted",
+		indices: [0],
+	} as ReferenceEntry,
+	ustedNoPronoun: {
+		path: "pron.subject.usted",
+		indices: [1],
+	} as ReferenceEntry,
+	ustedDirectObject: {
+		path: "pron.dObj.usted",
+		indices: [2],
+	} as ReferenceEntry,
 } as const
 
 type ReferenceKey = keyof typeof referenceMap
@@ -6348,6 +6360,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "are",
 							translation: verb.words.ser.present.somos,
+							reference: ref("serOrigin"),
 						},
 						{
 							phrase: "from",
@@ -8568,7 +8581,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{
 							phrase: "Why",
-							translation: [prep.words.por, pron.subject.words.que],
+							translation: [prep.words.por, pron.interrogative.words.que],
 							reference: ref("porQueWhy"),
 						},
 						{
@@ -8743,6 +8756,470 @@ const spanishData: { lessons: Lesson[] } = {
 				"So 'you are' in a formal way is 'usted es' (not 'usted eres').",
 				"This is also very dependent on what region of Spanish you’re dealing with. For example, in Argentina, the usted form is very rarely used, but there are also regional dialects in some other parts of South America where the tú form is rarely used and most people speak in usted most of the time except with very intimate acquaintances.",
 				"For English speakers this feels like a whole new thing to worry about, since we don't separate formal from informal ways of talking in a grammatical sense.",
+				"Usted is not changed based on gender: 'You aren't a teacher?' = 'Usted no era un profesor'",
+				"However there will be situations when you are speaking with someone in a formal voice, and they end up being the Direct Object in the sentence",
+				"If your formal person becomes the direct object we don't use the 'YOU/TE' form of dObjs, we instead use the it/him/her form: LO/LA",
+				"This can seem odd, since 'they know you' might be translated as 'Ellos Lo know' which seems like 'They know him', weird to use 'him' or 'her' to refer to a person you are talking directly to. But it's considered polite, and formal.",
+				"The last confusing bit here is that Spanish uses the USTED form without actually naming USTED at all: this happens a lot with ES, which can refer to an it, he, she, or now an unnamed USTED",
+				"For Example: 'Es un amigo' can mean 'he is a friend' or 'you are my friend' in a formal voice, this is the kind of thing that has to be picked up from the context.",
+				"For now and in the following quizzes we will specify when the sentence is in a Formal voice, just like specifying wether subject pronouns are required in earlier examples.",
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "You are a teacher",
+					translation: "USTED ES a teacher",
+					data: [
+						{
+							phrase: "You",
+							translation: pron.subject.words.usted,
+							isFormal: true,
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "a teacher" },
+					],
+				},
+				{
+					id: 2,
+					sentence: "He isn't my friend, you are",
+					translation: "ÉL NO ES my AMIGO, USTED LO ES",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{
+							phrase: "isn't",
+							translation: [advrb.words.no, verb.words.ser.present.es],
+							reference: ref("serIdentity", "noContractions"),
+						},
+						{ phrase: "my" },
+						{ phrase: "friend", translation: noun.words.amigo },
+						{
+							phrase: "you",
+							translation: pron.subject.words.usted,
+							isFormal: true,
+						},
+						{
+							phrase: "are",
+							translation: [pron.attribute.words.lo, verb.words.ser.present.es],
+							reference: ref("attributeLo", "serIdentity", "usted3rdPerson"),
+						},
+					],
+				},
+				{
+					id: 3,
+					sentence: "You weren't his friend(F)?",
+					translation: "USTED NO ERA his AMIGA?",
+					data: [
+						{
+							phrase: "You",
+							translation: pron.subject.words.usted,
+							isFormal: true,
+						},
+						{
+							phrase: "weren't",
+							translation: [advrb.words.no, verb.words.ser.past.era],
+							reference: ref("noContractions", "serIdentity", "usted3rdPerson"),
+						},
+						{ phrase: "his" },
+						{ phrase: "friend(F)", translation: noun.words.amiga },
+					],
+				},
+				{
+					id: 4,
+					sentence: "They(F) don't know you(F)",
+					translation: "ELLAS NO LA know",
+					data: [
+						{ phrase: "They(F)", translation: pron.subject.words.ellas },
+						{
+							phrase: "don't know you(F)",
+							translation: [advrb.words.no, pron.dObj.words.la],
+							phraseTranslation: "NO LA know",
+							reference: ref("noDoContractions", "dObjPosition"),
+						},
+					],
+				},
+				{
+					id: 5,
+					sentence: "I knew you(M) when you were a teacher",
+					translation: "YO LO knew when USTED ERA my teacher",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "knew you(M)",
+							translation: [pron.dObj.words.lo],
+							phraseTranslation: "LO knew",
+							reference: ref("dObjPosition", "ustedDirectObject"),
+						},
+						{ phrase: "when" },
+						{
+							phrase: "you",
+							translation: pron.subject.words.usted,
+							isFormal: true,
+						},
+						{
+							phrase: "were",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity", "usted3rdPerson"),
+						},
+						{ phrase: "my" },
+						{ phrase: "teacher" },
+					],
+				},
+				{
+					id: 6,
+					sentence: "Oh, you're from Bolivia?",
+					translation: "Oh, ES DE Bolivia?",
+					data: [
+						{ phrase: "Oh," },
+						{
+							phrase: "you're",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+							isFormal: true,
+							reference: ref("ustedNoPronoun", "serOrigin"),
+						},
+						{ phrase: "from", translation: prep.words.de },
+						{ phrase: "Bolivia" },
+					],
+				},
+				{
+					id: 7,
+					sentence: "I am not the girl that saw you(F)",
+					translation: "YO NO SOY LA CHICA QUE LA saw",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "am not",
+							translation: [advrb.words.no, verb.words.ser.present.soy],
+						},
+						{
+							phrase: "the girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "saw you(F)",
+							translation: [pron.dObj.words.la],
+							phraseTranslation: "LA saw",
+							noPronoun: true,
+							isFormal: true,
+						},
+					],
+				},
+				{
+					id: 8,
+					sentence: "She knows you(F), because of being your student",
+					translation: "ELLA LA knows, POR SER your student",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "knows you(F)",
+							translation: [pron.dObj.words.la],
+							phraseTranslation: "LA knows",
+							reference: ref("dObjPosition", "ustedDirectObject"),
+							isFormal: true,
+						},
+						{
+							phrase: "because of being",
+							translation: [prep.words.por, verb.words.ser],
+							reference: ref("porBecauseOf", "serBeing"),
+						},
+						{ phrase: "your" },
+						{ phrase: "student" },
+					],
+				},
+				{
+					id: 9,
+					sentence: "He said that you're his favorite teacher",
+					translation: "ÉL said QUE ES his favorite teacher",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{ phrase: "said" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you're",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+							isFormal: true,
+							reference: ref("ustedNoPronoun", "serIdentity", "usted3rdPerson"),
+						},
+						{ phrase: "his" },
+						{ phrase: "favorite teacher" },
+					],
+				},
+				{
+					id: 10,
+					sentence: "The problem is that they(M) are further away than he",
+					translation: "The problem ES QUE ELLOS are further away QUE ÉL",
+					data: [
+						{ phrase: "The problem" },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "they(M) are further",
+							translation: pron.subject.words.ellos,
+							reference: ref("serNoLocation"),
+							phraseTranslation: "ELLOS are further",
+						},
+						{ phrase: "away" },
+						{
+							phrase: "than",
+							translation: conj.words.que,
+							reference: ref("queAsThan"),
+						},
+						{ phrase: "he", translation: pron.subject.words.el },
+					],
+				},
+				{
+					id: 11,
+					sentence: "Are you the girl's friend(F)?",
+					translation: "ERES TÚ LA AMIGA DE LA CHICA?",
+					data: [
+						{
+							phrase: "Are",
+							translation: verb.words.ser.present.eres,
+						},
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{ phrase: "the", translation: artcl.words.la },
+						{
+							phrase: "girl's friend(F)?",
+							translation: [
+								artcl.words.la,
+								noun.words.amiga,
+								prep.words.de,
+								artcl.words.la,
+								noun.words.chica,
+							],
+							reference: ref("dePossessionContractions"),
+						},
+					],
+				},
+				{
+					id: 12,
+					sentence: "I didn't know that you were the same guy!",
+					translation: "YO NO knew QUE ERA EL same CHICO!",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "didn't know",
+							translation: advrb.words.no,
+							phraseTranslation: "NO knew",
+							reference: ref("noDoContractions"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you were",
+							translation: verb.words.ser.past.era,
+							noPronoun: true,
+							reference: ref("serIdentity", "usted3rdPerson", "ustedNoPronoun"),
+							isFormal: true,
+						},
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "same" },
+						{ phrase: "guy", translation: noun.words.chico },
+					],
+				},
+				{
+					id: 13,
+					sentence: "If they(F) are my friends, you(M) are my friend",
+					translation: "If ELLAS SON my AMIGAS, USTED ES my AMIGO",
+					data: [
+						{ phrase: "If" },
+						{ phrase: "they(F)", translation: pron.subject.words.ellas },
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.son,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "my" },
+						{ phrase: "friends", translation: asPlural(noun.words.amiga) },
+						{
+							phrase: "you(M)",
+							translation: pron.subject.words.usted,
+							isFormal: true,
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity", "usted3rdPerson"),
+						},
+						{ phrase: "my" },
+						{ phrase: "friend", translation: noun.words.amigo },
+					],
+				},
+				{
+					id: 14,
+					sentence: "We are the lady's daughters",
+					translation: "SOMOS LAS daughters DE LA lady",
+					data: [
+						{
+							phrase: "We are",
+							translation: verb.words.ser.present.somos,
+							noPronoun: true,
+						},
+						{
+							phrase: "the lady's daughters",
+							translation: [artcl.words.las, prep.words.de, artcl.words.la],
+							reference: ref("dePossessionContractions"),
+							phraseTranslation: "LAS daughters DE LA lady",
+						},
+					],
+				},
+				{
+					id: 15,
+					sentence: "What he saw was that you were my friend(M)",
+					translation: "What ÉL saw ERA QUE ERAS my AMIGO",
+					data: [
+						{ phrase: "What" },
+						{ phrase: "He", translation: pron.subject.words.el },
+						{ phrase: "saw" },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you were",
+							translation: verb.words.ser.past.eras,
+							noPronoun: true,
+						},
+						{ phrase: "my" },
+						{ phrase: "friend(M)", translation: noun.words.amigo },
+					],
+				},
+				{
+					id: 16,
+					sentence: "Why are we(F) the chosen ones?",
+					translation: "POR QUÉ SOMOS NOSOTRAS LAS chosen ones?",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							reference: ref("porQueWhy"),
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.somos,
+						},
+						{ phrase: "we(F)", translation: pron.subject.words.nosotras },
+						{ phrase: "the", translation: artcl.words.las },
+						{ phrase: "chosen ones" },
+					],
+				},
+				{
+					id: 17,
+					sentence: "Being a wooden boy was a unique experience",
+					translation: "SER UN CHICO DE wood ERA a unique experience",
+					data: [
+						{
+							phrase: "Being",
+							translation: verb.words.ser,
+							reference: ref("serBeing"),
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{
+							phrase: "wooden boy",
+							phraseTranslation: "CHICO DE wood",
+							translation: [noun.words.chico, prep.words.de],
+							reference: ref("deMaterial"),
+						},
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+						},
+						{
+							phrase: "a unique experience",
+						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "They're my friends(M) in order to be your friends(M)",
+					translation: "SON my AMIGOS PARA SER your AMIGOS",
+					data: [
+						{
+							phrase: "They're",
+							translation: verb.words.ser.present.son,
+							noPronoun: true,
+						},
+						{
+							phrase: "my",
+						},
+						{ phrase: "friends(M)", translation: asPlural(noun.words.amigo) },
+						{
+							phrase: "in order to be",
+							translation: [prep.words.para, verb.words.ser],
+							reference: ref("paraSer", "serBeing", "serIdentity"),
+						},
+						{ phrase: "your" },
+						{ phrase: "friends(M)", translation: asPlural(noun.words.amigo) },
+					],
+				},
+				{
+					id: 19,
+					sentence: "We(M) weren't customers, but you(M) were.",
+					translation: "NOSOTROS NO ÉRAMOS customers, but USTED LO ERA",
+					data: [
+						{
+							phrase: "We(M)",
+							translation: pron.subject.words.nosotros,
+						},
+						{
+							phrase: "weren't",
+							translation: [advrb.words.no, verb.words.ser.past.eramos],
+							reference: ref("noContractions", "serIdentity"),
+						},
+						{ phrase: "customers" },
+						{ phrase: "but" },
+						{
+							phrase: "you(M)",
+							translation: pron.subject.words.usted,
+							isFormal: true,
+						},
+						{
+							phrase: "were",
+							translation: [pron.attribute.words.lo, verb.words.ser.past.era],
+							reference: ref(
+								"attributeLo",
+								"serIdentity",
+								"usted3rdPerson",
+								"ustedDirectObject"
+							),
+						},
+					],
+				},
+				{
+					id: 20,
+					sentence: "They(M) said they saw you(M) at the theater",
+					translation: "ELLOS said QUE LO saw EN the theater",
+					data: [
+						{ phrase: "They(M)", translation: pron.subject.words.ellos },
+						{
+							phrase: "said they saw you(M)",
+							translation: [conj.words.que, pron.dObj.words.lo],
+							phraseTranslation: "said QUE LO saw",
+							isFormal: true,
+							reference: ref(
+								"queConnector",
+								"dObjPosition",
+								"ustedDirectObject"
+							),
+						},
+						{
+							phrase: "at",
+							translation: prep.words.en,
+						},
+						{ phrase: "the theater" },
+					],
+				},
 			],
 		},
 	],
