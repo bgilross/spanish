@@ -4786,6 +4786,13 @@ const spanishData: { lessons: Lesson[] } = {
 							reference: { "advrb.words.no": [6] },
 						},
 						{
+							phrase: "the",
+							translation: artcl.words.la,
+						},
+						{
+							phrase: "winner",
+						},
+						{
 							phrase: "he's",
 							phraseTranslation: "he ES",
 							translation: verb.words.ser.present.es,
@@ -4824,13 +4831,14 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "saw him",
 							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO saw",
+							reference: ref("dObjPosition"),
 						},
 					],
 				},
 				{
 					id: 9,
 					sentence: "No, HE is the man that did it",
-					translation: "NO, HE ES EL man QUE LO did",
+					translation: "NO, he ES EL man QUE LO did",
 					data: [
 						{
 							phrase: "No",
@@ -4839,7 +4847,7 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "HE is",
 							translation: verb.words.ser.present.es,
-							phraseTranslation: "HE ES",
+							phraseTranslation: "he ES",
 						},
 						{
 							phrase: "the",
@@ -4856,6 +4864,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "did it",
 							translation: pron.dObj.words.lo,
 							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
 						},
 					],
 				},
@@ -4867,9 +4876,9 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "Yes" },
 						{
 							phrase: "that's why",
-							translation: [prep.words.para, pron.demonstrative.words.eso],
+							translation: [prep.words.por, pron.demonstrative.words.eso],
 							phraseTranslation: "POR ESO",
-							reference: { "prep.words.para": [9] },
+							reference: ref("porEso"),
 						},
 						{
 							phrase: "you're",
@@ -4923,6 +4932,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "brought her",
 							translation: pron.dObj.words.la,
 							phraseTranslation: "LA brought",
+							reference: ref("dObjPosition"),
 						},
 						{
 							phrase: "so that",
@@ -4965,10 +4975,11 @@ const spanishData: { lessons: Lesson[] } = {
 						{
 							phrase: "than",
 							translation: conj.words.que,
+							reference: ref("queAsThan"),
 						},
 						{
 							phrase: "that",
-							translation: conj.words.que,
+							translation: pron.demonstrative.words.eso,
 						},
 					],
 				},
@@ -4990,14 +5001,14 @@ const spanishData: { lessons: Lesson[] } = {
 							translation: artcl.words.los,
 						},
 						{
-							phrase: "winners",
+							phrase: "winners(M)",
 						},
 					],
 				},
 				{
 					id: 16,
-					sentence: "She isn't my dog, HE is my dog.",
-					translation: "She NO ES my dog, HE ES my dog.",
+					sentence: "She isn't my dog, He is my dog.",
+					translation: "She NO ES my dog, He ES my dog.",
 					data: [
 						{
 							phrase: "She isn't",
@@ -5009,8 +5020,8 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "my dog",
 						},
 						{
-							phrase: "HE is",
-							phraseTranslation: "HE ES",
+							phrase: "He is",
+							phraseTranslation: "He ES",
 							translation: verb.words.ser.present.es,
 						},
 						{
@@ -5020,8 +5031,8 @@ const spanishData: { lessons: Lesson[] } = {
 				},
 				{
 					id: 17,
-					sentence: "Not them, WE are the winners(F).",
-					translation: "NO them, WE SOMOS LAS winners.",
+					sentence: "Not them, We are the winners(F).",
+					translation: "NO them, We SOMOS LAS winners.",
 					data: [
 						{
 							phrase: "Not",
@@ -5031,16 +5042,16 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "them",
 						},
 						{
-							phrase: "WE are",
+							phrase: "We are",
 							translation: verb.words.ser.present.somos,
-							phraseTranslation: "WE SOMOS",
+							phraseTranslation: "We SOMOS",
 						},
 						{
 							phrase: "the",
 							translation: artcl.words.las,
 						},
 						{
-							phrase: "winners",
+							phrase: "winners(F)",
 						},
 					],
 				},
@@ -5071,13 +5082,13 @@ const spanishData: { lessons: Lesson[] } = {
 				{
 					id: 19,
 					sentence: "How strange that he runs faster than her!",
-					translation: "QUE strange Que he runs faster QUE her!",
+					translation: "QUÉ strange QUE he runs faster QUE her!",
 					data: [
 						{
 							phrase: "How strange",
 							translation: pron.interrogative.words.que,
 							reference: { "pron.interrogative.words.que": [0] },
-							phraseTranslation: "QUE strange",
+							phraseTranslation: "QUÉ strange",
 						},
 						{
 							phrase: "that",
@@ -5105,6 +5116,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "I brought him",
 							translation: pron.dObj.words.lo,
 							phraseTranslation: "I LO brought",
+							reference: ref("dObjPosition"),
 						},
 						{
 							phrase: "because he wants",
@@ -5121,7 +5133,7 @@ const spanishData: { lessons: Lesson[] } = {
 					translation: "We NO SOMOS LAS teachers, they SON LAS teachers.",
 					data: [
 						{
-							phrase: "We are not",
+							phrase: "We(F) are not",
 							translation: [verb.words.ser.present.somos, advrb.words.no],
 							phraseTranslation: "We NO SOMOS",
 						},
@@ -5133,7 +5145,7 @@ const spanishData: { lessons: Lesson[] } = {
 							phrase: "teachers",
 						},
 						{
-							phrase: "they are",
+							phrase: "they(F) are",
 							translation: verb.words.ser.present.son,
 							phraseTranslation: "they SON",
 						},
