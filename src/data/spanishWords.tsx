@@ -445,7 +445,7 @@ const spanishWords: SpanishWords = {
 					"POR QUÉ' means 'Because of what', or 'Why'",
 					"POR can mean FOR in the sense of 'For a long time', or 'For a while'",
 					"POR and SER Conjugations, a form of SER before POR indicates it's meaning is related to Identity not Location. BY(Because of) the author, not AROUND the author.",
-					"POR means BY not just in the location sense, but in the 'created by' sense as well, 'the book is POR the author'",
+					"POR means BY not just in the location sense, but in the 'created by'/identity sense as well, 'the book is POR the author'",
 				],
 			},
 		},
