@@ -20,6 +20,8 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 		if (activeIndex == null) return
 		const el = inputRef.current
 		if (!el) return
+		// Don't focus when a modal overlay is open on mobile (keyboard would stay open)
+		if ((modalOpenRef.current as boolean) === true) return
 		const t = window.setTimeout(() => {
 			el.focus()
 			if (el.value) el.select()
@@ -86,6 +88,33 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 		setFlash(correct ? "green" : "red")
 	}
 
+	// Track whether a modal overlay is open so we avoid focusing the input
+	const modalOpenRef = React.useRef<boolean>(false)
+	React.useEffect(() => {
+		const onOpen = () => {
+			modalOpenRef.current = true
+			if (inputRef.current) inputRef.current.blur()
+		}
+		const onClose = () => {
+			modalOpenRef.current = false
+			// If there's an active section, restore focus when the modal closes
+			if (activeIndex != null) {
+				window.setTimeout(() => {
+					if (inputRef.current) {
+						inputRef.current.focus()
+						if (inputRef.current.value) inputRef.current.select()
+					}
+				}, 0)
+			}
+		}
+		window.addEventListener("app:modal-open", onOpen)
+		window.addEventListener("app:modal-close", onClose)
+		return () => {
+			window.removeEventListener("app:modal-open", onOpen)
+			window.removeEventListener("app:modal-close", onClose)
+		}
+	}, [activeIndex])
+
 	const info = (() => {
 		if (activeIndex == null) return null
 		const entry = sentence?.data[activeIndex]
@@ -119,7 +148,8 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 			<input
 				type="text"
 				ref={inputRef}
-				autoFocus
+				// autoFocus removed: focus is now managed programmatically and will
+				// avoid focusing when modal overlays are open (prevents keyboard staying open on mobile)
 				className="px-3 py-2 border rounded min-w-[24ch] text-lg sm:text-xl bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
 				placeholder={
 					activeIndex == null ? "All parts translated" : "Type answer"

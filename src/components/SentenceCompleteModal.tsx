@@ -19,6 +19,14 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 	onClose,
 	onNext,
 }) => {
+	// Emit global modal open/close events so inputs can blur on modal open
+	React.useEffect(() => {
+		if (!open) return
+		window.dispatchEvent(new Event("app:modal-open"))
+		return () => {
+			window.dispatchEvent(new Event("app:modal-close"))
+		}
+	}, [open])
 	if (!open) return null
 
 	// Helper that returns resolved refs keys/info for a section (safe runtime checks)

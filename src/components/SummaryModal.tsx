@@ -51,6 +51,14 @@ const SummaryModal: React.FC<Props> = ({
 	summary,
 	saveStatus,
 }) => {
+	// Emit global modal open/close events so other UI (like input) can react
+	React.useEffect(() => {
+		if (!open) return
+		window.dispatchEvent(new Event("app:modal-open"))
+		return () => {
+			window.dispatchEvent(new Event("app:modal-close"))
+		}
+	}, [open])
 	const getLessonSummary = useDataStore((s) => s.getLessonSummary)
 	const markSubmissionCorrect = useDataStore((s) => s.markSubmissionCorrect)
 	const getMixupStats = useDataStore((s) => s.getMixupStats)
