@@ -728,7 +728,10 @@ const MainPage = () => {
 											type="checkbox"
 											checked={reportForm.wrongTranslation}
 											onChange={(e) =>
-												setReportForm({ ...reportForm, wrongTranslation: e.target.checked })
+												setReportForm({
+													...reportForm,
+													wrongTranslation: e.target.checked,
+												})
 											}
 										/>
 										<span className="text-sm">Wrong translation</span>
@@ -737,7 +740,12 @@ const MainPage = () => {
 										<input
 											type="checkbox"
 											checked={reportForm.other}
-											onChange={(e) => setReportForm({ ...reportForm, other: e.target.checked })}
+											onChange={(e) =>
+												setReportForm({
+													...reportForm,
+													other: e.target.checked,
+												})
+											}
 										/>
 										<span className="text-sm">Other</span>
 									</label>
