@@ -300,6 +300,8 @@ const MainPage = () => {
 		typo: false,
 		missingReference: false,
 		incorrectReference: false,
+		wrongTranslation: false,
+		other: false,
 		notes: "",
 	})
 
@@ -309,6 +311,8 @@ const MainPage = () => {
 			typo: false,
 			missingReference: false,
 			incorrectReference: false,
+			wrongTranslation: false,
+			other: false,
 			notes: "",
 		})
 		setShowReportModal(true)
@@ -318,14 +322,25 @@ const MainPage = () => {
 		if (!currentLesson) return
 		setReportSaving(true)
 		try {
+			// Prefer explicit reporter name from form; fall back to logged-in user name/email
+			const inferredName =
+				reportForm.reporterName ||
+				session?.user?.name ||
+				session?.user?.email ||
+				undefined
 			const payload = {
 				userId: typeof userId === "string" ? userId : undefined,
-				reporterName: reportForm.reporterName || undefined,
+				reporterName: inferredName,
 				lessonNumber: currentLesson.lesson,
-				sentenceIndex: currentSentenceIndex,
+				sentenceId:
+					typeof currentSentenceObject?.id === "number"
+						? currentSentenceObject.id
+						: undefined,
 				typo: !!reportForm.typo,
 				missingReference: !!reportForm.missingReference,
 				incorrectReference: !!reportForm.incorrectReference,
+				wrongTranslation: !!reportForm.wrongTranslation,
+				other: !!reportForm.other,
 				notes: reportForm.notes || undefined,
 			}
 			const res = await fetch("/api/issues", {
@@ -707,6 +722,24 @@ const MainPage = () => {
 											}
 										/>
 										<span className="text-sm">Incorrect reference</span>
+									</label>
+									<label className="inline-flex items-center gap-2">
+										<input
+											type="checkbox"
+											checked={reportForm.wrongTranslation}
+											onChange={(e) =>
+												setReportForm({ ...reportForm, wrongTranslation: e.target.checked })
+											}
+										/>
+										<span className="text-sm">Wrong translation</span>
+									</label>
+									<label className="inline-flex items-center gap-2">
+										<input
+											type="checkbox"
+											checked={reportForm.other}
+											onChange={(e) => setReportForm({ ...reportForm, other: e.target.checked })}
+										/>
+										<span className="text-sm">Other</span>
 									</label>
 								</div>
 								<label className="block">

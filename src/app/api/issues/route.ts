@@ -20,6 +20,9 @@ export async function POST(req: NextRequest) {
 			reporterName,
 			lessonNumber,
 			sentenceIndex,
+			sentenceId,
+			wrongTranslation,
+			other,
 			typo,
 			missingReference,
 			incorrectReference,
@@ -32,21 +35,32 @@ export async function POST(req: NextRequest) {
 				{ status: 400 }
 			)
 		}
-		if (typeof sentenceIndex !== "number") {
+		// Accept sentenceId (preferred) or sentenceIndex for backward compatibility
+		if (typeof sentenceId !== "number" && typeof sentenceIndex !== "number") {
 			return NextResponse.json(
-				{ error: "sentenceIndex must be number" },
+				{ error: "sentenceId or sentenceIndex must be a number" },
 				{ status: 400 }
 			)
 		}
 
 		// Try saving via prisma if available and migrations are applied
 		try {
+			let resolvedReporterName = reporterName
 			if (userId && typeof userId === "string") {
+				// Ensure the user exists and try to resolve a display name if none provided
 				await prisma.user.upsert({
 					where: { id: userId },
 					update: {},
 					create: { id: userId },
 				})
+				try {
+					const u = await prisma.user.findUnique({ where: { id: userId } })
+					if (u && !resolvedReporterName) {
+						resolvedReporterName = u.name ?? u.email ?? resolvedReporterName
+					}
+				} catch (uErr) {
+					console.warn("Failed to resolve user for reporterName", uErr)
+				}
 			}
 			// Use a cast here because the generated Prisma client types are not being picked up by the TS checker
 			// in this environment; at runtime the delegate exists. This is a small pragmatic workaround.
@@ -54,13 +68,25 @@ export async function POST(req: NextRequest) {
 			const issue = await (prisma as any).issue.create({
 				data: {
 					userId: typeof userId === "string" ? userId : undefined,
-					reporterName: reporterName ? String(reporterName) : undefined,
+					reporterName: resolvedReporterName
+						? String(resolvedReporterName)
+						: undefined,
 					lessonNumber: Number(lessonNumber),
-					sentenceIndex: Number(sentenceIndex),
+					// Save sentenceId if provided, otherwise save the legacy sentenceIndex
+					sentenceIndex:
+						typeof sentenceId === "number"
+							? Number(sentenceId)
+							: Number(sentenceIndex),
 					typo: !!typo,
 					missingReference: !!missingReference,
 					incorrectReference: !!incorrectReference,
-					notes: notes ? String(notes) : undefined,
+					notes: [
+						notes ? String(notes) : undefined,
+						wrongTranslation ? "flag:wrongTranslation" : undefined,
+						other ? "flag:other" : undefined,
+					]
+						.filter(Boolean)
+						.join("\n"),
 				},
 			})
 			return NextResponse.json({ issue }, { status: 201 })
@@ -78,7 +104,15 @@ export async function POST(req: NextRequest) {
 					userId: typeof userId === "string" ? userId : null,
 					reporterName: reporterName || null,
 					lessonNumber: Number(lessonNumber),
-					sentenceIndex: Number(sentenceIndex),
+					// include sentenceId when present for modern reports
+					sentenceId:
+						typeof sentenceId === "number" ? Number(sentenceId) : undefined,
+					sentenceIndex:
+						typeof sentenceIndex === "number"
+							? Number(sentenceIndex)
+							: undefined,
+					wrongTranslation: !!wrongTranslation,
+					other: !!other,
 					typo: !!typo,
 					missingReference: !!missingReference,
 					incorrectReference: !!incorrectReference,

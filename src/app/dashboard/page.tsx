@@ -56,6 +56,13 @@ export default function DashboardPage() {
 						>
 							<span aria-hidden>←</span> Back to Lessons
 						</Link>
+						<Link
+							href="/dashboard/reports"
+							className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded border border-zinc-600 hover:bg-zinc-800 transition-colors"
+							prefetch={false}
+						>
+							Reports
+						</Link>
 					</div>
 				</div>
 				<ProgressDashboard />
