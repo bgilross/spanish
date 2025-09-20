@@ -553,7 +553,7 @@ const spanishData: { lessons: Lesson[] } = {
 					data: [
 						{ phrase: "She" },
 						{
-							phrase: "Can't be",
+							phrase: "can't be",
 							translation: advrb.words.no,
 							phraseTranslation: "NO can be",
 							reference: { "advrb.words.no": [7] },
@@ -9220,6 +9220,27 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "the theater" },
 					],
 				},
+			],
+		},
+		{
+			lesson: 22,
+			name: "Lesson 22",
+			details:
+				"New Verb! ESTAR the other form of TO BE, and it's contrast with SER(to be)",
+			info: [
+				"So far there have been a lot of 'to be' situations where we haven't been allowed to use SER. Where 'is', 'were', and 'am' etc. didn't translate to ES, ERAN, etc.",
+				"The name of the other verb is ESTAR, which is it's inifinitve form, and it's another translation of the English verb 'to be'",
+				"This alternate form of 'to be': ESTAR, is used specifically in the sense of 'HOW' or 'WHERE' something is. Not WHAT it is.",
+				"SER = What something is. ESTAR = Where, or How something is",
+				"It should be fairly easy to start thinking of places that ESTAR can be used, because you would use it in a LOT of the places where we HAVEN'T been translating 'to be' as SER",
+				"The easiest way to use ESTAR is to simply refer to a place: 'That is here'. Now this wouldn't use SER because we aren't describing 'What' that is, but 'Where' that is.",
+				"So 'That is here' is 'ESO ESTÁ here' not 'ESO ES here'",
+				"ESTÁ is the third person singular conjugation of ESTAR, here are the rest:",
+				"ESTOY (I am), ESTÁS (you are), ESTÁ (he/she/it is), ESTAMOS (we are), ESTÁN (they are)",
+				"Think abut te sentence 'That is here' again. Let's talk about the word coming after 'is' which is 'here'. 'Here' isn't a noun, it's an adverb.",
+				"As a general rule, a conjugation of Estar will never be directly followed by a noun, but is very often followed by adverbs.",
+				"Another common way to use ESTAR is by following it with phrases that start with prepositions, specificlly preposition referring to a location",
+				"Examples includ: 'That is at the park', 'That is with my friends', 'That is by the path' but the easiest way is simply using the word 'here' which is aquí",
 			],
 		},
 	],

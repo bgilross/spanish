@@ -488,6 +488,15 @@ const spanishWords: SpanishWords = {
 				audio:
 					"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=no&tl=es&total=1&idx=0&textlen=3",
 			},
+			aqui: {
+				id: "advrb.aqui",
+				translations: ["here"],
+				word: "aquí",
+				pos: "Adverb",
+				info: [],
+				audio:
+					"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=aquí&tl=es&total=1&idx=0&textlen=3",
+			},
 		},
 	},
 	noun: {
@@ -557,6 +566,63 @@ const spanishWords: SpanishWords = {
 		],
 
 		words: {
+			estar: {
+				id: "verb.estar",
+				translations: ["to be", "being"],
+				word: "estar",
+				pos: "Verb",
+				info: [
+					"This alternate form of 'to be': ESTAR, is used specifically in the sense of 'HOW' or 'WHERE' something is. Not WHAT it is.",
+				],
+				present: {
+					estoy: {
+						id: "verb.estar.present.estoy",
+						word: "estoy",
+						translations: ["am", "I am"],
+						pos: "Verb",
+						tense: "Present",
+						person: "first",
+						info: [],
+					},
+					estas: {
+						id: "verb.estar.present.estas",
+						word: "estás",
+						translations: ["are", "you are"],
+						pos: "Verb",
+						tense: "Present",
+						person: "second",
+						info: [],
+					},
+					esta: {
+						id: "verb.estar.present.esta",
+						word: "está",
+						translations: ["is", "he/she/it is"],
+						pos: "Verb",
+						tense: "Present",
+						person: "third",
+						info: [],
+					},
+					estamos: {
+						id: "verb.estar.present.estamos",
+						word: "estamos",
+						translations: ["are", "we are"],
+						pos: "Verb",
+						tense: "Present",
+						person: "first plural",
+						info: [],
+					},
+					estan: {
+						id: "verb.estar.present.estan",
+						word: "están",
+						translations: ["are", "they are"],
+						pos: "Verb",
+						tense: "Present",
+						person: "third plural",
+						info: [],
+					},
+				},
+				past: {},
+			},
 			ser: {
 				id: "verb.ser",
 				translations: ["to be", "being"],
