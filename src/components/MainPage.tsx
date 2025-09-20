@@ -14,6 +14,7 @@ import SummaryModal from "@/components/SummaryModal"
 import LessonIntroModal from "@/components/LessonIntroModal"
 import AdminPanel from "@/components/AdminPanel"
 import WordBankModal from "@/components/WordBankModal"
+import ReportIssueModal from "@/components/ReportIssueModal"
 import OriginalSentenceLine from "./OriginalSentenceLine"
 import { APP_VERSION } from "@/lib/version"
 import ImmediateFeedbackModal from "@/components/ImmediateFeedbackModal"
@@ -251,77 +252,6 @@ const MainPage = () => {
 
 	// Report issue modal state
 	const [showReportModal, setShowReportModal] = React.useState(false)
-	const [reportSaving, setReportSaving] = React.useState(false)
-	const [reportForm, setReportForm] = React.useState({
-		reporterName: "",
-		typo: false,
-		missingReference: false,
-		incorrectReference: false,
-		wrongTranslation: false,
-		wrongGender: false,
-		other: false,
-		notes: "",
-	})
-
-	const openReportModal = () => {
-		setReportForm({
-			reporterName: "",
-			typo: false,
-			missingReference: false,
-			incorrectReference: false,
-			wrongTranslation: false,
-			wrongGender: false,
-			other: false,
-			notes: "",
-		})
-		setShowReportModal(true)
-	}
-
-	const submitReport = async () => {
-		if (!currentLesson) return
-		setReportSaving(true)
-		try {
-			// Prefer explicit reporter name from form; fall back to logged-in user name/email
-			const inferredName =
-				reportForm.reporterName ||
-				session?.user?.name ||
-				session?.user?.email ||
-				undefined
-			const payload = {
-				userId: typeof userId === "string" ? userId : undefined,
-				reporterName: inferredName,
-				lessonNumber: currentLesson.lesson,
-				sentenceId:
-					typeof currentSentenceObject?.id === "number"
-						? currentSentenceObject.id
-						: undefined,
-				typo: !!reportForm.typo,
-				missingReference: !!reportForm.missingReference,
-				incorrectReference: !!reportForm.incorrectReference,
-				wrongTranslation: !!reportForm.wrongTranslation,
-				other: !!reportForm.other,
-				notes: reportForm.notes || undefined,
-				wrongGender: !!reportForm.wrongGender,
-			}
-			const res = await fetch("/api/issues", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload),
-			})
-			if (!res.ok) {
-				const txt = await res.text().catch(() => "")
-				throw new Error(`Request failed ${res.status}: ${txt}`)
-			}
-			await res.json()
-			setShowReportModal(false)
-			alert("Report submitted — thanks!")
-		} catch (e) {
-			console.error("Report save failed", e)
-			alert("Failed to submit report")
-		} finally {
-			setReportSaving(false)
-		}
-	}
 
 	return (
 		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-20">
@@ -566,7 +496,7 @@ const MainPage = () => {
 								<div>
 									<button
 										className="px-3 py-2 text-sm rounded border border-zinc-600 hover:bg-zinc-800"
-										onClick={() => openReportModal()}
+										onClick={() => setShowReportModal(true)}
 									>
 										Report issue
 									</button>
@@ -664,123 +594,14 @@ const MainPage = () => {
 					}}
 				/>
 
-				{/* Report issue modal */}
-				{showReportModal && (
-					<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-						<div className="w-full max-w-lg bg-zinc-950 border border-zinc-700 rounded-lg p-6">
-							<h2 className="text-lg font-semibold mb-3">Report an issue</h2>
-							<div className="space-y-2 text-sm text-zinc-300">
-								<label className="block">
-									<span className="text-xs text-zinc-400">
-										Your name (optional)
-									</span>
-									<input
-										value={reportForm.reporterName}
-										onChange={(e) =>
-											setReportForm({
-												...reportForm,
-												reporterName: e.target.value,
-											})
-										}
-										className="mt-1 w-full bg-zinc-900 border border-zinc-700 px-2 py-1 rounded text-sm"
-									/>
-								</label>
-								<div className="flex gap-4">
-									<label className="inline-flex items-center gap-2">
-										<input
-											type="checkbox"
-											checked={reportForm.typo}
-											onChange={(e) =>
-												setReportForm({ ...reportForm, typo: e.target.checked })
-											}
-										/>
-										<span className="text-sm">Typo</span>
-									</label>
-									<label className="inline-flex items-center gap-2">
-										<input
-											type="checkbox"
-											checked={reportForm.missingReference}
-											onChange={(e) =>
-												setReportForm({
-													...reportForm,
-													missingReference: e.target.checked,
-												})
-											}
-										/>
-										<span className="text-sm">Missing reference</span>
-									</label>
-									<label className="inline-flex items-center gap-2">
-										<input
-											type="checkbox"
-											checked={reportForm.incorrectReference}
-											onChange={(e) =>
-												setReportForm({
-													...reportForm,
-													incorrectReference: e.target.checked,
-												})
-											}
-										/>
-										<span className="text-sm">Incorrect reference</span>
-									</label>
-									<label className="inline-flex items-center gap-2">
-										<input
-											type="checkbox"
-											checked={reportForm.wrongTranslation}
-											onChange={(e) =>
-												setReportForm({
-													...reportForm,
-													wrongTranslation: e.target.checked,
-												})
-											}
-										/>
-										<span className="text-sm">Wrong translation</span>
-									</label>
-									<label className="inline-flex items-center gap-2">
-										<input
-											type="checkbox"
-											checked={reportForm.other}
-											onChange={(e) =>
-												setReportForm({
-													...reportForm,
-													other: e.target.checked,
-												})
-											}
-										/>
-										<span className="text-sm">Other</span>
-									</label>
-								</div>
-								<label className="block">
-									<span className="text-xs text-zinc-400">
-										Notes (optional)
-									</span>
-									<textarea
-										value={reportForm.notes}
-										onChange={(e) =>
-											setReportForm({ ...reportForm, notes: e.target.value })
-										}
-										className="mt-1 w-full bg-zinc-900 border border-zinc-700 px-2 py-1 rounded text-sm"
-										rows={4}
-									/>
-								</label>
-								<div className="flex items-center gap-3 justify-end">
-									<button
-										onClick={() => setShowReportModal(false)}
-										className="px-3 py-1.5 rounded border border-zinc-700"
-									>
-										Cancel
-									</button>
-									<button
-										onClick={submitReport}
-										disabled={reportSaving}
-										className="px-3 py-1.5 rounded bg-emerald-600 text-black font-medium"
-									>
-										{reportSaving ? "Submitting…" : "Submit report"}
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				)}
+				{/* Report issue modal (extracted) */}
+				<ReportIssueModal
+					open={showReportModal}
+					onClose={() => setShowReportModal(false)}
+					lesson={currentLesson}
+					sentence={currentSentenceObject}
+					userId={userId}
+				/>
 			</div>
 		</div>
 	)
