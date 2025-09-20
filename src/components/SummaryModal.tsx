@@ -43,6 +43,7 @@ interface Props {
 		message?: string
 		id?: string
 	}
+	onNextLesson?: () => void
 }
 
 const SummaryModal: React.FC<Props> = ({
@@ -50,6 +51,7 @@ const SummaryModal: React.FC<Props> = ({
 	onClose,
 	summary,
 	saveStatus,
+	onNextLesson,
 }) => {
 	// Emit global modal open/close events so other UI (like input) can react
 	React.useEffect(() => {
@@ -129,6 +131,14 @@ const SummaryModal: React.FC<Props> = ({
 						>
 							Close
 						</button>
+						{onNextLesson && (
+							<button
+								onClick={onNextLesson}
+								className="text-[10px] px-2 py-0.5 rounded border border-zinc-600 hover:bg-zinc-800"
+							>
+								Next lesson
+							</button>
+						)}
 					</div>
 				</div>
 

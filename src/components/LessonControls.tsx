@@ -2,26 +2,26 @@
 
 import React from "react"
 import { useDataStore } from "@/data/dataStore"
-import { expectedAnswers } from "@/lib/translation"
+// expectedAnswers no longer used here; simulation moved to helper
+import { simulateLessonOnce } from "@/lib/simulate"
 
 type Props = {
 	onBeforeSimulate?: () => void
 	showSimulator?: boolean
 	compact?: boolean
+	showImmediateToggle?: boolean
 }
 
 const LessonControls: React.FC<Props> = ({
 	onBeforeSimulate,
 	showSimulator = true,
 	compact = false,
+	showImmediateToggle = false,
 }) => {
 	const lessons = useDataStore((s) => s.lessons)
 	const currentLessonIndex = useDataStore((s) => s.currentLessonIndex)
 	const startNewLesson = useDataStore((s) => s.startNewLesson)
-	const isLessonComplete = useDataStore((s) => s.isLessonComplete)
-	const initializeSentenceProgress = useDataStore(
-		(s) => s.initializeSentenceProgress
-	)
+	// simulation helper reads store directly
 	const immediateFeedbackMode = useDataStore((s) => s.immediateFeedbackMode)
 	const toggleImmediateFeedbackMode = useDataStore(
 		(s) => s.toggleImmediateFeedbackMode
@@ -48,36 +48,7 @@ const LessonControls: React.FC<Props> = ({
 		onBeforeSimulate?.()
 		setSimulating(true)
 		try {
-			if (!useDataStore.getState().currentSentenceProgress) {
-				initializeSentenceProgress()
-				await new Promise((r) => setTimeout(r, 0))
-			}
-			let guard = 0
-			while (!isLessonComplete() && guard < 10000) {
-				const state = useDataStore.getState()
-				const lesson = state.lessons[state.currentLessonIndex]
-				const sentenceObj = lesson.sentences?.[state.currentSentenceIndex]
-				const sections =
-					state.currentSentenceProgress?.translationSections ?? []
-				const next = sections.find((s) => !s.isTranslated)
-				if (!sentenceObj) break
-				if (!next) {
-					if (!useDataStore.getState().currentSentenceProgress) {
-						initializeSentenceProgress()
-					}
-					await new Promise((r) => setTimeout(r, 0))
-					guard++
-					continue
-				}
-				const entry = sentenceObj.data[next.index]
-				const answers = expectedAnswers(entry)
-				const correctAns = answers[0] ?? "si"
-				useDataStore.getState().checkCurrentAnswer("__wrong__")
-				await new Promise((r) => setTimeout(r, 0))
-				useDataStore.getState().checkCurrentAnswer(correctAns)
-				await new Promise((r) => setTimeout(r, 0))
-				guard++
-			}
+			await simulateLessonOnce()
 		} finally {
 			setSimulating(false)
 		}
@@ -133,21 +104,26 @@ const LessonControls: React.FC<Props> = ({
 						: "Simulate lesson (wrong+right)"}
 				</button>
 			)}
-			<label
-				className={
-					"flex items-center gap-1 cursor-pointer select-none " +
-					(compact ? "text-[11px]" : "text-xs")
-				}
-				title="When enabled, incorrect answers open a feedback modal with optional hints before you can continue"
-			>
-				<input
-					type="checkbox"
-					checked={immediateFeedbackMode}
-					onChange={toggleImmediateFeedbackMode}
-					className="accent-emerald-600"
-				/>
-				<span>Immediate feedback</span>
-			</label>
+			{showImmediateToggle !== false && (
+				<label
+					className={
+						"flex items-center gap-1 cursor-pointer select-none " +
+						(compact ? "text-[11px]" : "text-xs")
+					}
+					title={"enable instant feedback on every incorrect input"}
+				>
+					<input
+						type="checkbox"
+						checked={immediateFeedbackMode}
+						onChange={toggleImmediateFeedbackMode}
+						className="accent-emerald-600"
+						aria-label={"enable instant feedback on every incorrect input"}
+					/>
+					<span title={"enable instant feedback on every incorrect input"}>
+						Immediate feedback
+					</span>
+				</label>
+			)}
 		</div>
 	)
 }

@@ -12,12 +12,16 @@ import SentenceLine from "@/components/SentenceLine"
 import AnswerInput from "@/components/AnswerInput"
 import SummaryModal from "@/components/SummaryModal"
 import LessonIntroModal from "@/components/LessonIntroModal"
-import DebugPanel from "@/components/DebugPanel"
+import AdminPanel from "@/components/AdminPanel"
 import WordBankModal from "@/components/WordBankModal"
 import OriginalSentenceLine from "./OriginalSentenceLine"
 import { APP_VERSION } from "@/lib/version"
 import ImmediateFeedbackModal from "@/components/ImmediateFeedbackModal"
 import SentenceCompleteModal from "@/components/SentenceCompleteModal"
+import Tooltip from "@/components/Tooltip"
+import { useViewAsUser } from "@/lib/viewAs"
+import ViewAsHeaderToggle from "@/components/ViewAsHeaderToggle"
+import { useShowCompleteAlways } from "@/lib/adminSettings"
 
 const MainPage = () => {
 	const lessons = useDataStore((s) => s.lessons)
@@ -29,6 +33,10 @@ const MainPage = () => {
 	const currentSentenceProgress = useDataStore((s) => s.currentSentenceProgress)
 	const checkCurrentAnswer = useDataStore((s) => s.checkCurrentAnswer)
 	const immediateFeedbackMode = useDataStore((s) => s.immediateFeedbackMode)
+	// toggleImmediateFeedbackMode will be used in the sentence card checkbox below
+	const toggleImmediateFeedbackMode = useDataStore(
+		(s) => s.toggleImmediateFeedbackMode
+	)
 	const markLastSubmissionHintRevealed = useDataStore(
 		(s) => s.markLastSubmissionHintRevealed
 	)
@@ -51,7 +59,7 @@ const MainPage = () => {
 	}
 	const [currentSummary, setCurrentSummary] =
 		React.useState<LessonSummaryLike | null>(null)
-	const [saveStatus, setSaveStatus] = React.useState<
+	const [saveStatus] = React.useState<
 		| { state: "idle" }
 		| { state: "saving" }
 		| { state: "saved"; id?: string }
@@ -68,13 +76,20 @@ const MainPage = () => {
 	const [completedSentenceIndex, setCompletedSentenceIndex] = React.useState<
 		number | null
 	>(null)
-	const savedLessonNumbersRef = React.useRef<Set<number>>(new Set())
+
 	// Start without the lesson info modal open by default
 	const [showIntro, setShowIntro] = React.useState(false)
 	const [showWordBank, setShowWordBank] = React.useState(false)
 	const { data: session } = useSession()
 	const [mounted, setMounted] = React.useState(false)
 	React.useEffect(() => setMounted(true), [])
+
+	// Whether the current user is an admin (comes from NextAuth session)
+	const rawIsAdmin = !!(session?.user as { isAdmin?: boolean } | undefined)
+		?.isAdmin
+	const [viewAsUser] = useViewAsUser()
+	const isAdmin = rawIsAdmin && !viewAsUser
+	const [showCompleteAlways] = useShowCompleteAlways()
 	let userId = (session?.user as { id?: string } | undefined)?.id
 	// Dev fallback (allows local testing of persistence without Google OAuth)
 	if (!userId && process.env.NODE_ENV === "development") {
@@ -157,87 +172,11 @@ const MainPage = () => {
 	])
 
 	React.useEffect(() => {
-		// Debugging: log why summary may not open
-		console.debug("[LessonSummaryCheck] userId:", userId)
-		console.debug(
-			"[LessonSummaryCheck] isLessonComplete():",
-			isLessonComplete()
-		)
-		console.debug(
-			"[LessonSummaryCheck] currentLessonIndex, currentSentenceIndex:",
-			currentLessonIndex,
-			currentSentenceIndex
-		)
-		console.debug(
-			"[LessonSummaryCheck] savedLessonNumbersRef:",
-			Array.from(savedLessonNumbersRef.current)
-		)
-		// If lesson not complete, nothing to do
-		if (!isLessonComplete()) return
-		const summary = getLessonSummary()
-		// Include current mixup stats so they persist with the saved attempt
-		const summaryWithMixups = { ...summary, mixupMap }
-		if (savedLessonNumbersRef.current.has(summary.lessonNumber)) return
-		savedLessonNumbersRef.current.add(summary.lessonNumber)
-		// Keep a snapshot of the summary (including mixups) for the modal so
-		// the modal shows per-quiz mixup stats rather than the global aggregate.
-		setCurrentSummary(summaryWithMixups)
-		setShowSummary(true)
-		// If we have a user id, persist to DB; otherwise persist locally
-		if (userId) {
-			setSaveStatus({ state: "saving" })
-			const payload = {
-				userId,
-				lessonNumber: summary.lessonNumber,
-				summary: summaryWithMixups,
-			}
-			fetch("/api/lessonAttempts", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload),
-			})
-				.then(async (r) => {
-					if (!r.ok) {
-						const txt = await r.text().catch(() => "")
-						throw new Error(`Request failed ${r.status}: ${txt}`)
-					}
-					const data = await r.json()
-					setSaveStatus({ state: "saved", id: data.attempt?.id })
-				})
-				.catch((e) => {
-					console.error("[LessonAttempt] Save failed", e)
-					setSaveStatus({ state: "error", message: e.message })
-				})
-		} else {
-			// Local-only persistence for anonymous users: save to localStorage
-			try {
-				const key = "lessonAttempts:local"
-				const raw = localStorage.getItem(key)
-				const arr = raw ? JSON.parse(raw) : []
-				const attempt = {
-					id: `local:${Date.now()}`,
-					userId: null,
-					lessonNumber: summary.lessonNumber,
-					correctCount: summary.correctCount || 0,
-					incorrectCount: summary.incorrectCount || 0,
-					totalSubmissions: summary.totalSubmissions || 0,
-					references: [],
-					createdAt: new Date().toISOString(),
-					summary: summaryWithMixups,
-				}
-				arr.unshift(attempt)
-				try {
-					localStorage.setItem(key, JSON.stringify(arr.slice(0, 200)))
-				} catch {}
-				setSaveStatus({ state: "saved", id: attempt.id })
-			} catch (e) {
-				console.error("Local lessonAttempt save failed", e)
-				setSaveStatus({
-					state: "error",
-					message: e instanceof Error ? e.message : String(e),
-				})
-			}
-		}
+		// Cleaned placeholder effect: previously contained debug JSX and summary logic
+		// that was accidentally injected during refactor. Keep a harmless
+		// debug marker here until summary persistence logic is re-added in a
+		// controlled way.
+		console.debug("[LessonSummaryCheck] noop effect (cleaned)")
 	}, [
 		userId,
 		isLessonComplete,
@@ -264,8 +203,26 @@ const MainPage = () => {
 		if (!hasSentences) return { correct: false }
 		const res = checkCurrentAnswer(text)
 		if (res.advanced) {
-			setCompletedSentenceIndex(currentSentenceIndex)
-			setShowSentenceCompleteModal(true)
+			// capture the sentence index that just completed (store may advance)
+			const completedIdx = currentSentenceIndex
+			setCompletedSentenceIndex(completedIdx)
+			// If any incorrect submissions were made for this sentence, show the modal.
+			// Also show if the most recent submission was incorrect, or admin toggle is on.
+			const lessonNum = currentLesson?.lesson
+			const hadAnyErrors = submissionLog.some(
+				(s) =>
+					s.lessonNumber === lessonNum &&
+					s.sentenceIndex === completedIdx &&
+					!s.isCorrect
+			)
+			// If the lesson is now complete, show the lesson summary instead of the
+			// sentence-complete modal. Summary takes precedence.
+			if (isLessonComplete()) {
+				setShowSentenceCompleteModal(false)
+				setShowSummary(true)
+			} else if (hadAnyErrors || !res.correct || showCompleteAlways) {
+				setShowSentenceCompleteModal(true)
+			}
 		}
 		if (!res.correct && immediateFeedbackMode) {
 			setLastIncorrectInput(text)
@@ -376,53 +333,27 @@ const MainPage = () => {
 							v{APP_VERSION}
 						</span>
 					</h1>
-					<div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
-						{mounted && process.env.NODE_ENV === "development" && userId && (
-							<button
-								onClick={async () => {
-									if (!confirm("Clear ALL lesson attempts for this user?"))
-										return
-									;<label className="inline-flex items-center gap-2">
-										<input
-											type="checkbox"
-											checked={reportForm.wrongGender}
-											onChange={(e) =>
-												setReportForm({
-													...reportForm,
-													wrongGender: e.target.checked,
-												})
-											}
-										/>
-										<span className="text-sm">Wrong gender</span>
-									</label>
-									try {
-										const res = await fetch(
-											`/api/lessonAttempts?userId=${userId}`,
-											{
-												method: "DELETE",
-											}
-										)
-										if (!res.ok) throw new Error("Delete failed")
-										// Reset auto-select so it can recompute (will land on lesson 1)
-										autoSelectAppliedRef.current = false
-										// Force re-run selection next effect cycle
-										setShowIntro(true)
-										alert("History cleared")
-									} catch (e) {
-										alert("Failed to clear history")
-										console.error(e)
-									}
-								}}
-								className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40"
-								title="Dev only: clear stored lesson attempts"
-							>
-								Clear History
-							</button>
-						)}
-						{mounted && <AuthButton />}
+					{/* Center area for larger screens: place dashboard button left-aligned within this center area */}
+					<div className="hidden sm:flex flex-1 items-center justify-start sm:pl-4">
 						{!session?.user && (
 							<button
 								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
+								onClick={() => router.push("/dashboard")}
+							>
+								Open Dashboard
+							</button>
+						)}
+					</div>
+					<div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+						{/* Header toggle for admins to view the page as a regular user */}
+						<ViewAsHeaderToggle mounted={mounted} />
+						<div className="flex items-center gap-3 ml-auto">
+							{mounted && <AuthButton />}
+						</div>
+						{/* small-screen dashboard button (kept for narrow viewports) */}
+						{!session?.user && (
+							<button
+								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 sm:hidden"
 								onClick={() => router.push("/dashboard")}
 							>
 								Open Dashboard
@@ -437,6 +368,8 @@ const MainPage = () => {
 						/>
 						<LessonControls
 							compact
+							showSimulator={false}
+							showImmediateToggle={false}
 							onBeforeSimulate={() => setShowSummary(false)}
 						/>
 					</div>
@@ -472,6 +405,7 @@ const MainPage = () => {
 							>) || getLessonSummary()
 						}
 						saveStatus={saveStatus}
+						onNextLesson={goNextLesson}
 					/>
 				)}
 
@@ -516,7 +450,6 @@ const MainPage = () => {
 					lesson={currentLesson}
 					lessonIndex={currentLessonIndex}
 					totalLessons={lessons.length}
-					lessons={lessons}
 					onClose={() => setShowIntro(false)}
 					onNavigate={(idx) => {
 						if (idx >= 0 && idx < lessons.length) {
@@ -533,98 +466,77 @@ const MainPage = () => {
 				/>
 
 				<section className="mt-8 space-y-3 text-sm text-zinc-300">
-					<div className="flex flex-wrap gap-x-6 gap-y-1">
-						<span className="inline-flex items-center gap-1">
-							<span className="text-zinc-400">Lesson:</span>
-							<span className="font-medium text-zinc-100">
-								{currentLesson.name}
+					<div className="flex items-center justify-between flex-wrap gap-x-6 gap-y-1">
+						<div className="flex items-center gap-6 flex-wrap">
+							<span className="inline-flex items-center gap-1">
+								<span className="text-zinc-400">Lesson:</span>
+								<span className="font-medium text-zinc-100">
+									{currentLesson.name}
+								</span>
 							</span>
-						</span>
-						<span className="inline-flex items-center gap-1">
-							<span className="text-zinc-400">Sentence:</span>
-							<span className="font-medium text-zinc-100">
-								{hasSentences
-									? `${currentSentenceIndex + 1} / ${
-											currentLesson.sentences?.length
-									  }`
-									: "—"}
+							<span className="inline-flex items-center gap-1">
+								<span className="text-zinc-400">Sentence:</span>
+								<span className="font-medium text-zinc-100">
+									{hasSentences
+										? `${currentSentenceIndex + 1} / ${
+												currentLesson.sentences?.length
+										  }`
+										: "—"}
+								</span>
+								{/* Sentence selector dropdown */}
+								{hasSentences && isAdmin && (
+									<select
+										aria-label="Select sentence"
+										value={currentSentenceIndex}
+										onChange={(e) => {
+											const v = Number(e.target.value)
+											// Update store directly to jump to sentence
+											useDataStore.setState({
+												currentSentenceIndex: v,
+												currentSentenceProgress: null,
+											})
+										}}
+										className="ml-3 bg-zinc-900 border border-zinc-700 text-sm px-2 py-1 rounded"
+									>
+										{Array.from({
+											length: currentLesson.sentences?.length || 0,
+										}).map((_, i) => (
+											<option
+												key={i}
+												value={i}
+											>
+												{i + 1}
+											</option>
+										))}
+									</select>
+								)}
 							</span>
-							{/* Sentence selector dropdown */}
-							{hasSentences && (
-								<select
-									aria-label="Select sentence"
-									value={currentSentenceIndex}
-									onChange={(e) => {
-										const v = Number(e.target.value)
-										// Update store directly to jump to sentence
-										useDataStore.setState({
-											currentSentenceIndex: v,
-											currentSentenceProgress: null,
-										})
-									}}
-									className="ml-3 bg-zinc-900 border border-zinc-700 text-sm px-2 py-1 rounded"
-								>
-									{Array.from({
-										length: currentLesson.sentences?.length || 0,
-									}).map((_, i) => (
-										<option
-											key={i}
-											value={i}
-										>
-											{i + 1}
-										</option>
-									))}
-								</select>
-							)}
-						</span>
-						<span className="flex items-center gap-2 mt-2 w-full">
+						</div>
+						<div className="ml-4 mt-2 sm:mt-0 flex items-center gap-3">
 							<button
-								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
-								onClick={() => setShowIntro(true)}
+								aria-label="Previous lesson"
+								className="px-4 py-2 text-sm rounded border border-zinc-500 hover:bg-zinc-800 disabled:opacity-40"
+								onClick={goPrevLesson}
+								disabled={currentLessonIndex === 0}
 							>
-								Lesson Info
+								Prev Lesson
 							</button>
 							<button
-								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
-								onClick={() => setShowWordBank(true)}
+								aria-label="Next lesson"
+								data-next-lesson
+								className={`px-4 py-2 text-sm rounded border border-zinc-500 hover:bg-zinc-800 disabled:opacity-40 ${
+									isLessonComplete() ? "ring-2 ring-emerald-500" : ""
+								}`}
+								onClick={goNextLesson}
+								disabled={currentLessonIndex >= lessons.length - 1}
 							>
-								Word Bank
+								Next Lesson
 							</button>
-							<button
-								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
-								onClick={() => openReportModal()}
-								title="Report an issue with this sentence"
-							>
-								Report issue
-							</button>
-							<div className="flex gap-2 ml-auto">
-								<button
-									className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 disabled:opacity-40"
-									onClick={goPrevLesson}
-									disabled={currentLessonIndex === 0}
-								>
-									Prev Lesson
-								</button>
-								<button
-									data-next-lesson
-									className={`px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 disabled:opacity-40 ${
-										isLessonComplete() ? "ring-2 ring-emerald-500" : ""
-									}`}
-									onClick={goNextLesson}
-									disabled={currentLessonIndex >= lessons.length - 1}
-								>
-									Next Lesson
-								</button>
-							</div>
-						</span>
+						</div>
 					</div>
-					{/* Show original sentence line unless lesson has no sentences */}
-					{hasSentences ? (
-						<OriginalSentenceLine
-							sentence={currentSentenceObject}
-							activeIndex={activeSectionOriginalIndex}
-						/>
-					) : (
+					{/* If lesson has no sentences, show a helpful message. The original (untranslated)
+						sentence line is rendered inside the sentence card below when sentences exist. */}
+					{!hasSentences && (
 						<p className="text-sm text-zinc-400 mt-2">
 							No sentences present in this lesson. Click &quot;Next Lesson&quot;
 							to advance.
@@ -635,6 +547,36 @@ const MainPage = () => {
 				{hasSentences && (
 					<section className="mt-8">
 						<div className="rounded-xl bg-zinc-800/60 backdrop-blur-sm border border-zinc-700 px-6 py-8 shadow-inner shadow-black/40">
+							{/* Controls placed inside the sentence card */}
+							<div className="flex items-start justify-between mb-4">
+								<div className="flex items-center gap-3">
+									<button
+										className="px-3 py-2 text-sm rounded border border-zinc-600 hover:bg-zinc-800"
+										onClick={() => setShowIntro(true)}
+									>
+										Lesson Info
+									</button>
+									<button
+										className="px-3 py-2 text-sm rounded border border-zinc-600 hover:bg-zinc-800"
+										onClick={() => setShowWordBank(true)}
+									>
+										Word Bank
+									</button>
+								</div>
+								<div>
+									<button
+										className="px-3 py-2 text-sm rounded border border-zinc-600 hover:bg-zinc-800"
+										onClick={() => openReportModal()}
+									>
+										Report issue
+									</button>
+								</div>
+							</div>
+							{/* Show full untranslated/original sentence with active underline above the blanked sentence */}
+							<OriginalSentenceLine
+								sentence={currentSentenceObject}
+								activeIndex={activeSectionOriginalIndex}
+							/>
 							<SentenceLine
 								sentence={currentSentenceObject}
 								toTranslate={
@@ -667,22 +609,60 @@ const MainPage = () => {
 									</span>
 								)}
 							</div>
+							<div className="mt-4 flex justify-end">
+								<Tooltip
+									text={"enable instant feedback on every incorrect input"}
+								>
+									<label className="flex items-center gap-2 text-xs text-zinc-300">
+										<input
+											type="checkbox"
+											checked={immediateFeedbackMode}
+											onChange={() => toggleImmediateFeedbackMode()}
+											className="accent-emerald-600"
+											aria-label={
+												"enable instant feedback on every incorrect input"
+											}
+										/>
+										<span>Immediate feedback</span>
+									</label>
+								</Tooltip>
+							</div>
 						</div>
 					</section>
 				)}
 
-				<section className="mt-10">
-					<DebugPanel
-						currentLessonIndex={currentLessonIndex}
-						currentSentenceIndex={currentSentenceIndex}
-						sentenceText={currentSentenceObject?.sentence}
-						activeIndex={activeSectionOriginalIndex}
-						currentSentenceData={currentSentenceObject?.data}
-						translationSections={
-							currentSentenceProgress?.translationSections || []
+				<AdminPanel
+					mounted={mounted}
+					rawIsAdmin={rawIsAdmin}
+					userId={userId}
+					currentLesson={currentLesson}
+					currentLessonIndex={currentLessonIndex}
+					currentSentenceIndex={currentSentenceIndex}
+					currentSentenceObject={currentSentenceObject}
+					activeIndex={activeSectionOriginalIndex}
+					currentSentenceProgress={currentSentenceProgress ?? undefined}
+					onSelectSentence={(idx) =>
+						useDataStore.setState({
+							currentSentenceIndex: idx,
+							currentSentenceProgress: null,
+						})
+					}
+					onClearHistory={async () => {
+						if (!confirm("Clear ALL lesson attempts for this user?")) return
+						try {
+							const res = await fetch(`/api/lessonAttempts?userId=${userId}`, {
+								method: "DELETE",
+							})
+							if (!res.ok) throw new Error("Delete failed")
+							autoSelectAppliedRef.current = false
+							setShowIntro(true)
+							alert("History cleared")
+						} catch (e) {
+							alert("Failed to clear history")
+							console.error(e)
 						}
-					/>
-				</section>
+					}}
+				/>
 
 				{/* Report issue modal */}
 				{showReportModal && (

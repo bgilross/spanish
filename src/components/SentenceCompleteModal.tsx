@@ -20,13 +20,66 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 	onNext,
 }) => {
 	// Emit global modal open/close events so inputs can blur on modal open
+	const nextBtnRef = React.useRef<HTMLButtonElement | null>(null)
 	React.useEffect(() => {
 		if (!open) return
+		// Notify other components (e.g., input) so they blur
 		window.dispatchEvent(new Event("app:modal-open"))
+		// Ensure any active input loses focus, then focus the Next button so
+		// Enter works immediately without clicking the modal. We call focus
+		// on a short timeout and retry to handle mobile keyboards / timing.
+		try {
+			if (
+				typeof document !== "undefined" &&
+				document.activeElement instanceof HTMLElement
+			) {
+				document.activeElement.blur()
+			}
+		} catch {}
+		const t = window.setTimeout(() => {
+			try {
+				nextBtnRef.current?.focus({ preventScroll: true })
+			} catch {}
+			// second attempt for slow environments
+			window.setTimeout(() => {
+				try {
+					nextBtnRef.current?.focus({ preventScroll: true })
+				} catch {}
+			}, 50)
+		}, 10)
 		return () => {
+			window.clearTimeout(t)
 			window.dispatchEvent(new Event("app:modal-close"))
 		}
 	}, [open])
+
+	// When the modal is open, allow Enter to advance to the next sentence.
+	// Ignore Enter presses when focus is inside inputs, textareas, selects or
+	// contentEditable elements, and require no modifier keys.
+	React.useEffect(() => {
+		if (!open) return
+		const handler = (e: KeyboardEvent) => {
+			if (e.defaultPrevented) return
+			if (e.key !== "Enter") return
+			if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return
+			const target = e.target as HTMLElement | null
+			if (target) {
+				const tag = target.tagName?.toUpperCase()
+				if (
+					tag === "INPUT" ||
+					tag === "TEXTAREA" ||
+					tag === "SELECT" ||
+					target.isContentEditable
+				) {
+					return
+				}
+			}
+			e.preventDefault()
+			onNext()
+		}
+		window.addEventListener("keydown", handler)
+		return () => window.removeEventListener("keydown", handler)
+	}, [open, onNext])
 	if (!open) return null
 
 	// Helper that returns resolved refs keys/info for a section (safe runtime checks)
@@ -69,7 +122,52 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 					</button>
 				</div>
 				{sentence && (
-					<div className="mb-3 text-sm text-zinc-300">{sentence.sentence}</div>
+					<div className="mb-3">
+						<div className="text-sm text-zinc-300">{sentence.sentence}</div>
+						{(() => {
+							// Prefer whole-sentence translation when available
+							if (!sentence) return null
+							if (
+								typeof sentence.translation === "string" &&
+								sentence.translation.trim()
+							) {
+								return (
+									<div className="mt-2 text-sm text-emerald-300">
+										{sentence.translation}
+									</div>
+								)
+							}
+							// Fallback: assemble from per-entry translations (only use string translations)
+							const dataEntries = (sentence as Sentence | undefined)?.data as
+								| SentenceDataEntry[]
+								| undefined
+							if (Array.isArray(dataEntries)) {
+								const parts = dataEntries
+									.map((d) => {
+										if (!d) return ""
+										// phraseTranslation preferred
+										if ("phraseTranslation" in d) {
+											const pt = d.phraseTranslation
+											if (typeof pt === "string") return pt
+											if (Array.isArray(pt) && pt.length) return pt[0]
+										}
+										// fallback to string translation when available
+										if ("translation" in d) {
+											const tr = d.translation
+											if (typeof tr === "string") return tr
+										}
+										return ""
+									})
+									.join(" ")
+								if (parts.trim() !== "") {
+									return (
+										<div className="mt-2 text-sm text-emerald-300">{parts}</div>
+									)
+								}
+							}
+							return null
+						})()}
+					</div>
 				)}
 				<div className="mb-3">
 					<div className="font-semibold text-sm mb-2">Submissions</div>
@@ -158,6 +256,7 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 				)}
 				<div className="flex gap-2 mt-4">
 					<button
+						ref={nextBtnRef}
 						onClick={() => {
 							onNext()
 						}}
@@ -165,16 +264,7 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 					>
 						Next sentence
 					</button>
-					<button
-						onClick={() => {
-							// try to open lesson summary in parent (MainPage holds summary state)
-							const ev = new CustomEvent("openLessonSummary")
-							window.dispatchEvent(ev)
-						}}
-						className="px-3 py-1.5 text-sm rounded border"
-					>
-						Open Summary
-					</button>
+					{/* Open Summary button removed per request */}
 					<button
 						onClick={onClose}
 						className="px-3 py-1.5 text-sm rounded border"

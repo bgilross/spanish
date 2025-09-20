@@ -4,6 +4,7 @@ import Link from "next/link"
 import { ProgressDashboard } from "@/components/ProgressDashboard"
 import NextDynamic from "next/dynamic"
 import { APP_VERSION } from "@/lib/version"
+import ViewAsHeaderToggle from "@/components/ViewAsHeaderToggle"
 import type { GeneratedQuiz } from "@/lib/quiz/types"
 
 const QuizBuilder = NextDynamic(() => import("@/components/quiz/QuizBuilder"), {
@@ -25,43 +26,14 @@ export default function DashboardPage() {
 						</span>
 					</h1>
 					<div className="flex items-center gap-2">
-						<a
-							href="/api/quiz/debug"
-							className="text-[10px] px-2 py-1 rounded border border-zinc-700 hover:bg-zinc-800 text-zinc-400"
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							Debug Topics
-						</a>
-						<a
-							href="/api/quiz/debug?reset=1"
-							className="text-[10px] px-2 py-1 rounded border border-amber-600/50 hover:bg-amber-900/30 text-amber-400"
-							target="_blank"
-							rel="noopener noreferrer"
-							title="Force rebuild quiz index"
-						>
-							Reset Index
-						</a>
-						<button
-							type="button"
-							onClick={() => setShowQuiz(true)}
-							className="text-xs px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-black font-medium border border-emerald-500/60"
-						>
-							Create Custom Quiz
-						</button>
+						<ViewAsHeaderToggle mounted={true} />
+						{/* Admin controls moved to AdminPanel (rendered inside ProgressDashboard) */}
 						<Link
 							href="/"
 							className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded border border-zinc-600 hover:bg-zinc-800 transition-colors"
 							prefetch={false}
 						>
 							<span aria-hidden>←</span> Back to Lessons
-						</Link>
-						<Link
-							href="/dashboard/reports"
-							className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded border border-zinc-600 hover:bg-zinc-800 transition-colors"
-							prefetch={false}
-						>
-							Reports
 						</Link>
 					</div>
 				</div>

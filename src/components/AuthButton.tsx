@@ -11,11 +11,15 @@ export function AuthButton() {
 	if (!mounted) return null
 
 	if (status === "loading")
-		return <button className="text-xs opacity-70">Auth...</button>
+		return (
+			<button className="px-3 py-2 text-sm rounded border border-zinc-500 opacity-70">
+				Auth...
+			</button>
+		)
 	if (!session?.user) {
 		return (
 			<button
-				className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
+				className="px-3 py-2 text-sm rounded border border-zinc-500 hover:bg-zinc-800"
 				onClick={() => signIn("google")}
 			>
 				Sign in with Google
@@ -28,19 +32,19 @@ export function AuthButton() {
 			{userId && (
 				<a
 					href="/dashboard"
-					className="px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+					className="px-3 py-2 text-sm rounded border border-zinc-600 hover:bg-zinc-800"
 				>
 					Dashboard
 				</a>
 			)}
 			<span
-				className="text-xs text-zinc-300 max-w-[140px] truncate"
+				className="text-sm text-zinc-300 max-w-[180px] truncate"
 				title={session.user.email || session.user.name || userId || "User"}
 			>
 				{session.user.name || session.user.email || userId || "User"}
 			</span>
 			<button
-				className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
+				className="px-3 py-2 text-sm rounded border border-zinc-500 hover:bg-zinc-800"
 				onClick={() => signOut()}
 			>
 				Logout
