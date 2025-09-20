@@ -181,6 +181,7 @@ interface AttemptRowProps {
 	referenceInfoMap: Record<string, string[]>
 	attemptIndex: number
 	deleting: string | null
+	onDelete?: (id: string) => Promise<void>
 }
 function AttemptRow({
 	attempt,
@@ -188,6 +189,7 @@ function AttemptRow({
 	referenceInfoMap,
 	attemptIndex,
 	deleting,
+	onDelete,
 }: AttemptRowProps) {
 	const [open, setOpen] = React.useState(false)
 	const created = new Date(attempt.createdAt)
@@ -382,13 +384,10 @@ function AttemptRow({
 						onClick={async (e) => {
 							e.stopPropagation()
 							if (!confirm("Delete ONLY this attempt?")) return
-							try {
-								await fetch(
-									`/api/lessonAttempts?userId=${attempt.userId}&attemptId=${attempt.id}`,
-									{ method: "DELETE" }
-								)
+							if (onDelete) {
+								await onDelete(attempt.id)
 								setOpen(false)
-							} catch {}
+							}
 						}}
 						disabled={deleting !== null}
 						className="text-[10px] px-1.5 py-0.5 rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
@@ -405,13 +404,8 @@ function AttemptRow({
 							onClick={async () => {
 								if (!confirm("Delete ONLY this attempt?")) return
 								if (deleting) return
-								try {
-									await fetch(
-										`/api/lessonAttempts?userId=${attempt.userId}&attemptId=${attempt.id}`,
-										{ method: "DELETE" }
-									)
-									setOpen(false)
-								} catch {}
+								if (onDelete) await onDelete(attempt.id)
+								setOpen(false)
 							}}
 							className="px-2 py-0.5 rounded border border-red-600 text-red-300 hover:bg-red-900/40"
 						>
@@ -677,10 +671,62 @@ export function ProgressDashboard() {
 			setLoading(false)
 		}
 	}, [userId, loadLocalAttempts])
+
+	// DEV: simple localStorage-based admin list so you can promote yourself without DB changes
+	const [isAdmin, setIsAdmin] = React.useState(false)
 	React.useEffect(() => {
+		try {
+			const devAdminsRaw = localStorage.getItem("dev_admin_users") || "[]"
+			const devAdmins = JSON.parse(devAdminsRaw)
+			const uid = userId
+			setIsAdmin(
+				Array.isArray(devAdmins) && uid ? devAdmins.includes(uid) : false
+			)
+		} catch {
+			setIsAdmin(false)
+		}
+	}, [userId])
+
+	const toggleAdmin = () => {
+		// Try to persist admin status server-side; fall back to localStorage.
+		;(async () => {
+			if (!userId) return
+			const newVal = !isAdmin
+			try {
+				const res = await fetch(`/api/admin/role`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ userId, isAdmin: newVal }),
+				})
+				if (!res.ok) throw new Error(await res.text())
+				// success — update client state
+				setIsAdmin(newVal)
+			} catch (e) {
+				console.error(
+					"Server admin toggle failed, falling back to localStorage",
+					e
+				)
+				try {
+					const raw = localStorage.getItem("dev_admin_users") || "[]"
+					const arr = Array.isArray(JSON.parse(raw)) ? JSON.parse(raw) : []
+					const idx = arr.indexOf(userId)
+					if (newVal && idx === -1) arr.push(userId)
+					if (!newVal && idx !== -1) arr.splice(idx, 1)
+					localStorage.setItem("dev_admin_users", JSON.stringify(arr))
+					setIsAdmin(newVal)
+				} catch (e2) {
+					console.error("Failed to persist admin locally", e2)
+				}
+			}
+		})()
+	}
+	// Only trigger loading once session status is resolved to avoid a flash
+	// where local or placeholder attempts briefly appear while auth is resolving.
+	React.useEffect(() => {
+		if (status === "loading") return
 		load()
 		loadMixups(1)
-	}, [load, loadMixups])
+	}, [status, load, loadMixups])
 	const aggregate = React.useMemo(() => {
 		if (!attempts || attempts.length === 0) return null
 		const lessonsSet = new Set<number>()
@@ -774,6 +820,38 @@ export function ProgressDashboard() {
 		}
 	}
 
+	const deleteAttempt = async (id: string) => {
+		if (!confirm("Delete ONLY this attempt?")) return
+		if (!userId) {
+			// local-only
+			try {
+				const raw = localStorage.getItem("lessonAttempts:local") || "[]"
+				const arr = JSON.parse(raw)
+				const next = Array.isArray(arr) ? arr.filter((a) => a.id !== id) : []
+				localStorage.setItem("lessonAttempts:local", JSON.stringify(next))
+				setAttempts(next)
+			} catch (e) {
+				console.error("Failed to delete local attempt", e)
+			}
+			return
+		}
+		setDeleting(id)
+		try {
+			await fetch(
+				`/api/lessonAttempts?userId=${encodeURIComponent(
+					userId
+				)}&attemptId=${encodeURIComponent(id)}`,
+				{ method: "DELETE" }
+			)
+			// Optimistically update UI by removing the attempt locally
+			setAttempts((prev) => (prev ? prev.filter((a) => a.id !== id) : prev))
+		} catch (e) {
+			console.error("Failed to delete attempt", e)
+		} finally {
+			setDeleting(null)
+		}
+	}
+
 	return (
 		<div className="space-y-8">
 			{!userId && (
@@ -806,14 +884,52 @@ export function ProgressDashboard() {
 				</button>
 				{error && <span className="text-xs text-rose-400">{error}</span>}
 				{userId && (
-					<a
-						href={`/api/lessonAttempts?userId=${encodeURIComponent(userId)}`}
-						target="_blank"
-						rel="noopener noreferrer"
+					<>
+						<a
+							href={`/api/lessonAttempts?userId=${encodeURIComponent(userId)}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="px-3 py-1.5 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+						>
+							View API Attempts
+						</a>
+						<a
+							href={`/api/mixups?userId=${encodeURIComponent(userId)}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="px-3 py-1.5 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+						>
+							View API Mixups
+						</a>
+					</>
+				)}
+				{process.env.NODE_ENV === "development" && (
+					<button
+						onClick={() => {
+							// Open a new window and dump local attempts for quick inspection
+							try {
+								const raw = localStorage.getItem("lessonAttempts:local") || "[]"
+								const w = window.open()
+								if (w) {
+									w.document.body.innerText = raw
+									w.document.title = "Local Attempts"
+								}
+							} catch (e) {
+								console.error("Failed to open local attempts", e)
+							}
+						}}
 						className="px-3 py-1.5 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
 					>
-						View API Attempts
-					</a>
+						View Local Attempts
+					</button>
+				)}
+				{process.env.NODE_ENV === "development" && (
+					<button
+						onClick={toggleAdmin}
+						className="px-3 py-1.5 text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+					>
+						{isAdmin ? "Revoke Admin" : "Promote to Admin"}
+					</button>
 				)}
 			</div>
 			{aggregate && (
@@ -903,6 +1019,7 @@ export function ProgressDashboard() {
 							}
 							referenceInfoMap={referenceInfoMap}
 							deleting={deleting}
+							onDelete={deleteAttempt}
 						/>
 					))}
 				</ul>

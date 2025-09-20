@@ -26,6 +26,19 @@ const authOptions = {
 		async session({ session, user }: { session: any; user: { id: string } }) {
 			if (session.user) {
 				;(session.user as { id?: string }).id = user.id
+				// include admin flag for client-side checks
+				const maybeUser: unknown = user
+				if (
+					maybeUser &&
+					typeof maybeUser === "object" &&
+					"isAdmin" in (maybeUser as Record<string, unknown>)
+				) {
+					;(session.user as { isAdmin?: boolean }).isAdmin = !!(
+						maybeUser as Record<string, unknown>
+					).isAdmin
+				} else {
+					;(session.user as { isAdmin?: boolean }).isAdmin = false
+				}
 			}
 			return session
 		},
