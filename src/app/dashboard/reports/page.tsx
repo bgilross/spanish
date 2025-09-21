@@ -2,8 +2,6 @@
 "use server"
 
 import React from "react"
-import fs from "fs"
-import path from "path"
 import prisma from "@/lib/prisma"
 
 type Issue = {
@@ -13,6 +11,7 @@ type Issue = {
 	lessonNumber: number
 	sentenceId?: number
 	sentenceIndex?: number
+	reportContext?: string | null
 	typo: boolean
 	missingReference: boolean
 	incorrectReference: boolean
@@ -20,22 +19,6 @@ type Issue = {
 	other?: boolean
 	notes?: string | null
 	createdAt?: string | null
-}
-
-async function readLocalIssues(): Promise<Issue[]> {
-	const dataPath = path.resolve(process.cwd(), "data")
-	const issuesFile = path.join(dataPath, "issues.json")
-	try {
-		const raw = await fs.promises.readFile(issuesFile, "utf8")
-		const arr = JSON.parse(raw) || []
-		return arr.map((it: any) => ({
-			...it,
-			wrongTranslation: !!it.wrongTranslation,
-			other: !!it.other,
-		}))
-	} catch {
-		return []
-	}
 }
 
 async function readDbIssues(): Promise<Issue[]> {
@@ -51,6 +34,7 @@ async function readDbIssues(): Promise<Issue[]> {
 			reporterName: r.reporterName ?? null,
 			lessonNumber: r.lessonNumber,
 			sentenceIndex: r.sentenceIndex,
+			reportContext: r.reportContext ?? null,
 			typo: !!r.typo,
 			missingReference: !!r.missingReference,
 			incorrectReference: !!r.incorrectReference,
@@ -60,23 +44,18 @@ async function readDbIssues(): Promise<Issue[]> {
 			createdAt: r.createdAt ? r.createdAt.toISOString() : null,
 		}))
 	} catch (err) {
-		console.warn("Prisma read failed, falling back to local issues file", err)
+		console.warn("Prisma read failed", err)
 		return []
 	}
 }
 
 export default async function ReportsPage() {
-	let issues = await readDbIssues()
-	if (!issues || issues.length === 0) {
-		issues = await readLocalIssues()
-	}
+	const issues = await readDbIssues()
 
 	return (
 		<div className="p-6">
 			<h1 className="text-2xl font-semibold mb-4">User submitted reports</h1>
-			<p className="text-sm text-zinc-400 mb-4">
-				Source: {issues.length > 0 ? "DB / file" : "none"}
-			</p>
+			<p className="text-sm text-zinc-400 mb-4">Source: DB</p>
 			<div className="mb-4">
 				<div className="text-xs text-zinc-500 mb-2">
 					Tip: fetch{" "}
@@ -102,14 +81,34 @@ export default async function ReportsPage() {
 								</div>
 							</div>
 							<div className="text-xs text-zinc-300 mt-1">
-								Lesson {it.lessonNumber} — sentence{" "}
-								{it.sentenceId ?? it.sentenceIndex}
+								{it.lessonNumber === 0 ? (
+									<span>General feedback</span>
+								) : (
+									<span>
+										Lesson {it.lessonNumber}
+										{typeof it.sentenceIndex === "number"
+											? ` — sentence ${it.sentenceIndex}`
+											: ""}
+									</span>
+								)}
+								{it.reportContext ? (
+									<span className="ml-2 inline-block text-[10px] px-2 py-[2px] rounded bg-zinc-800 text-zinc-300 border border-zinc-700 align-middle">
+										{it.reportContext}
+									</span>
+								) : null}
 							</div>
 							<div className="text-xs mt-2">Notes: {it.notes ?? "—"}</div>
 							<div className="text-xs mt-2 text-zinc-400">
-								Flags: {it.typo ? "typo " : ""}
-								{it.missingReference ? "missingRef " : ""}
-								{it.incorrectReference ? "incorrectRef" : ""}
+								Flags:{" "}
+								{[
+									it.typo && "typo",
+									it.missingReference && "missingRef",
+									it.incorrectReference && "incorrectRef",
+									it.wrongTranslation && "wrongTranslation",
+									it.other && "other",
+								]
+									.filter(Boolean)
+									.join(" ")}
 							</div>
 						</li>
 					))}

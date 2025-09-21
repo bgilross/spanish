@@ -14,6 +14,7 @@ type Props = {
 	onClose: () => void // Starts the quiz
 	onNavigate: (index: number) => void // For prev/next while staying in modal
 	lessons?: Lesson[] // Optional full lessons list for direct selection
+	onReport?: () => void
 }
 
 const LessonIntroModal: React.FC<Props> = ({
@@ -24,6 +25,7 @@ const LessonIntroModal: React.FC<Props> = ({
 	onClose,
 	onNavigate,
 	lessons,
+	onReport,
 }) => {
 	const markEmptyLessonComplete = useDataStore((s) => s.markEmptyLessonComplete)
 	const isAlreadyMarked = useDataStore(
@@ -91,6 +93,14 @@ const LessonIntroModal: React.FC<Props> = ({
 									onClick={onClose}
 								>
 									Start Quiz
+								</button>
+							)}
+							{onReport && (
+								<button
+									className="px-3 py-1 text-sm rounded border border-zinc-400 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+									onClick={onReport}
+								>
+									Report issue
 								</button>
 							)}
 							{isEmptyLesson && (

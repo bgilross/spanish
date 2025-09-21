@@ -2,6 +2,7 @@
 
 import React from "react"
 import { expectedAnswers } from "@/lib/translation"
+import { getVerbFeedback } from "@/lib/verbErrors"
 import { resolveReferenceList } from "@/lib/refs"
 import type { Sentence, SentenceDataEntry } from "@/data/types"
 
@@ -29,6 +30,10 @@ const ImmediateFeedbackModal: React.FC<ImmediateFeedbackModalProps> = ({
 	autoFocus = true,
 }) => {
 	const expected = section ? expectedAnswers(section) : []
+	const verbFeedback = React.useMemo(() => {
+		if (!section) return []
+		return getVerbFeedback(section, userInput)
+	}, [section, userInput])
 	React.useEffect(() => {
 		if (!open || !autoFocus) return
 		const handler = (e: KeyboardEvent) => {
@@ -62,6 +67,20 @@ const ImmediateFeedbackModal: React.FC<ImmediateFeedbackModalProps> = ({
 						{userInput || <span className="opacity-50 italic">(empty)</span>}
 					</div>
 				</div>
+				{/* Show quick analysis chips if we detected a verb-related pattern */}
+				{verbFeedback.length > 0 && (
+					<div className="mb-3 flex flex-wrap gap-2">
+						{verbFeedback.map((fb, i) => (
+							<span
+								key={i}
+								className="px-2 py-0.5 rounded-full text-[11px] border border-amber-500/50 text-amber-300 bg-amber-900/20"
+							>
+								{fb.title}
+							</span>
+						))}
+					</div>
+				)}
+
 				<div className="flex flex-wrap gap-2 items-center mb-4">
 					{!revealed && (
 						<button
@@ -105,6 +124,32 @@ const ImmediateFeedbackModal: React.FC<ImmediateFeedbackModalProps> = ({
 								))}
 							</ul>
 						)}
+						{/* Verb feedback details */}
+						{verbFeedback.length > 0 && (
+							<div className="mt-3">
+								<div className="text-sm font-medium text-amber-300 mb-1">
+									Why this was wrong (verb)
+								</div>
+								<ul className="list-disc ml-5 text-xs text-zinc-200">
+									{verbFeedback.map((fb, i) => (
+										<li
+											key={i}
+											className="mb-2"
+										>
+											<div className="font-medium">{fb.title}</div>
+											{fb.details?.length ? (
+												<ul className="list-disc ml-5 text-xs text-zinc-300">
+													{fb.details.map((d, j) => (
+														<li key={j}>{d}</li>
+													))}
+												</ul>
+											) : null}
+										</li>
+									))}
+								</ul>
+							</div>
+						)}
+
 						{/* Show references if the section included any */}
 						{section && "reference" in section && section.reference && (
 							<div className="mt-3">

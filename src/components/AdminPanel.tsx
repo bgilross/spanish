@@ -4,7 +4,7 @@ import React from "react"
 import DebugPanel from "@/components/DebugPanel"
 import NextDynamic from "next/dynamic"
 import type { SentenceDataEntry } from "@/data/types"
-import { simulateLessonOnce } from "@/lib/simulate"
+import { simulateLessonOnce, simulateLessonVerbMistakes } from "@/lib/simulate"
 import type { GeneratedQuiz } from "@/lib/quiz/types"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -72,6 +72,16 @@ export default function AdminPanel({
 		setSimulating(true)
 		try {
 			await simulateLessonOnce()
+		} finally {
+			setSimulating(false)
+		}
+	}
+
+	const handleSimulateVerbs = async () => {
+		if (simulating) return
+		setSimulating(true)
+		try {
+			await simulateLessonVerbMistakes()
 		} finally {
 			setSimulating(false)
 		}
@@ -333,6 +343,14 @@ export default function AdminPanel({
 						title="Simulate lesson (admin)"
 					>
 						{simulating ? "Simulating…" : "Simulate"}
+					</button>
+					<button
+						onClick={handleSimulateVerbs}
+						disabled={simulating}
+						className="ml-2 px-2 py-1 rounded border border-amber-700 bg-amber-900/30 text-amber-300 text-sm hover:bg-amber-900/40"
+						title="Simulate targeted verb mistakes (conjugation/tense/ser vs estar)"
+					>
+						{simulating ? "Simulating…" : "Simulate Verbs"}
 					</button>
 				</div>
 			</div>

@@ -24,6 +24,11 @@ const POS_LABELS: Record<string, string> = {
 }
 
 export function formatErrorCategory(key: string): string {
+	// Friendly labels for virtual verb error categories
+	if (key === "verb.error.conjugation") return "Verb: wrong conjugation"
+	if (key === "verb.error.tense") return "Verb: wrong tense"
+	if (key === "verb.error.ser-vs-estar") return "Ser vs Estar mixup"
+	if (key === "verb.error.wrong-root") return "Verb: wrong verb"
 	const parts = key.split(".")
 	if (parts.length === 3 && parts[1] === "words") {
 		const [groupId, , wordId] = parts
@@ -194,6 +199,8 @@ function AttemptRow({
 }: AttemptRowProps) {
 	const [open, setOpen] = React.useState(false)
 	const created = new Date(attempt.createdAt)
+	const [mounted, setMounted] = React.useState(false)
+	React.useEffect(() => setMounted(true), [])
 	const cats = attempt.summary?.errorCategoryCounts || {}
 	const sentenceStats = React.useMemo(
 		() => attempt.summary?.sentenceStats || [],
@@ -367,8 +374,7 @@ function AttemptRow({
 						})()}
 					</span>
 					<span className="flex items-center gap-2 text-[10px] text-zinc-500">
-						<span className="sm:hidden">{created.toLocaleDateString()}</span>
-						<span className="hidden sm:inline">{created.toLocaleString()}</span>
+						{mounted ? created.toLocaleString() : created.toLocaleDateString()}
 					</span>
 				</span>
 				<span className="flex flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-4 text-right">

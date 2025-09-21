@@ -71,10 +71,13 @@ model Issue {
   user              User?    @relation(fields: [userId], references: [id])
   reporterName      String?
   lessonNumber      Int
-  sentenceIndex     Int
+  sentenceIndex     Int?
   typo              Boolean  @default(false)
   missingReference  Boolean  @default(false)
   incorrectReference Boolean @default(false)
+  wrongTranslation  Boolean  @default(false)
+  other             Boolean  @default(false)
+  reportContext     String?
   notes             String?
   createdAt         DateTime @default(now())
 

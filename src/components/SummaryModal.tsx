@@ -2,6 +2,7 @@
 
 import React from "react"
 import { resolveReferenceList, resolveReference } from "@/lib/refs"
+import { getVerbFeedback } from "@/lib/verbErrors"
 import { useDataStore } from "@/data/dataStore"
 import type { SubmissionLog } from "@/data/types"
 
@@ -32,6 +33,14 @@ interface LessonSummary {
 		SubmissionLog & { expected?: string[]; references?: string[] }
 	>
 	references?: string[]
+	// aggregated across the attempt (includes verb.error.* virtual categories)
+	errorCategoryCounts?: Record<string, number>
+
+	// optional per-sentence stats produced by the store's getLessonSummary
+	sentenceStats?: Array<{
+		sentenceIndex: number
+		errorReferences: Record<string, number>
+	}>
 }
 
 interface Props {
@@ -75,6 +84,13 @@ const SummaryModal: React.FC<Props> = ({
 		)
 	)
 
+	// UI state: expanded/collapsed verb categories
+	const [verbOpen, setVerbOpen] = React.useState<{ [k: string]: boolean }>({})
+	// UI state: expanded/collapsed per-transition drill-down
+	const [verbDetailOpen, setVerbDetailOpen] = React.useState<{
+		[k: string]: boolean
+	}>({})
+
 	// Extract mixupMap into a stable variable so the dependency array can be static
 	const summaryMixupMap = (summary as unknown as { mixupMap?: MixupMap })
 		?.mixupMap
@@ -88,6 +104,42 @@ const SummaryModal: React.FC<Props> = ({
 	React.useEffect(() => {
 		setMixups(computeMixupsFromMapStatic(summaryMixupMap, getMixupStats))
 	}, [summaryMixupMap, getMixupStats])
+
+	// Prefer a store-provided `referenceSources` map (constructed in getLessonSummary).
+	// Fallback: build from per-sentence stats if present in the local summary.
+	const referenceSources = React.useMemo((): Record<string, string> => {
+		// If the store already provided a map, use it
+		const provided = (
+			localSummary as unknown as { referenceSources?: Record<string, string> }
+		)?.referenceSources
+		if (provided && Object.keys(provided).length) return provided
+
+		// Otherwise, build from sentenceStats
+		const map: Record<string, string> = {}
+		const stats = (
+			localSummary as unknown as {
+				sentenceStats?: Array<{
+					sentenceIndex: number
+					errorReferences?: Record<string, number>
+				}>
+			}
+		)?.sentenceStats
+		if (!stats || !Array.isArray(stats)) return map
+		for (const st of stats) {
+			const si = typeof st.sentenceIndex === "number" ? st.sentenceIndex : null
+			const refs: Record<string, number> = st.errorReferences || {}
+			for (const [rKey, count] of Object.entries(refs)) {
+				if (!map[rKey]) map[rKey] = ""
+				const human = `#${(si ?? 0) + 1} (${count})`
+				map[rKey] = map[rKey] ? `${map[rKey]}, ${human}` : human
+			}
+		}
+		// Prefix with a short descriptor
+		for (const k of Object.keys(map)) {
+			map[k] = `Generated from sentence(s): ${map[k]}`
+		}
+		return map
+	}, [localSummary])
 
 	if (!open) return null
 
@@ -182,6 +234,72 @@ const SummaryModal: React.FC<Props> = ({
 											<div className="text-xs">
 												Expected: {s.expected?.join(" | ")}
 											</div>
+											{(() => {
+												// Verb-specific details: show conjugation (person) and tense for both your input and expected
+												try {
+													const items = getVerbFeedback(s.section, s.userInput)
+													const verbItems = items.filter((it) =>
+														it.tag.startsWith("verb.error.")
+													)
+													if (!verbItems.length) return null
+													const fmt = (side?: {
+														surface?: string
+														root?: string
+														tense?: string
+														person?: string
+													}) => {
+														if (!side) return "—"
+														const parts: string[] = []
+														const head = [side.surface, side.root]
+															.filter(Boolean)
+															.join(" — ")
+														if (head) parts.push(head)
+														const tp: string[] = []
+														if (side.tense) tp.push(side.tense)
+														if (side.person) tp.push(side.person)
+														if (tp.length) parts.push(`(${tp.join(", ")})`)
+														return parts.join(" ") || "—"
+													}
+													return (
+														<div className="mt-2 border border-zinc-700 rounded bg-zinc-900/30">
+															<div className="px-2 py-1 text-[11px] uppercase text-zinc-400 border-b border-zinc-800">
+																Verb details
+															</div>
+															<div className="px-2 py-1">
+																<div className="flex items-center text-[11px] uppercase text-zinc-400 px-1">
+																	<div className="basis-1/2">Your input</div>
+																	<div className="basis-1/2">
+																		Expected input
+																	</div>
+																</div>
+																<ul className="mt-1 divide-y divide-zinc-800 text-xs">
+																	{verbItems.map((it, idx) => (
+																		<li
+																			key={idx}
+																			className="flex items-start justify-between gap-2 px-1 py-1"
+																		>
+																			<span
+																				className="basis-1/2 truncate"
+																				title={fmt(it.wrong)}
+																			>
+																				{fmt(it.wrong)}
+																			</span>
+																			<span
+																				className="basis-1/2 truncate"
+																				title={fmt(it.expected)}
+																			>
+																				{fmt(it.expected)}
+																			</span>
+																		</li>
+																	))}
+																</ul>
+															</div>
+														</div>
+													)
+												} catch {
+													return null
+												}
+											})()}
 											<div className="mt-2 flex gap-2">
 												<button
 													className="px-2 py-1 text-xs rounded border bg-emerald-600 text-white"
@@ -206,11 +324,7 @@ const SummaryModal: React.FC<Props> = ({
 																}
 															).reference
 														)?.map((rr, k) => {
-															const title = rr.word
-																? `${rr.groupName || rr.word.pos || "Word"} — ${
-																		rr.word.word
-																  }`
-																: rr.groupName || rr.label
+															const title = rr.label
 															return (
 																<li key={k}>
 																	<div className="font-medium">{title}</div>
@@ -236,6 +350,261 @@ const SummaryModal: React.FC<Props> = ({
 						</div>
 
 						<div className="max-h-[60vh] overflow-auto space-y-4">
+							{/* Verb mistakes summary */}
+							{(() => {
+								const counts = localSummary.errorCategoryCounts || {}
+								const verbEntries = Object.entries(counts).filter(([k]) =>
+									k.startsWith("verb.error.")
+								)
+								if (verbEntries.length === 0) return null
+								const label = (k: string) => {
+									if (k === "verb.error.conjugation") return "Wrong conjugation"
+									if (k === "verb.error.tense") return "Wrong tense"
+									if (k === "verb.error.ser-vs-estar")
+										return "Ser vs Estar mixup"
+									if (k === "verb.error.wrong-root")
+										return "Wrong verb (different root)"
+									return k
+								}
+								const total = verbEntries.reduce(
+									(acc, [, v]) => acc + (v || 0),
+									0
+								)
+								const breakdown = (
+									localSummary as unknown as {
+										verbMistakeBreakdown?: {
+											totals: {
+												conjugation: number
+												tense: number
+												serVsEstar: number
+												wrongRoot: number
+											}
+											tenseTransitions: Record<string, number>
+											personTransitions: Record<string, number>
+											serEstarTransitions: Record<string, number>
+											rootTransitions: Record<string, number>
+										}
+									}
+								).verbMistakeBreakdown
+
+								const examples = (
+									localSummary as unknown as {
+										verbMistakeExamples?: {
+											tense: Record<
+												string,
+												{ wrong: string; expected: string; count: number }[]
+											>
+											person: Record<
+												string,
+												{ wrong: string; expected: string; count: number }[]
+											>
+											serEstar: Record<
+												string,
+												{ wrong: string; expected: string; count: number }[]
+											>
+											root: Record<
+												string,
+												{ wrong: string; expected: string; count: number }[]
+											>
+										}
+									}
+								).verbMistakeExamples
+
+								return (
+									<div>
+										<div className="flex items-center justify-between">
+											<div className="font-semibold mb-2">Verb mistakes</div>
+											<div className="text-xs text-zinc-400">{total} total</div>
+										</div>
+										<ul className="space-y-1 text-sm">
+											{verbEntries
+												.sort((a, b) => b[1] - a[1])
+												.map(([k, v]) => {
+													const isOpen = Boolean(verbOpen[k])
+													let detail: React.ReactNode = null
+
+													const renderPairs = (
+														pairs: Record<string, number>,
+														categoryKey: string,
+														format?: (
+															from: string,
+															to: string
+														) => { from: string; to: string }
+													) => {
+														const entries = Object.entries(pairs)
+															.sort((a, b) => b[1] - a[1])
+															.slice(0, 12) // keep it readable
+														if (entries.length === 0)
+															return (
+																<div className="text-xs text-zinc-500">
+																	No details recorded.
+																</div>
+															)
+														return (
+															<div className="mt-2 ml-2">
+																<div className="flex items-center text-[11px] uppercase text-zinc-400 px-2">
+																	<div className="basis-1/2">Your input</div>
+																	<div className="basis-1/2">
+																		Expected input
+																	</div>
+																	<div className="w-12 text-right">Count</div>
+																</div>
+																<ul className="mt-1 divide-y divide-zinc-800">
+																	{entries.map(([kk, vv]) => {
+																		const [rawFrom, rawTo] = kk.split("->")
+																		const f = format
+																			? format(rawFrom || "", rawTo || "")
+																			: { from: rawFrom || "", to: rawTo || "" }
+																		const openKey = `TRANSITION::${categoryKey}::${kk}`
+																		const isDetailOpen = Boolean(
+																			verbDetailOpen[openKey]
+																		)
+
+																		// pick example rows for this transition in the right category
+																		let exRows: {
+																			wrong: string
+																			expected: string
+																			count: number
+																		}[] = []
+																		if (examples) {
+																			if (categoryKey === "verb.error.tense")
+																				exRows = examples.tense?.[kk] || []
+																			else if (
+																				categoryKey === "verb.error.conjugation"
+																			)
+																				exRows = examples.person?.[kk] || []
+																			else if (
+																				categoryKey ===
+																				"verb.error.ser-vs-estar"
+																			)
+																				exRows = examples.serEstar?.[kk] || []
+																			else if (
+																				categoryKey === "verb.error.wrong-root"
+																			)
+																				exRows = examples.root?.[kk] || []
+																		}
+
+																		return (
+																			<li key={kk}>
+																				<button
+																					className="w-full flex items-center justify-between px-2 py-1 text-left hover:bg-zinc-900/60"
+																					onClick={() =>
+																						setVerbDetailOpen({
+																							...verbDetailOpen,
+																							[openKey]: !isDetailOpen,
+																						})
+																					}
+																					aria-expanded={isDetailOpen}
+																				>
+																					<span
+																						className="basis-1/2 truncate"
+																						title={f.from}
+																					>
+																						{f.from}
+																					</span>
+																					<span
+																						className="basis-1/2 truncate"
+																						title={f.to}
+																					>
+																						{f.to}
+																					</span>
+																					<span className="w-12 text-right text-zinc-400">
+																						{vv}
+																					</span>
+																				</button>
+																				{isDetailOpen && exRows.length > 0 && (
+																					<div className="mt-1 ml-2">
+																						<div className="flex items-center text-[10px] uppercase text-zinc-500 px-2">
+																							<div className="basis-1/2">
+																								Your input (examples)
+																							</div>
+																							<div className="basis-1/2">
+																								Expected input
+																							</div>
+																							<div className="w-12 text-right">
+																								Count
+																							</div>
+																						</div>
+																						<ul className="mt-1 divide-y divide-zinc-900">
+																							{exRows.slice(0, 8).map((row) => (
+																								<li
+																									key={`${row.wrong}=>${row.expected}`}
+																									className="flex items-center justify-between px-2 py-1 text-xs"
+																								>
+																									<span
+																										className="basis-1/2 truncate"
+																										title={row.wrong}
+																									>
+																										{row.wrong}
+																									</span>
+																									<span
+																										className="basis-1/2 truncate"
+																										title={row.expected}
+																									>
+																										{row.expected}
+																									</span>
+																									<span className="w-12 text-right text-zinc-500">
+																										{row.count}
+																									</span>
+																								</li>
+																							))}
+																						</ul>
+																					</div>
+																				)}
+																			</li>
+																		)
+																	})}
+																</ul>
+															</div>
+														)
+													}
+
+													if (breakdown) {
+														if (k === "verb.error.tense") {
+															detail = renderPairs(
+																breakdown.tenseTransitions,
+																k
+															)
+														} else if (k === "verb.error.conjugation") {
+															detail = renderPairs(
+																breakdown.personTransitions,
+																k
+															)
+														} else if (k === "verb.error.ser-vs-estar") {
+															detail = renderPairs(
+																breakdown.serEstarTransitions,
+																k
+															)
+														} else if (k === "verb.error.wrong-root") {
+															detail = renderPairs(breakdown.rootTransitions, k)
+														}
+													}
+													return (
+														<li
+															key={k}
+															className="border border-zinc-700 rounded bg-zinc-900/40"
+														>
+															<button
+																className="w-full flex items-center justify-between px-2 py-1 text-left"
+																onClick={() =>
+																	setVerbOpen({ ...verbOpen, [k]: !isOpen })
+																}
+																aria-expanded={isOpen}
+															>
+																<span>{label(k)}</span>
+																<span className="text-zinc-400">{v}</span>
+															</button>
+															{isOpen && detail && (
+																<div className="px-2 pb-2">{detail}</div>
+															)}
+														</li>
+													)
+												})}
+										</ul>
+									</div>
+								)
+							})()}
+
 							<div>
 								<div className="font-semibold mb-2">References</div>
 								<div className="text-sm">
@@ -250,17 +619,18 @@ const SummaryModal: React.FC<Props> = ({
 												[]
 											).map((r, idx) => {
 												const rr = resolveReference(r)
-												const title = rr.word
-													? `${rr.groupName || rr.word.pos || "Word"} — ${
-															rr.word.word
-													  }`
-													: rr.groupName || rr.label
+												const title = rr.label
 												return (
 													<li
 														key={idx}
 														className="text-xs"
 													>
-														<div className="font-medium">{title}</div>
+														<div
+															className="font-medium"
+															title={referenceSources[r] || undefined}
+														>
+															{title}
+														</div>
 														{rr.info && rr.info.length > 0 && (
 															<ul className="list-disc ml-5">
 																{rr.info.map((line, i) => (

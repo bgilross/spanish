@@ -252,6 +252,9 @@ const MainPage = () => {
 
 	// Report issue modal state
 	const [showReportModal, setShowReportModal] = React.useState(false)
+	const [reportContext, setReportContext] = React.useState<
+		"general" | "lessonInfo" | "sentence"
+	>("general")
 
 	return (
 		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-20">
@@ -263,8 +266,19 @@ const MainPage = () => {
 							v{APP_VERSION}
 						</span>
 					</h1>
-					{/* Center area for larger screens: place dashboard button left-aligned within this center area */}
-					<div className="hidden sm:flex flex-1 items-center justify-start sm:pl-4">
+					{/* Center area: show on all viewports so feedback/dashboard are mobile-accessible */}
+					<div className="flex flex-1 items-center justify-start sm:pl-4">
+						{/* Top-level general feedback button */}
+						<button
+							className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 mr-3"
+							onClick={() => {
+								setReportContext("general")
+								setShowReportModal(true)
+							}}
+							aria-label="Send feedback about site"
+						>
+							Send feedback
+						</button>
 						{!session?.user && (
 							<button
 								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800"
@@ -280,15 +294,7 @@ const MainPage = () => {
 						<div className="flex items-center gap-3 ml-auto">
 							{mounted && <AuthButton />}
 						</div>
-						{/* small-screen dashboard button (kept for narrow viewports) */}
-						{!session?.user && (
-							<button
-								className="px-2 py-1 text-xs rounded border border-zinc-500 hover:bg-zinc-800 sm:hidden"
-								onClick={() => router.push("/dashboard")}
-							>
-								Open Dashboard
-							</button>
-						)}
+						{/* small-screen dashboard button removed because header now shows dashboard on all viewports */}
 						{/* If lesson complete but summary is closed, allow reopening summary */}
 						{/* Open Quiz Summary removed per request */}
 						{/* Lesson controls forced to next line on very narrow screens */}
@@ -386,6 +392,10 @@ const MainPage = () => {
 							useDataStore.getState().startNewLesson(idx)
 							setShowIntro(true)
 						}
+					}}
+					onReport={() => {
+						setReportContext("lessonInfo")
+						setShowReportModal(true)
 					}}
 				/>
 
@@ -493,13 +503,17 @@ const MainPage = () => {
 										Word Bank
 									</button>
 								</div>
-								<div>
+								<div className="flex items-center gap-2">
 									<button
 										className="px-3 py-2 text-sm rounded border border-zinc-600 hover:bg-zinc-800"
-										onClick={() => setShowReportModal(true)}
+										onClick={() => {
+											setReportContext("sentence")
+											setShowReportModal(true)
+										}}
 									>
 										Report issue
 									</button>
+									{/* Removed duplicate Lesson Info button - Lesson info modal already opened from left-side control. */}
 								</div>
 							</div>
 							{/* Show full untranslated/original sentence with active underline above the blanked sentence */}
@@ -601,6 +615,13 @@ const MainPage = () => {
 					lesson={currentLesson}
 					sentence={currentSentenceObject}
 					userId={userId}
+					// For lesson-info and general reports, hide the checkboxes and sentence id
+					hideCheckboxes={reportContext !== "sentence"}
+					hideSentence={reportContext !== "sentence"}
+					// Provide context so server can store where the report came from
+					general={reportContext === "general"}
+					// prop for including context in payload
+					reportContext={reportContext}
 				/>
 			</div>
 		</div>

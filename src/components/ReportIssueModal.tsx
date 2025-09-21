@@ -10,6 +10,14 @@ type Props = {
 	lesson?: { lesson: number }
 	sentence?: Sentence | undefined
 	userId?: string | null
+	// When true, this is a general site feedback report (not tied to a lesson)
+	general?: boolean
+	// When true, hide the checkbox options (for contextual reports inside other UIs)
+	hideCheckboxes?: boolean
+	// When true, hide the sentence id line (used when reporting on lesson info text)
+	hideSentence?: boolean
+	// Context indicating source of report: 'general' | 'lessonInfo' | 'sentence'
+	reportContext?: "general" | "lessonInfo" | "sentence"
 }
 
 const ReportIssueModal: React.FC<Props> = ({
@@ -18,6 +26,10 @@ const ReportIssueModal: React.FC<Props> = ({
 	lesson,
 	sentence,
 	userId,
+	general,
+	hideCheckboxes,
+	hideSentence,
+	reportContext,
 }) => {
 	const { data: session } = useSession()
 	const [reportSaving, setReportSaving] = React.useState(false)
@@ -47,7 +59,8 @@ const ReportIssueModal: React.FC<Props> = ({
 	}, [open])
 
 	const submitReport = async () => {
-		if (!lesson) return
+		// For general feedback, use lessonNumber 0. Otherwise require lesson.
+		if (!general && !lesson) return
 		setReportSaving(true)
 		try {
 			const inferredName =
@@ -58,8 +71,13 @@ const ReportIssueModal: React.FC<Props> = ({
 			const payload = {
 				userId: typeof userId === "string" ? userId : undefined,
 				reporterName: inferredName,
-				lessonNumber: lesson.lesson,
-				sentenceId: typeof sentence?.id === "number" ? sentence.id : undefined,
+				lessonNumber: general ? 0 : lesson!.lesson,
+				// For general feedback we won't include sentenceId
+				sentenceId: general
+					? undefined
+					: typeof sentence?.id === "number"
+					? sentence.id
+					: undefined,
 				typo: !!reportForm.typo,
 				missingReference: !!reportForm.missingReference,
 				incorrectReference: !!reportForm.incorrectReference,
@@ -67,6 +85,7 @@ const ReportIssueModal: React.FC<Props> = ({
 				other: !!reportForm.other,
 				notes: reportForm.notes || undefined,
 				wrongGender: !!reportForm.wrongGender,
+				reportContext: reportContext || (general ? "general" : "sentence"),
 			}
 			const res = await fetch("/api/issues", {
 				method: "POST",
@@ -99,11 +118,15 @@ const ReportIssueModal: React.FC<Props> = ({
 			<div className="relative w-[92%] max-w-2xl bg-zinc-900 text-zinc-100 border border-zinc-700 rounded-xl shadow-2xl p-5">
 				<div className="flex items-start justify-between mb-3">
 					<div>
-						<h3 className="text-lg font-semibold">Report issue</h3>
-						{lesson && (
+						<h3 className="text-lg font-semibold">
+							{general ? "Send feedback" : "Report issue"}
+						</h3>
+						{!general && lesson && (
 							<div className="text-xs text-zinc-400 mt-1">
 								Reporting on: Lesson {lesson.lesson}
-								{sentence ? ` — sentence id ${sentence.id}` : ""}
+								{!hideSentence && sentence
+									? ` — sentence id ${sentence.id}`
+									: ""}
 							</div>
 						)}
 					</div>
@@ -127,80 +150,82 @@ const ReportIssueModal: React.FC<Props> = ({
 							}
 						/>
 					</div>
-					<div className="grid grid-cols-2 gap-2">
-						<label className="text-sm">
-							<input
-								type="checkbox"
-								checked={reportForm.typo}
-								onChange={(e) =>
-									setReportForm((s) => ({ ...s, typo: e.target.checked }))
-								}
-							/>{" "}
-							Typo
-						</label>
-						<label className="text-sm">
-							<input
-								type="checkbox"
-								checked={reportForm.missingReference}
-								onChange={(e) =>
-									setReportForm((s) => ({
-										...s,
-										missingReference: e.target.checked,
-									}))
-								}
-							/>{" "}
-							Missing reference
-						</label>
-						<label className="text-sm">
-							<input
-								type="checkbox"
-								checked={reportForm.incorrectReference}
-								onChange={(e) =>
-									setReportForm((s) => ({
-										...s,
-										incorrectReference: e.target.checked,
-									}))
-								}
-							/>{" "}
-							Incorrect reference
-						</label>
-						<label className="text-sm">
-							<input
-								type="checkbox"
-								checked={reportForm.wrongTranslation}
-								onChange={(e) =>
-									setReportForm((s) => ({
-										...s,
-										wrongTranslation: e.target.checked,
-									}))
-								}
-							/>{" "}
-							Wrong translation
-						</label>
-						<label className="text-sm">
-							<input
-								type="checkbox"
-								checked={reportForm.wrongGender}
-								onChange={(e) =>
-									setReportForm((s) => ({
-										...s,
-										wrongGender: e.target.checked,
-									}))
-								}
-							/>{" "}
-							Wrong gender
-						</label>
-						<label className="text-sm">
-							<input
-								type="checkbox"
-								checked={reportForm.other}
-								onChange={(e) =>
-									setReportForm((s) => ({ ...s, other: e.target.checked }))
-								}
-							/>{" "}
-							Other
-						</label>
-					</div>
+					{!hideCheckboxes && (
+						<div className="grid grid-cols-2 gap-2">
+							<label className="text-sm">
+								<input
+									type="checkbox"
+									checked={reportForm.typo}
+									onChange={(e) =>
+										setReportForm((s) => ({ ...s, typo: e.target.checked }))
+									}
+								/>{" "}
+								Typo
+							</label>
+							<label className="text-sm">
+								<input
+									type="checkbox"
+									checked={reportForm.missingReference}
+									onChange={(e) =>
+										setReportForm((s) => ({
+											...s,
+											missingReference: e.target.checked,
+										}))
+									}
+								/>{" "}
+								Missing reference
+							</label>
+							<label className="text-sm">
+								<input
+									type="checkbox"
+									checked={reportForm.incorrectReference}
+									onChange={(e) =>
+										setReportForm((s) => ({
+											...s,
+											incorrectReference: e.target.checked,
+										}))
+									}
+								/>{" "}
+								Incorrect reference
+							</label>
+							<label className="text-sm">
+								<input
+									type="checkbox"
+									checked={reportForm.wrongTranslation}
+									onChange={(e) =>
+										setReportForm((s) => ({
+											...s,
+											wrongTranslation: e.target.checked,
+										}))
+									}
+								/>{" "}
+								Wrong translation
+							</label>
+							<label className="text-sm">
+								<input
+									type="checkbox"
+									checked={reportForm.wrongGender}
+									onChange={(e) =>
+										setReportForm((s) => ({
+											...s,
+											wrongGender: e.target.checked,
+										}))
+									}
+								/>{" "}
+								Wrong gender
+							</label>
+							<label className="text-sm">
+								<input
+									type="checkbox"
+									checked={reportForm.other}
+									onChange={(e) =>
+										setReportForm((s) => ({ ...s, other: e.target.checked }))
+									}
+								/>{" "}
+								Other
+							</label>
+						</div>
+					)}
 					<div>
 						<label className="text-xs text-zinc-400">Notes</label>
 						<textarea
@@ -223,7 +248,11 @@ const ReportIssueModal: React.FC<Props> = ({
 							onClick={submitReport}
 							disabled={reportSaving}
 						>
-							{reportSaving ? "Submitting…" : "Submit report"}
+							{reportSaving
+								? "Submitting…"
+								: general
+								? "Send feedback"
+								: "Submit report"}
 						</button>
 					</div>
 				</div>

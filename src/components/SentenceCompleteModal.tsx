@@ -2,6 +2,7 @@
 
 import React from "react"
 import { resolveReferenceList, resolveReference } from "@/lib/refs"
+import { getVerbFeedback } from "@/lib/verbErrors"
 import type { SubmissionLog, Sentence, SentenceDataEntry } from "@/data/types"
 
 export type SentenceCompleteProps = {
@@ -201,6 +202,41 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 											: "-"}
 									</div>
 								)}
+
+								{/* Verb feedback for incorrect answers */}
+								{!s.isCorrect &&
+									s.section &&
+									(() => {
+										const vf = getVerbFeedback(
+											s.section as SentenceDataEntry,
+											s.userInput
+										)
+										if (!vf || vf.length === 0) return null
+										return (
+											<div className="mt-2 text-xs text-zinc-200">
+												<div className="font-medium text-amber-300">
+													Why it was wrong (verb)
+												</div>
+												<ul className="list-disc ml-5">
+													{vf.map((fb, k) => (
+														<li
+															key={k}
+															className="mb-1"
+														>
+															<div className="font-medium">{fb.title}</div>
+															{fb.details?.length ? (
+																<ul className="list-disc ml-5 text-zinc-300">
+																	{fb.details.map((d, di) => (
+																		<li key={di}>{d}</li>
+																	))}
+																</ul>
+															) : null}
+														</li>
+													))}
+												</ul>
+											</div>
+										)
+									})()}
 								{/* show references attached to this section */}
 								{(() => {
 									const list = getSectionReferences(s.section)

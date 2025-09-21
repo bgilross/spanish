@@ -1,16 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
-import fs from "fs"
-import path from "path"
-
-const dataPath = path.resolve(process.cwd(), "data")
-const issuesFile = path.join(dataPath, "issues.json")
-
-async function ensureDataDir() {
-	try {
-		await fs.promises.mkdir(dataPath, { recursive: true })
-	} catch {}
-}
+// Local file fallback removed: we now write all reports to the database.
 
 export async function POST(req: NextRequest) {
 	try {
@@ -36,14 +27,17 @@ export async function POST(req: NextRequest) {
 			)
 		}
 		// Accept sentenceId (preferred) or sentenceIndex for backward compatibility
-		if (typeof sentenceId !== "number" && typeof sentenceIndex !== "number") {
-			return NextResponse.json(
-				{ error: "sentenceId or sentenceIndex must be a number" },
-				{ status: 400 }
-			)
+		// For general/site feedback (lessonNumber === 0) we allow missing sentence info
+		if (Number(lessonNumber) !== 0) {
+			if (typeof sentenceId !== "number" && typeof sentenceIndex !== "number") {
+				return NextResponse.json(
+					{ error: "sentenceId or sentenceIndex must be a number" },
+					{ status: 400 }
+				)
+			}
 		}
 
-		// Try saving via prisma if available and migrations are applied
+		// Save via Prisma (required)
 		try {
 			let resolvedReporterName = reporterName
 			if (userId && typeof userId === "string") {
@@ -62,9 +56,6 @@ export async function POST(req: NextRequest) {
 					console.warn("Failed to resolve user for reporterName", uErr)
 				}
 			}
-			// Use a cast here because the generated Prisma client types are not being picked up by the TS checker
-			// in this environment; at runtime the delegate exists. This is a small pragmatic workaround.
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const issue = await (prisma as any).issue.create({
 				data: {
 					userId: typeof userId === "string" ? userId : undefined,
@@ -72,76 +63,39 @@ export async function POST(req: NextRequest) {
 						? String(resolvedReporterName)
 						: undefined,
 					lessonNumber: Number(lessonNumber),
-					// Save sentenceId if provided, otherwise save the legacy sentenceIndex
+					// For general/site feedback (lesson 0), explicitly store null. Otherwise, prefer sentenceId then sentenceIndex.
 					sentenceIndex:
-						typeof sentenceId === "number"
+						Number(lessonNumber) === 0
+							? null
+							: typeof sentenceId === "number"
 							? Number(sentenceId)
-							: Number(sentenceIndex),
+							: typeof sentenceIndex === "number"
+							? Number(sentenceIndex)
+							: null,
 					typo: !!typo,
 					missingReference: !!missingReference,
 					incorrectReference: !!incorrectReference,
-					notes: [
-						notes ? String(notes) : undefined,
-						wrongTranslation ? "flag:wrongTranslation" : undefined,
-						other ? "flag:other" : undefined,
-					]
-						.filter(Boolean)
-						.join("\n"),
+					wrongTranslation: !!wrongTranslation,
+					other: !!other,
+					reportContext:
+						typeof data?.reportContext === "string"
+							? String(data.reportContext)
+							: undefined,
+					notes: notes ? String(notes) : undefined,
 				},
 			})
 			return NextResponse.json({ issue }, { status: 201 })
-		} catch (prismaErr) {
-			// If Prisma isn't available or migrations not applied, gracefully fall back to file storage
-			console.warn(
-				"Prisma save failed, falling back to local file storage",
-				prismaErr
-			)
-			try {
-				await ensureDataDir()
-				const now = new Date().toISOString()
-				const entry = {
-					id: `local:${Date.now()}`,
-					userId: typeof userId === "string" ? userId : null,
-					reporterName: reporterName || null,
-					lessonNumber: Number(lessonNumber),
-					// include sentenceId when present for modern reports
-					sentenceId:
-						typeof sentenceId === "number" ? Number(sentenceId) : undefined,
-					sentenceIndex:
-						typeof sentenceIndex === "number"
-							? Number(sentenceIndex)
-							: undefined,
-					wrongTranslation: !!wrongTranslation,
-					other: !!other,
-					typo: !!typo,
-					missingReference: !!missingReference,
-					incorrectReference: !!incorrectReference,
-					notes: notes || null,
-					createdAt: now,
-				}
-				let arr = []
-				try {
-					const raw = await fs.promises.readFile(issuesFile, "utf8")
-					arr = JSON.parse(raw) || []
-				} catch {}
-				arr.unshift(entry)
-				try {
-					await fs.promises.writeFile(
-						issuesFile,
-						JSON.stringify(arr.slice(0, 1000), null, 2),
-						"utf8"
-					)
-				} catch (writeErr) {
-					console.error("Failed to write local issues file", writeErr)
-				}
-				return NextResponse.json({ issue: entry }, { status: 201 })
-			} catch (fileErr) {
-				console.error("Local file fallback failed", fileErr)
-				return NextResponse.json(
-					{ error: "Internal Server Error" },
-					{ status: 500 }
-				)
-			}
+		} catch (prismaErr: any) {
+			console.error("Prisma save failed", prismaErr)
+			const payload =
+				process.env.NODE_ENV === "development"
+					? {
+							error: "Database unavailable",
+							code: prismaErr?.code,
+							message: prismaErr?.message,
+					  }
+					: { error: "Database unavailable" }
+			return NextResponse.json(payload, { status: 500 })
 		}
 	} catch (err: unknown) {
 		console.error("POST /api/issues error", err)
@@ -149,5 +103,33 @@ export async function POST(req: NextRequest) {
 			{ error: "Internal Server Error" },
 			{ status: 500 }
 		)
+	}
+}
+
+export async function GET() {
+	try {
+		const rows = await (prisma as any).issue.findMany({
+			orderBy: { createdAt: "desc" },
+			take: 1000,
+		})
+		const issues = (rows as any[]).map((r) => ({
+			id: r.id,
+			userId: r.userId ?? null,
+			reporterName: r.reporterName ?? null,
+			lessonNumber: r.lessonNumber,
+			sentenceIndex: r.sentenceIndex ?? null,
+			typo: !!r.typo,
+			missingReference: !!r.missingReference,
+			incorrectReference: !!r.incorrectReference,
+			wrongTranslation: !!r.wrongTranslation,
+			other: !!r.other,
+			reportContext: r.reportContext ?? null,
+			notes: r.notes ?? null,
+			createdAt: r.createdAt ?? null,
+		}))
+		return NextResponse.json({ issues }, { status: 200 })
+	} catch (err) {
+		console.error("GET /api/issues failed", err)
+		return NextResponse.json({ error: "Database unavailable" }, { status: 500 })
 	}
 }

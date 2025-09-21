@@ -2,6 +2,7 @@ import { create } from "zustand"
 import spanishData from "./spanishData"
 import { normalizeText } from "@/lib/text"
 import { expectedAnswers } from "@/lib/translation"
+import { classifyVerbMistake, getVerbFeedback } from "@/lib/verbErrors"
 import type {
 	Lesson,
 	SentenceDataEntry,
@@ -93,6 +94,19 @@ type LessonSummary = {
 		errorReferences: Record<string, number>
 	}>
 	errorCategoryCounts: Record<string, number>
+	// Detailed verb breakdown for the attempt
+	verbMistakeBreakdown?: {
+		totals: {
+			conjugation: number
+			tense: number
+			serVsEstar: number
+			wrongRoot: number
+		}
+		tenseTransitions: Record<string, number>
+		personTransitions: Record<string, number>
+		serEstarTransitions: Record<string, number>
+		rootTransitions: Record<string, number>
+	}
 }
 
 export const useDataStore = create<DataStore>((set, get) => ({
@@ -258,6 +272,11 @@ export const useDataStore = create<DataStore>((set, get) => ({
 				entry as { reference?: Record<string, (number | string)[]> }
 			).reference
 			const refKeys = references ? Object.keys(references) : []
+			// Verb mistake classification: append virtual categories for analytics
+			try {
+				const tags = classifyVerbMistake(entry, input)
+				for (const t of tags) refKeys.push(t)
+			} catch {}
 			const error: ErrorEntry = {
 				userInput: input,
 				currentSentence: sentence,
@@ -396,7 +415,10 @@ export const useDataStore = create<DataStore>((set, get) => ({
 					references: refKeys,
 				}
 			})
-		const refs = Array.from(new Set(errs.flatMap((e) => e.references)))
+		// Aggregated references for the summary (exclude virtual verb error tags)
+		const refs = Array.from(new Set(errs.flatMap((e) => e.references))).filter(
+			(r) => !r.startsWith("verb.error.")
+		)
 
 		// --- Added detailed analytics ---
 		// Group submissions by sentence & section to derive stats
@@ -476,13 +498,167 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			}
 		})
 
-		// Aggregate error categories across entire lesson attempt
+		// Build detailed verb mistake breakdown from incorrect submissions
+		const verbTotals = {
+			conjugation: 0,
+			tense: 0,
+			serVsEstar: 0,
+			wrongRoot: 0,
+		}
+		const tenseTransitions: Record<string, number> = {}
+		const personTransitions: Record<string, number> = {}
+		const serEstarTransitions: Record<string, number> = {}
+		const rootTransitions: Record<string, number> = {}
+
+		// Collect example pairs per transition: wrong surface -> expected surface with counts
+		const tenseExamplePairs: Record<string, Record<string, number>> = {}
+		const personExamplePairs: Record<string, Record<string, number>> = {}
+		const serEstarExamplePairs: Record<string, Record<string, number>> = {}
+		const rootExamplePairs: Record<string, Record<string, number>> = {}
+
+		for (const s of incorrect) {
+			try {
+				const items = getVerbFeedback(s.section, s.userInput)
+				for (const it of items) {
+					if (it.tag === "verb.error.tense") {
+						verbTotals.tense += 1
+						const fromT = (it.wrong?.tense || "unknown").toString()
+						const toT = (it.expected?.tense || "unknown").toString()
+						const key = `${fromT}->${toT}`
+						tenseTransitions[key] = (tenseTransitions[key] || 0) + 1
+						// example pair
+						if (it.wrong?.surface && it.expected?.surface) {
+							const pKey = `${it.wrong.surface}||${it.expected.surface}`
+							if (!tenseExamplePairs[key]) tenseExamplePairs[key] = {}
+							tenseExamplePairs[key][pKey] =
+								(tenseExamplePairs[key][pKey] || 0) + 1
+						}
+					} else if (it.tag === "verb.error.conjugation") {
+						verbTotals.conjugation += 1
+						const fromP = (it.wrong?.person || "unknown").toString()
+						const toP = (it.expected?.person || "unknown").toString()
+						const key = `${fromP}->${toP}`
+						personTransitions[key] = (personTransitions[key] || 0) + 1
+						if (it.wrong?.surface && it.expected?.surface) {
+							const pKey = `${it.wrong.surface}||${it.expected.surface}`
+							if (!personExamplePairs[key]) personExamplePairs[key] = {}
+							personExamplePairs[key][pKey] =
+								(personExamplePairs[key][pKey] || 0) + 1
+						}
+					} else if (it.tag === "verb.error.ser-vs-estar") {
+						verbTotals.serVsEstar += 1
+						const key = `${it.wrong?.root || "?"}->${it.expected?.root || "?"}`
+						serEstarTransitions[key] = (serEstarTransitions[key] || 0) + 1
+						if (it.wrong?.surface && it.expected?.surface) {
+							const pKey = `${it.wrong.surface}||${it.expected.surface}`
+							if (!serEstarExamplePairs[key]) serEstarExamplePairs[key] = {}
+							serEstarExamplePairs[key][pKey] =
+								(serEstarExamplePairs[key][pKey] || 0) + 1
+						}
+					} else if (it.tag === "verb.error.wrong-root") {
+						verbTotals.wrongRoot += 1
+						const key = `${it.wrong?.root || "?"}->${it.expected?.root || "?"}`
+						rootTransitions[key] = (rootTransitions[key] || 0) + 1
+						if (it.wrong?.surface && it.expected?.surface) {
+							const pKey = `${it.wrong.surface}||${it.expected.surface}`
+							if (!rootExamplePairs[key]) rootExamplePairs[key] = {}
+							rootExamplePairs[key][pKey] =
+								(rootExamplePairs[key][pKey] || 0) + 1
+						}
+					}
+				}
+			} catch {
+				// ignore feedback parse errors
+			}
+		}
+
+		// Aggregate error categories across entire lesson attempt.
+		// Use error log entries (errs) so we include virtual tags like verb.error.*
 		const errorCategoryCounts: Record<string, number> = {}
-		for (const inc of incorrect) {
-			for (const r of inc.references || []) {
+		for (const e of errs) {
+			for (const r of e.references || []) {
+				// Count ALL references here, including virtual tags like verb.error.*
+				// These power the "Verb mistakes" section and other analytics.
 				errorCategoryCounts[r] = (errorCategoryCounts[r] || 0) + 1
 			}
 		}
+
+		// Build a map of reference key -> sentenceIndex counts from error log entries
+		const referenceSourcesMap: Record<string, Record<number, number>> = {}
+		for (const e of errs) {
+			// try to resolve sentence index within this lesson
+			let sentIdx = -1
+			if (lesson.sentences && e.currentSentence) {
+				// Prefer matching by id
+				sentIdx = lesson.sentences.findIndex(
+					(s) => s.id === e.currentSentence.id
+				)
+				// Fallback to matching by sentence text if id didn't match
+				if (sentIdx < 0 && typeof e.currentSentence.sentence === "string") {
+					sentIdx = lesson.sentences.findIndex(
+						(s) => s.sentence === e.currentSentence.sentence
+					)
+				}
+			}
+			// If we couldn't reliably map this error to a sentence index, skip it
+			if (sentIdx < 0) continue
+			for (const rKey of e.references || []) {
+				// Skip virtual analytics tags from tooltip generation
+				if (rKey.startsWith("verb.error.")) continue
+				if (!referenceSourcesMap[rKey]) referenceSourcesMap[rKey] = {}
+				referenceSourcesMap[rKey][sentIdx] =
+					(referenceSourcesMap[rKey][sentIdx] || 0) + 1
+			}
+		}
+
+		// Convert to human-readable string map (e.g., "Generated from sentence(s): #3 (2), #7 (1)")
+		const referenceSources: Record<string, string> = {}
+		for (const [rKey, bySent] of Object.entries(referenceSourcesMap)) {
+			const parts: string[] = []
+			for (const [siStr, cnt] of Object.entries(bySent)) {
+				const si = Number(siStr)
+				parts.push(`#${si + 1} (${cnt})`)
+			}
+			if (parts.length)
+				referenceSources[rKey] = `Generated from sentence(s): ${parts.join(
+					", "
+				)}`
+		}
+
+		// Convert example pairs maps to array form, sorted by count desc
+		function toExampleArray(m: Record<string, number>) {
+			return Object.entries(m)
+				.map(([k, c]) => {
+					const [wrong, expected] = k.split("||")
+					return { wrong, expected, count: c }
+				})
+				.sort((a, b) => b.count - a.count)
+		}
+
+		const verbMistakeExamples = {
+			tense: Object.fromEntries(
+				Object.entries(tenseExamplePairs).map(([k, v]) => [
+					k,
+					toExampleArray(v),
+				])
+			),
+			person: Object.fromEntries(
+				Object.entries(personExamplePairs).map(([k, v]) => [
+					k,
+					toExampleArray(v),
+				])
+			),
+			serEstar: Object.fromEntries(
+				Object.entries(serEstarExamplePairs).map(([k, v]) => [
+					k,
+					toExampleArray(v),
+				])
+			),
+			root: Object.fromEntries(
+				Object.entries(rootExamplePairs).map(([k, v]) => [k, toExampleArray(v)])
+			),
+		}
+
 		return {
 			lessonNumber: lessonNum,
 			correctCount: correct.length,
@@ -493,6 +669,15 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			references: refs,
 			sentenceStats,
 			errorCategoryCounts,
+			referenceSources,
+			verbMistakeBreakdown: {
+				totals: verbTotals,
+				tenseTransitions,
+				personTransitions,
+				serEstarTransitions,
+				rootTransitions,
+			},
+			verbMistakeExamples,
 		}
 	},
 
