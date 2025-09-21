@@ -182,6 +182,10 @@ const referenceMap = {
 		path: "verb.words.estar",
 		indices: [1],
 	} as ReferenceEntry,
+	estarPresent: {
+		path: "verb.words.estar",
+		indices: [2],
+	} as ReferenceEntry,
 } as const
 
 type ReferenceKey = keyof typeof referenceMap
@@ -9938,6 +9942,450 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "with", translation: prep.words.con },
 						{ phrase: "the", translation: artcl.words.las },
 						{ phrase: "girls", translation: asPlural(noun.words.chica) },
+					],
+				},
+			],
+		},
+		{
+			lesson: 23,
+			name: "Lesson 23",
+			details: "ESTAR's stabby past tense. And more nouns!",
+			info: [
+				"Before we learn the past tense conjugation of ESTAR, let's add some more NOUNS to our reperotoire.",
+				"Unlike AMIGO/AMIGA(friend) which can change genders based on context, these nouns have fixed genders and must be used with the proper articles.",
+				"CASA = House, and is always feminine. (La Casa = The Casa),",
+				"LUGAR = Place, and is always masculine. (El Lugar = The Place)",
+				"CASA is often used without an article, in phrases such as 'EN CASA' = 'AT HOME'",
+				"Let's also learn the plural form of these words:",
+				"CASAS = Houses/Homes (Las Casas = The Houses)",
+				"LUGARES = Places (Los Lugares = The Places)",
+				"Note: CASA is actually the most frequently used noun in Spanish, and LUGAR isn't far behind. Since they both are used to talk about locations we will use them a lot to practice ESTAR vs SER usage",
+				"Now let's move to learning the past tense conjugation of ESTAR. Seems tricky to memorize all these verb forms, but the good news is as you start to pick up on these conjugation patterns things WILL get easier!",
+				"I WAS = ESTABA, YOU WERE = ESTABAS, HE/SHE/IT WAS = ESTABA, WE WERE = ESTÁBAMOS, THEY WERE = ESTABAN",
+				"You may already be noticing patterns that are simillar across SER and ESTAR and across the TENSE:",
+				"Consider SERs 3rd person plural (THEY) present and past: SON and ERAN, and ESTARS 3rd person plural present and past: ESTÁN and ESTÁBAN",
+				"These conjugations are all very different from each other, BUT they all end in the letter 'N' ",
+				"Now consider SER's 2nd person (YOU) present and past: ERES and ESTÁS, and ESTAR's 2nd person (YOU) present and past: ESTÁS and ESTABAS",
+				"These conjugations all end with the letter 'S'",
+				"Here's two more quirks with ESTAR that don't really appear in English: ",
+				"Remember with SER we used LO as an attribute to refer to a whole concept previously mentioned in the sentence, like: 'We aren't friends but they are' become 'We aren't friends but they LO are'",
+				"The same thing can happen with ESTAR: 'We aren't at the house but they are' would be 'We aren't at the house but they LO ESTÁN",
+				"The other quirk with ESTAR is something you actually can't do in English. ",
+				"Consider the sentence: 'ELLOS NO ESTÁN', this is literally translated as 'They are not', but what it means in Spanish is: 'They are not around', or 'They are not present'",
+				"The thing with this is: By default the verb ESTAR refers to location, so when it's used without any other information it defaults to referring to 'the idea of being in a location'",
+				"In English we can't do this, because it's very vague to say simply: 'He isn't', or 'They aren't' without any context. But in Spanish ESTAR provides the context since it's the TO BE very speciically used for location stuff.",
+				"This use of ESTAR doesn't have to mean just 'around here' it can mean 'around there' if it is clear what location you are talking about.",
+				"For clarity in the quizzes, if we ask for HERE translate it as AQUÍ, but if we ask for PRESENT you can just use ESTAR without anything attached to it.",
+			],
+			wordBank: [
+				noun.words.casa,
+				noun.words.lugar,
+				verb.words.estar.past.estaba,
+				verb.words.estar.past.estabas,
+				verb.words.estar.past.estabamos,
+				verb.words.estar.past.estaban,
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "I was here",
+					translation: "ESTABA AQUÍ",
+					data: [
+						{
+							phrase: "I was",
+							translation: verb.words.estar.past.estaba,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 2,
+					sentence: "He was here",
+					translation: "ESTABA AQUÍ",
+					data: [
+						{
+							phrase: "He was",
+							translation: verb.words.estar.past.estaba,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 3,
+					sentence: "You were here",
+					translation: "ESTABAS AQUÍ",
+					data: [
+						{
+							phrase: "You were",
+							translation: verb.words.estar.past.estabas,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 4,
+					sentence: "We were here",
+					translation: "ESTÁBAMOS AQUÍ",
+					data: [
+						{
+							phrase: "We were",
+							translation: verb.words.estar.past.estabamos,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 5,
+					sentence: "They were here",
+					translation: "ESTABAN AQUÍ",
+					data: [
+						{
+							phrase: "They were",
+							translation: verb.words.estar.past.estaban,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 6,
+					sentence: "You are at the place",
+					translation: "ESTÁS EN EL LUGAR",
+					data: [
+						{
+							phrase: "You are",
+							translation: verb.words.estar.present.estas,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 7,
+					sentence: "You were at the house",
+					translation: "ESTABAS EN LA CASA",
+					data: [
+						{
+							phrase: "You were",
+							translation: verb.words.estar.past.estabas,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "house", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 8,
+					sentence: "Were they at the house?",
+					translation: "ESTABAN EN LA CASA?",
+					data: [
+						{
+							phrase: "Were they",
+							translation: verb.words.estar.past.estaban,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "house", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 9,
+					sentence: "We were at the places",
+					translation: "ESTÁBAMOS EN LOS LUGARES",
+					data: [
+						{
+							phrase: "We were",
+							translation: verb.words.estar.past.estabamos,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.los },
+						{ phrase: "places", translation: asPlural(noun.words.lugar) },
+					],
+				},
+				{
+					id: 10,
+					sentence: "You are at the house",
+					translation: "USTED ESTÁ EN LA CASA",
+					data: [
+						{
+							phrase: "You",
+							translation: pron.subject.words.usted,
+							isFormal: true,
+						},
+						{
+							phrase: "are",
+							translation: verb.words.estar.present.esta,
+							reference: ref("estarHowAndWhere", "usted3rdPerson"),
+							isFormal: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "house", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 11,
+					sentence: "She was here",
+					translation: "ESTABA AQUÍ",
+					data: [
+						{
+							phrase: "She was",
+							translation: verb.words.estar.past.estaba,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{
+							phrase: "here",
+							translation: advrb.words.aqui,
+						},
+					],
+				},
+				{
+					id: 12,
+					sentence: "I was in a house",
+					translation: "ESTABA EN UNA CASA",
+					data: [
+						{
+							phrase: "I was",
+							translation: verb.words.estar.past.estaba,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{
+							phrase: "in",
+							translation: prep.words.en,
+						},
+						{
+							phrase: "a",
+							translation: artcl.words.una,
+						},
+						{
+							phrase: "house",
+							translation: noun.words.casa,
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "I'm at a place",
+					translation: "ESTOY EN UN LUGAR",
+					data: [
+						{
+							phrase: "I'm",
+							translation: verb.words.estar.present.estoy,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "a", translation: artcl.words.un },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 14,
+					sentence: "We aren't friends(M) but they(M) are",
+					translation: "NOSOTROS NO SOMOS AMIGOS, but ELLOS LO SON",
+					data: [
+						{ phrase: "We(M)", translation: pron.subject.words.nosotros },
+						{
+							phrase: "aren't",
+							translation: [advrb.words.no, verb.words.ser.present.somos],
+							reference: ref("serIdentity", "noContractions"),
+						},
+						{ phrase: "friends(M)", translation: asPlural(noun.words.amigo) },
+						{ phrase: "but" },
+						{ phrase: "they(M)", translation: pron.subject.words.ellos },
+						{
+							phrase: "are",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.ser.present.son,
+							],
+							reference: ref("attributeLo", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 15,
+					sentence: "We(M) aren't at the house buy they(M) are",
+					translation: "NOSOTROS NO ESTAMOS EN LA CASA, but ELLOS LO ESTÁN",
+					data: [
+						{ phrase: "We(M)", translation: pron.subject.words.nosotros },
+						{
+							phrase: "aren't",
+							translation: [advrb.words.no, verb.words.estar.present.estamos],
+							reference: ref("estarHowAndWhere", "noContractions"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "house", translation: noun.words.casa },
+						{ phrase: "but" },
+						{ phrase: "they(M)", translation: pron.subject.words.ellos },
+						{
+							phrase: "are",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.estar.present.estan,
+							],
+							reference: ref("attributeLo", "estarHowAndWhere"),
+						},
+					],
+				},
+				{
+					id: 16,
+					sentence: "We weren't here, but now we are",
+					translation: "NO ESTÁBAMOS AQUÍ, but now LO ESTAMOS",
+					data: [
+						{
+							phrase: "We weren't",
+							translation: [advrb.words.no, verb.words.estar.past.estabamos],
+							noPronoun: true,
+							reference: ref("estarHowAndWhere", "noContractions"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "but" },
+						{ phrase: "now" },
+						{
+							phrase: "we are",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.estar.present.estamos,
+							],
+							reference: ref("attributeLo", "estarHowAndWhere"),
+						},
+					],
+				},
+				{
+					id: 17,
+					sentence: "I wasn't in a house, you were",
+					translation: "YO NO ESTABA EN UNA CASA, TÚ LO ESTABAS",
+					data: [
+						{
+							phrase: "I",
+							translation: pron.subject.words.yo,
+						},
+						{
+							phrase: "wasn't",
+							translation: [advrb.words.no, verb.words.estar.past.estaba],
+							noPronoun: true,
+							reference: ref("estarHowAndWhere", "noContractions"),
+						},
+						{
+							phrase: "in",
+							translation: prep.words.en,
+						},
+						{
+							phrase: "a",
+							translation: artcl.words.una,
+						},
+						{
+							phrase: "house",
+							translation: noun.words.casa,
+						},
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{
+							phrase: "were",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.estar.past.estabas,
+							],
+							reference: ref("attributeLo", "estarHowAndWhere"),
+						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "Were you at the place? They(F) were",
+					translation: "ESTABA USTED EN LUGAR? ELLAS LO ESTABAN",
+					data: [
+						{
+							phrase: "Were you",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere", "usted3rdPerson"),
+							isFormal: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+						{ phrase: "They(F)", translation: pron.subject.words.ellas },
+						{
+							phrase: "were",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.estar.past.estaban,
+							],
+							reference: ref("attributeLo", "estarHowAndWhere"),
+						},
+					],
+				},
+				{
+					id: 19,
+					sentence: "Yes, I am present",
+					translation: "Yes, YO ESTOY",
+					data: [
+						{ phrase: "Yes," },
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "am present",
+							translation: verb.words.estar.present.estoy,
+							reference: ref("estarHowAndWhere", "estarPresent"),
+						},
+					],
+				},
+				{
+					id: 20,
+					sentence: "They want to know if you are present",
+					translation: "ELLOS want to know if ESTÁS",
+					data: [
+						{
+							phrase: "They",
+							translation: pron.subject.words.ellos,
+						},
+						{ phrase: "want to know" },
+						{ phrase: "if" },
+						{
+							phrase: "you are present",
+							translation: verb.words.estar.present.estas,
+							reference: ref("estarHowAndWhere", "estarPresent"),
+						},
+					],
+				},
+				{
+					id: 21,
+					sentence: "The girl is not present",
+					translation: "LA CHICA NO ESTÁ",
+					data: [
+						{
+							phrase: "The girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "is not present",
+							translation: [advrb.words.no, verb.words.estar.present.esta],
+							reference: ref(
+								"estarHowAndWhere",
+								"noVerbPosition",
+								"estarPresent"
+							),
+						},
 					],
 				},
 			],

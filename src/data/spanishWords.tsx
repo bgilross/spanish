@@ -552,6 +552,24 @@ const spanishWords: SpanishWords = {
 				gender: "Feminine",
 				info: [],
 			},
+			casa: {
+				id: "noun.casa",
+				translations: ["house", "home"],
+				word: "casa",
+				forms: ["casas"],
+				pos: "Noun",
+				gender: "Feminine",
+				info: [],
+			},
+			lugar: {
+				id: "noun.lugar",
+				translations: ["place"],
+				word: "lugar",
+				forms: ["lugares"],
+				pos: "Noun",
+				gender: "Masculine",
+				info: [],
+			},
 		},
 	},
 	verb: {
@@ -582,6 +600,7 @@ const spanishWords: SpanishWords = {
 				info: [
 					"ESTAR means To Be (but not like SER), is used specifically in the sense of 'HOW' or 'WHERE' something is. Not WHAT it is.",
 					"The infinitive ESTAR can be translated as TO BE or BEING, but in the sense of BEING somewhere, or BEING in a certain condition, not related to identity.",
+					"ESTAR can refer to a location without that location being specified, ELLAS ESTAN translated directly as 'They are' but since ESTAR refers to location by default it implies 'They are present' or 'They are here'",
 				],
 				present: {
 					estoy: {
@@ -630,7 +649,44 @@ const spanishWords: SpanishWords = {
 						info: [],
 					},
 				},
-				past: {},
+				past: {
+					etaba: {
+						id: "verb.estar.past.etaba",
+						word: "estaba",
+						translations: ["was", "I was", "he/she/it was"],
+						pos: "Verb",
+						tense: "Past",
+						person: "first/third",
+						info: [],
+					},
+					etabas: {
+						id: "verb.estar.past.etabas",
+						word: "estabas",
+						translations: ["were", "you were"],
+						pos: "Verb",
+						tense: "Past",
+						person: "second",
+						info: [],
+					},
+					etabamos: {
+						id: "verb.estar.past.etabamos",
+						word: "estábamos",
+						translations: ["were", "we were"],
+						pos: "Verb",
+						tense: "Past",
+						person: "first plural",
+						info: [],
+					},
+					etaban: {
+						id: "verb.estar.past.etaban",
+						word: "estaban",
+						translations: ["were", "they were"],
+						pos: "Verb",
+						tense: "Past",
+						person: "third plural",
+						info: [],
+					},
+				},
 			},
 			ser: {
 				id: "verb.ser",
