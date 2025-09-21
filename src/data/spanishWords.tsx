@@ -414,7 +414,14 @@ const spanishWords: SpanishWords = {
 			},
 			para: {
 				id: "prep.para",
-				translations: ["for", "in order", "intended for", "so"],
+				translations: [
+					"for",
+					"in order",
+					"intended for",
+					"so",
+					"intending",
+					"intended",
+				],
 				word: "para",
 				pos: "Preposition",
 				info: [
@@ -424,7 +431,7 @@ const spanishWords: SpanishWords = {
 					"PARA ESO means `Intended for that`",
 					"PARA QUÉ means `intended for what`, or `for what intended use' /  'for what purpose` ",
 					"'PARA QUE' is an idiom which means 'So that' or 'In order that', or even 'intending that'",
-					"'PARA SER' has the meaning: 'in order to be', 'intending to be' or even 'for being', ",
+					"'PARA SER' has the meaning: 'in order to be', 'intending to be' or even 'for being', etc.",
 				],
 			},
 			por: {
@@ -483,7 +490,8 @@ const spanishWords: SpanishWords = {
 					"In Spanish DO HAVE isn't a real concept, we remove the word DO: I Don't Have that! = I no have that. 'Untie the Knot, and make the D Disappear!'",
 					"There are no contraction in Spanish. For verb types like Can't: Untie the NOT (can't be = can not be), then move not/NO to the front: NO CAN BE!",
 					"There are no contractions and no concept for 'DO a verb' or 'DID a verb' in Spanish (Do have, do say, do want). \nUntie the NOT (don't want = do not want), and make the Do DISAPPEAR! (no want)",
-					"You might think NO should work like 'She can NO be' but adverbs don't work like this. Verb Structures like CAN BE have to stick together, and the adverb has to go first!",
+					"You might think NO should work like 'She can NO be' but adverbs don't work like this. Verb Structures like CAN BE have to stick together, and the adverb has to go first: 'She NO can be'!",
+					"NO always comes before the verb or verb phrase it is negating. \n'I NO want that' not 'I want no that' \n'He NO can be here' NOT 'He can no be here'",
 				],
 				audio:
 					"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=no&tl=es&total=1&idx=0&textlen=3",
@@ -572,7 +580,8 @@ const spanishWords: SpanishWords = {
 				word: "estar",
 				pos: "Verb",
 				info: [
-					"This alternate form of 'to be': ESTAR, is used specifically in the sense of 'HOW' or 'WHERE' something is. Not WHAT it is.",
+					"ESTAR means To Be (but not like SER), is used specifically in the sense of 'HOW' or 'WHERE' something is. Not WHAT it is.",
+					"The infinitive ESTAR can be translated as TO BE or BEING, but in the sense of BEING somewhere, or BEING in a certain condition, not related to identity.",
 				],
 				present: {
 					estoy: {
