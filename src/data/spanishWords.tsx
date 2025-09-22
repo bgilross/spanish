@@ -428,10 +428,11 @@ const spanishWords: SpanishWords = {
 					`PARA roughly means FOR, implying some sort of INTENTION, or pointing at something. A 'gift' is PARA or 'intended for' someone`,
 					`Visualize PARA as an arrow, pointint at something specific, in a very direct, maybe even expectant way!`,
 					"PARA/Deadlines: 'PARA this evening' means: Do it BY this evening! We are emphasizing a point, making a due date",
-					"PARA ESO means `Intended for that`",
+					"PARA ESO means `Intended for that`, or 'in order that'",
 					"PARA QUÉ means `intended for what`, or `for what intended use' /  'for what purpose` ",
 					"'PARA QUE' is an idiom which means 'So that' or 'In order that', or even 'intending that'",
 					"'PARA SER' has the meaning: 'in order to be', 'intending to be' or even 'for being', etc.",
+					"PARA can be translated as 'in order' like 'in order to be' or 'in order that', think of it like 'with the intention of' or 'with the purpose of'",
 				],
 			},
 			por: {
