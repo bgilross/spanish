@@ -12016,8 +12016,45 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I quit" },
 					],
 				},
+				
 			],
 		},
+		{
+			lesson: 26,
+			name: "Lesson 26",
+			details: "How to use SUBJUNCTIVES in Spanish",
+			info: [
+				"Subjunctives are some of the most important Verb Conjugations for expressing Abstract Ideas in Spanish",
+				"They initimidate a lot of people, BUT they're are actually not that hard if you learn the most common sentence templates that use them!",
+				"In fact, we are already familliar with some of these sentence templates.",
+				"In Lesson 11: We discussed expressing abstract concepts in Spanish, such as intentions or reactions, using QUE phrases, such as 'I'd prefer QUE they do it by this afternoon'",
+				"We've already learned the present and past forms of SER and ESTAR now we will add to that the Subjunctives:",
+				"Subjunctives mean something like 'be' as in 'I be' 'he be' etc. and are typically used to express intention",
+				"Intention means we 'want something to be the case' We aren't necessarilly saying it IS or ISN'T the case, but expressing an intention that 'it be the case'",
+				"We actually do use the subjunctive in English, but nearly as often as it occurs in Spanish. Here's an English example: 'I recommend that you be his friend'",
+				"For SER the Subjunctive conjugations are: SEA = 'I be', SEAS = 'you be', SEA = 'he/she/it be', SEAMOS = 'we be', SEAN = 'they be'",
+				"While this usage isn't common in English, in Spanish it happens pretty much any time you indicate one person's intention for another person",
+				"Example: 'I hope that she be our friend' = 'I hope QUE ELLA SEA our friend'. In English this would simply use: 'I hope that she is' but in Spanish the verb Hope indicated some sort of intention, so the second part of the sentence(clause) after QUE is going to be subjunctive",
+				"There are some situations that trigger the subjunctive use: in technical terms you can expect this to happen anytime there are two clauses/sentence parts connected by QUE where an intention is being expressed in the first clause about what's happening in the second clause.",
+				"In the above example, 'I hope' in the first clause indicates intention towards the second clause 'she be our friend'",
+				"Some other verbs that oftern trigger subjunctives and indicate intention are: 'Hope', 'Recommend' 'Wish' 'Ask' or 'Desire' ",
+				"Now let's learn the Subjunctives for ESTAR which are all pretty easy as they retain the same stressed syllable sounding like 'STAY'" ,
+				"ESTÉ = 'I be', ESTÉS = 'you be', ESTÉ = 'he/she/it be', ESTÉMOS = 'we be', ESTÉN = 'they be'",
+				"In English there's another sentence structure that expresses intention: 'We want you to be a doctor' but this sentence structure doesn't work in Spanish",
+				"This would appear that the 'To be' should simply be SER, as in 'We want you SER a doctor', but in Spanish we would really phrase this as: 'We want that you be a doctor' = 'We want QUE SEAS doctor",
+				"For example, here are two versions of the same English Sentence: 'I hope that he is a doctor' 'I hope for him to become a doctor'",
+				"In Spanish both of these versions are simplified into 'I hope QUE ÉL SEA doctor",
+				"Another example of translating English to Spanish is: 'My parents want me to be a good student' = 'My parents what THAT I BE a good student' = 'My parents want QUE YO SEA a good student'",
+				"Just remember that you can't say things like 'Him to be' or 'you to be' in Spanish, you would say 'That he be' or 'that you be'",
+				"This quiz will start simple to cover these concepts in isolation",
+						],
+			sentences: [
+				
+			]
+
+			
+
+		}
 	],
 }
 

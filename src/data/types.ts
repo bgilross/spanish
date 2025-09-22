@@ -106,6 +106,7 @@ export interface VerbRoot extends WordObject {
 	info: string[]
 	present: Record<string, VerbConjugation>
 	past: Record<string, VerbConjugation>
+	subjunctive: Record<string, VerbConjugation>
 }
 
 export interface VerbGroup {
