@@ -776,8 +776,8 @@ const spanishWords: SpanishWords = {
 						person: "second",
 						info: [],
 					},
-					éramos: {
-						id: "verb.ser.past.éramos",
+					eramos: {
+						id: "verb.ser.past.eramos",
 						word: "éramos",
 						translations: ["were", "we were"],
 						pos: "Verb",

@@ -7361,7 +7361,7 @@ const spanishData: { lessons: Lesson[] } = {
 				{
 					id: 27,
 					sentence: "We were friends(M) and he and she were enemies",
-					translation: "ERAMOS AMIGOS, Y ÉL Y ELLA ERAN enemies",
+					translation: "ÉRAMOS AMIGOS, Y ÉL Y ELLA ERAN enemies",
 					data: [
 						{
 							phrase: "We were friends(M)",
@@ -10386,6 +10386,317 @@ const spanishData: { lessons: Lesson[] } = {
 								"estarPresent"
 							),
 						},
+					],
+				},
+			],
+		},
+		{
+			lesson: 24,
+			name: "Lesson 24",
+			details: "SER vs ESTAR review and practice",
+			info: [
+				"Keeping all the conjugations and tenses in one verb form is hard enough, now we have to do it with two verbs that mean arguably simillar things, ESTAR and SER both being different uses of 'To Be",
+				"SER is TO BE in the sense of something/someones identity or origin, What they are, or where they're from.",
+				"ESTAR is TO BE in the sense of location, Where something/someone is, or how they are (feeling, condition, etc)",
+				"There's a useful three part process in determining the correct verb usage between SER and ESTAR:",
+				"1. Decide if it's SER or ESTAR: Are we talking about WHAT something is, or WHERE it is/HOW it is?",
+				"2. Decide the TENSE: Present, Past, Future, etc",
+				"3. Decide the CONJUGATION: Who or what is the subject? I, You, He, She, It, We, They?",
+				"You may see a sentence like: 'She was my friend' and be tempted to jump right into past tense of one of the verbs, but before that you need to be totally confident if you should be using SER or ESTAR.",
+				"In this case we are talkig about 'WHAT' she was, so we know it's SER, then we see it's PAST tense, and finally we see the subject is 'SHE' so we use the 3rd person singular form of SER in the past tense: ERA",
+				"Once you get the hang of this process it will become second nature to you, and you'll be able to quickly determine the correct verb form to use.",
+				"Let's practice this process with some example sentences",
+			],
+			wordBank: [],
+			sentences: [
+				{
+					id: 1,
+					sentence: "You were the girl",
+					translation: "ERAS LA CHICA",
+					data: [
+						{
+							phrase: "You were",
+							translation: verb.words.ser.past.eras,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "the",
+							translation: artcl.words.la,
+						},
+						{ phrase: "girl", translation: noun.words.chica },
+					],
+				},
+				{
+					id: 2,
+					sentence: "She was here",
+					translation: "ELLA ESTABA AQUÍ",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 3,
+					sentence: "I was at the house",
+					translation: "ESTABA EN LA CASA",
+					data: [
+						{
+							phrase: "I was",
+							translation: verb.words.estar.past.estaba,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "house", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 4,
+					sentence: "They were friends(F)",
+					translation: "ERAN AMIGAS",
+					data: [
+						{
+							phrase: "They were",
+							translation: verb.words.ser.past.eran,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "friends(F)",
+							translation: asPlural(noun.words.amiga),
+						},
+					],
+				},
+				{
+					id: 5,
+					sentence: "He was at a place",
+					translation: "ESTABA EN UN LUGAR",
+					data: [
+						{
+							phrase: "He was",
+							translation: verb.words.estar.past.estaba,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "a", translation: artcl.words.un },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 6,
+					sentence: "We are here",
+					translation: "ESTAMOS AQUÍ",
+					data: [
+						{
+							phrase: "We are",
+							translation: verb.words.estar.present.estamos,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{
+							phrase: "here",
+							translation: advrb.words.aqui,
+						},
+					],
+				},
+				{
+					id: 7,
+					sentence: "Were you at the place?",
+					translation: "ESTABAS EN EL LUGAR?",
+					data: [
+						{
+							phrase: "Were you",
+							translation: verb.words.estar.past.estabas,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 8,
+					sentence: "You were the guy",
+					translation: "USTED ERA EL CHICO",
+					data: [
+						{
+							phrase: "You",
+							translation: pron.subject.words.usted,
+							isFormal: true,
+						},
+						{
+							phrase: "were",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity", "usted3rdPerson"),
+						},
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "guy", translation: noun.words.chico },
+					],
+				},
+				{
+					id: 9,
+					sentence: "She was afriend",
+					translation: "ELLA ERA UNA AMIGA",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "a", translation: artcl.words.una },
+						{ phrase: "friend(F)", translation: noun.words.amiga },
+					],
+				},
+				{
+					id: 10,
+					sentence: "We were here",
+					translation: "ESTÁBAMOS AQUÍ",
+					data: [
+						{
+							phrase: "We were",
+							translation: verb.words.estar.past.estabamos,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 11,
+					sentence: "We were the girls",
+					translation: "ÉRAMOS LAS CHICAS",
+					data: [
+						{
+							phrase: "We were",
+							translation: verb.words.ser.past.eramos,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "the", translation: artcl.words.las },
+						{ phrase: "girls", translation: asPlural(noun.words.chica) },
+					],
+				},
+				{
+					id: 12,
+					sentence: "They guys are friends",
+					translation: "LOS CHICOS SON AMIGOS",
+					data: [
+						{
+							phrase: "The guys",
+							translation: [artcl.words.los, noun.words.chico],
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.son,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "friends(M)", translation: asPlural(noun.words.amigo) },
+					],
+				},
+				{
+					id: 13,
+					sentence: "Are you here?",
+					translation: "USTED ESTÁ AQUÍ?",
+					data: [
+						{
+							phrase: "Are you",
+							translation: [
+								pron.subject.words.usted,
+								verb.words.estar.present.esta,
+							],
+							reference: ref("estarHowAndWhere", "usted3rdPerson"),
+							isFormal: true,
+						},
+						{
+							phrase: "here",
+							translation: advrb.words.aqui,
+						},
+					],
+				},
+				{
+					id: 14,
+					sentence: "We are not friends(M)",
+					translation: "NO SOMOS AMIGOS",
+					data: [
+						{
+							phrase: "We are not",
+							translation: [advrb.words.no, verb.words.ser.present.somos],
+							noPronoun: true,
+							reference: ref("serIdentity", "noVerbPosition"),
+						},
+						{ phrase: "friends(M)", translation: asPlural(noun.words.amigo) },
+					],
+				},
+				{
+					id: 15,
+					sentence: "They were not at the place",
+					translation: "NO ESTABAN EN EL LUGAR",
+					data: [
+						{
+							phrase: "They were not",
+							translation: [advrb.words.no, verb.words.estar.past.estaban],
+							noPronoun: true,
+							reference: ref("estarHowAndWhere", "noVerbPosition"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 16,
+					sentence: "He is a friend",
+					translation: "ES UN AMIGO",
+					data: [
+						{
+							phrase: "He is",
+							translation: verb.words.ser.present.es,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{ phrase: "friend(M)", translation: noun.words.amigo },
+					],
+				},
+				{
+					id: 17,
+					sentence: "I was the girl",
+					translation: "YO ERA LA CHICA",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "girl", translation: noun.words.chica },
+					],
+				},
+				{
+					id: 18,
+					sentence: "I'm a guy",
+					translation: "SOY UN CHICO",
+					data: [
+						{
+							phrase: "I'm",
+							translation: verb.words.ser.present.soy,
+							noPronoun: true,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{ phrase: "guy", translation: noun.words.chico },
 					],
 				},
 			],
