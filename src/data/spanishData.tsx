@@ -11301,6 +11301,139 @@ const spanishData: { lessons: Lesson[] } = {
 				},
 			],
 		},
+		{
+			lesson: 25,
+			name: "Lesson 25",
+			details: "Full Course Review Quiz",
+			info: [
+				"This is just a review and practice of everything we've learned so far!",
+				"Remember we are still using the word 'present' to denote the behoviour of ESTAR verbs to omit an actual location when saying something like 'She is present' = 'Ella está', since ESTAR implies location",
+			],
+			wordBank: [],
+			sentences: [
+				{
+					id: 1,
+					sentence: "What were you for those people?",
+					translation: "QUÉ ERAS TÚ PARA those people?",
+					data: [
+						{ phrase: "What", translation: pron.interrogative.words.que },
+						{
+							phrase: "were you",
+							translation: [verb.words.ser.past.eras, pron.subject.words.tu],
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "for",
+							translation: prep.words.para,
+							reference: ref("paraFor"),
+						},
+						{ phrase: "those people" },
+					],
+				},
+				{
+					id: 2,
+					sentence: "The boys were my friends",
+					translation: "LOS CHICOS ERAN my AMIGOS",
+					data: [
+						{
+							phrase: "The boys",
+							translation: [artcl.words.los, asPlural(noun.words.chico)],
+						},
+						{
+							phrase: "were",
+							translation: verb.words.ser.past.eran,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "my" },
+						{ phrase: "friends(M)", translation: asPlural(noun.words.amigo) },
+					],
+				},
+				{
+					id: 3,
+					sentence: "We said that you are a friend(F)",
+					translation: "We said QUE TÚ ERES UNA AMIGA",
+					data: [
+						{ phrase: "We said" },
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.eres,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "a", translation: artcl.words.una },
+						{ phrase: "friend(F)", translation: noun.words.amiga },
+					],
+				},
+				{
+					id: 4,
+					sentence: "It has to be sent to the girl by this afternoon",
+					translation: "It has to be sent A LA CHICA PARA this afternoon",
+					data: [
+						{ phrase: "It has to be sent" },
+						{ phrase: "to", translation: prep.words.a },
+						{
+							phrase: "the girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "by",
+							translation: prep.words.para,
+							reference: ref("paraDeadlines"),
+						},
+						{ phrase: "this afternoon" },
+					],
+				},
+				{
+					id: 5,
+					sentence: "They were present at 6:00",
+					translation: "ESTABAN A 6:00",
+					data: [
+						{
+							phrase: "They were present",
+							translation: verb.words.estar.past.estaban,
+							noPronoun: true,
+							reference: ref("estarHowAndWhere", "estarPresent"),
+						},
+						{
+							phrase: "at",
+							translation: prep.words.a,
+							reference: ref("aAndTime"),
+						},
+						{ phrase: "6:00" },
+					],
+				},
+				{
+					id: 6,
+					sentence: "I am the boy that found you",
+					translation: "YO SOY EL CHICO QUE LO found",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "am",
+							translation: verb.words.ser.present.soy,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "the boy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "found you",
+							isFormal: true,
+							translation: pron.attribute.words.lo,
+							reference: ref(
+								"dObjPosition",
+								"usted3rdPerson",
+								"ustedNoPronoun"
+							),
+							phraseTranslation: "LO found",
+						},
+					],
+				},
+			],
+		},
 	],
 }
 
