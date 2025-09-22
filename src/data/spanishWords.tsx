@@ -650,8 +650,8 @@ const spanishWords: SpanishWords = {
 					},
 				},
 				past: {
-					etaba: {
-						id: "verb.estar.past.etaba",
+					estaba: {
+						id: "verb.estar.past.estaba",
 						word: "estaba",
 						translations: ["was", "I was", "he/she/it was"],
 						pos: "Verb",
@@ -659,8 +659,8 @@ const spanishWords: SpanishWords = {
 						person: "first/third",
 						info: [],
 					},
-					etabas: {
-						id: "verb.estar.past.etabas",
+					estabas: {
+						id: "verb.estar.past.estabas",
 						word: "estabas",
 						translations: ["were", "you were"],
 						pos: "Verb",
@@ -668,8 +668,8 @@ const spanishWords: SpanishWords = {
 						person: "second",
 						info: [],
 					},
-					etabamos: {
-						id: "verb.estar.past.etabamos",
+					estabamos: {
+						id: "verb.estar.past.estabamos",
 						word: "estábamos",
 						translations: ["were", "we were"],
 						pos: "Verb",
@@ -677,8 +677,8 @@ const spanishWords: SpanishWords = {
 						person: "first plural",
 						info: [],
 					},
-					etaban: {
-						id: "verb.estar.past.etaban",
+					estaban: {
+						id: "verb.estar.past.estaban",
 						word: "estaban",
 						translations: ["were", "they were"],
 						pos: "Verb",
