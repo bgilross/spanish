@@ -98,6 +98,7 @@ export type PronounGroup = {
 }
 
 export interface VerbConjugation extends WordObject {
+	info: string[]
 	tense: string
 	person: string
 }

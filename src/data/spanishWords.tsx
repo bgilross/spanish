@@ -120,6 +120,7 @@ const spanishWords: SpanishWords = {
 					"If you CAN add QUE / that in Spanish as a connector then you HAVE to!",
 					"'Para que' is an idiom which means 'So that' or 'In order that'",
 					"Que can also mean than, in the sense of 'He is taller THAN his brother'",
+					"QUE is triggered by subjunctive usage, whenever you see something like 'I hope the girls are friends' you would add QUE in: 'I hope QUE the girls....' or 'I want the boys to be friends' = 'I want THAT/QUE the boys....'",
 				],
 			},
 			y: {
@@ -590,6 +591,9 @@ const spanishWords: SpanishWords = {
 			"This is because verbs aren't really just one words, but a whole family of words, all meaning the same thing, but appearing in different ways depending on the context.",
 			'For the majority of the Spanish speaking world there are five types of PEOPLE associated with any verb. "I", "YOU", "HE/SHE/IT", "WE", and "THEY"',
 			"There isn't a concept of 'DO/DID have', 'DO/DID say', or 'DO/DID' preceding any Verb in Spanish. Instead of saying 'I do have it' you would say 'I have it', and instead of 'I don't have it' you would say 'I no have it'. Untie the NOT, and make the DO disappear!",
+			"Subjunctive Conjugation is used for sentences where intention is implied, look for words like Recommend, Hope, Wish, Desire, Want, Ask, Intend, etc. and QUE phrases 'I hope that/QUE you be his teacher'. Subjunctive doesn't apply to facts/observations",
+			"Subjunctive isn't used if we are stating a fact or observation, only when there is some sort of intention, desire, or hope involved.",
+			"Just because a sentence doesn't use the exact word 'he be/she be/they be/we be' doesn't mean it's not subjunctive, look for the intention/desire/hope/wish etc. behind the sentence.",
 		],
 
 		words: {

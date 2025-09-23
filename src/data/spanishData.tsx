@@ -194,6 +194,22 @@ const referenceMap = {
 		path: "verb.words.ser",
 		indices: [9],
 	} as ReferenceEntry,
+	subjunctiveIntentionQue: {
+		path: "verb",
+		indices: [13],
+	} as ReferenceEntry,
+	noSubjunctive: {
+		path: "verb",
+		indices: [14],
+	} as ReferenceEntry,
+	subjunctiveNoBe: {
+		path: "verb",
+		indices: [15],
+	} as ReferenceEntry,
+	queWithSubjunctive: {
+		path: "conj.words.que",
+		indices: [4],
+	} as ReferenceEntry,
 } as const
 
 type ReferenceKey = keyof typeof referenceMap
@@ -12016,7 +12032,6 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "I quit" },
 					],
 				},
-				
 			],
 		},
 		{
@@ -12038,7 +12053,7 @@ const spanishData: { lessons: Lesson[] } = {
 				"There are some situations that trigger the subjunctive use: in technical terms you can expect this to happen anytime there are two clauses/sentence parts connected by QUE where an intention is being expressed in the first clause about what's happening in the second clause.",
 				"In the above example, 'I hope' in the first clause indicates intention towards the second clause 'she be our friend'",
 				"Some other verbs that oftern trigger subjunctives and indicate intention are: 'Hope', 'Recommend' 'Wish' 'Ask' or 'Desire' ",
-				"Now let's learn the Subjunctives for ESTAR which are all pretty easy as they retain the same stressed syllable sounding like 'STAY'" ,
+				"Now let's learn the Subjunctives for ESTAR which are all pretty easy as they retain the same stressed syllable sounding like 'STAY'",
 				"ESTÉ = 'I be', ESTÉS = 'you be', ESTÉ = 'he/she/it be', ESTÉMOS = 'we be', ESTÉN = 'they be'",
 				"In English there's another sentence structure that expresses intention: 'We want you to be a doctor' but this sentence structure doesn't work in Spanish",
 				"This would appear that the 'To be' should simply be SER, as in 'We want you SER a doctor', but in Spanish we would really phrase this as: 'We want that you be a doctor' = 'We want QUE SEAS doctor",
@@ -12046,15 +12061,563 @@ const spanishData: { lessons: Lesson[] } = {
 				"In Spanish both of these versions are simplified into 'I hope QUE ÉL SEA doctor",
 				"Another example of translating English to Spanish is: 'My parents want me to be a good student' = 'My parents what THAT I BE a good student' = 'My parents want QUE YO SEA a good student'",
 				"Just remember that you can't say things like 'Him to be' or 'you to be' in Spanish, you would say 'That he be' or 'that you be'",
-				"This quiz will start simple to cover these concepts in isolation",
-						],
+				"This quiz will start simple to cover these concepts in isolation, watch out for differences in sentences that use subjunctive and don't",
+			],
+			wordBank: [
+				verb.words.ser.subjunctive.seas,
+				verb.words.ser.subjunctive.sea,
+				verb.words.ser.subjunctive.seamos,
+				verb.words.ser.subjunctive.sean,
+				verb.words.estar.subjunctive.este,
+				verb.words.estar.subjunctive.estes,
+				verb.words.estar.subjunctive.estemos,
+				verb.words.estar.subjunctive.esten,
+			],
+
 			sentences: [
-				
-			]
-
-			
-
-		}
+				{
+					id: 1,
+					sentence: "I recommend that you be his teacher",
+					translation: "I recommend QUE SEAS his teacher",
+					data: [
+						{ phrase: "I recommend" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you be",
+							translation: verb.words.ser.subjunctive.seas,
+							reference: ref("serIdentity", "subjunctiveIntentionQue"),
+						},
+						{ phrase: "his teacher" },
+					],
+				},
+				{
+					id: 2,
+					sentence: "I ask that she be my friend",
+					translation: "I ask QUE ELLA SEA my AMIGA",
+					data: [
+						{ phrase: "I ask" },
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "she be", translation: verb.words.ser.subjunctive.sea },
+						{ phrase: "my" },
+						{ phrase: "friend", translation: noun.words.amiga },
+					],
+				},
+				{
+					id: 3,
+					sentence: "You see that he is not your student",
+					translation: "You see QUE ÉL NO ES your student",
+					data: [
+						{ phrase: "You see" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "he is not",
+							translation: [
+								pron.subject.words.el,
+								advrb.words.no,
+								verb.words.ser.present.es,
+							],
+							reference: ref("serIdentity", "noSubjunctive", "noVerbPosition"),
+						},
+						{ phrase: "your student" },
+					],
+				},
+				{
+					id: 4,
+					sentence: "They intend that we be students",
+					translation: "They intend QUE SEAMOS students",
+					data: [
+						{ phrase: "They intend" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "we be",
+							translation: verb.words.ser.subjunctive.seamos,
+							reference: ref("serIdentity", "subjunctiveIntentionQue"),
+						},
+						{ phrase: "students" },
+					],
+				},
+				{
+					id: 5,
+					sentence: "He hopes that she is the winner",
+					translation: "ÉL hopes QUE ELLA SEA LA winner",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{ phrase: "hopes" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "she is",
+							translation: verb.words.ser.subjunctive.sea,
+							reference: ref("serIdentity", "subjunctiveNoBe"),
+						},
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "winner" },
+					],
+				},
+				{
+					id: 6,
+					sentence: "I recommend that you be here",
+					translation: "I recommend QUE ESTÉS AQUÍ",
+					data: [
+						{ phrase: "I recommend" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you be",
+							translation: verb.words.estar.subjunctive.estes,
+							reference: ref("estarHowAndWhere", "subjunctiveIntentionQue"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 7,
+					sentence: "I hope that she is at the house",
+					translation: "I hope QUE ELLA ESTÉ EN LA CASA",
+					data: [
+						{ phrase: "I hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "she is",
+							translation: verb.words.estar.subjunctive.este,
+							reference: ref("estarHowAndWhere", "subjunctiveNoBe"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "house", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 8,
+					sentence: "I want the boys to be friends",
+					translation: "I want QUE LOS CHICOS SEAN AMIGOS",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "want the boys to be",
+							phraseTranslation: "want QUE LOS CHICOS SEAN",
+							translation: [
+								conj.words.que,
+								artcl.words.los,
+								asPlural(noun.words.chico),
+								verb.words.ser.subjunctive.sean,
+							],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{ phrase: "friends", translation: asPlural(noun.words.amigo) },
+					],
+				},
+				{
+					id: 9,
+					sentence: "I want him to be here",
+					translation: "I want QUE ÉL ESTÉ AQUÍ",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "want him to be",
+							phraseTranslation: "want QUE ÉL ESTÉ",
+							translation: [
+								conj.words.que,
+								pron.subject.words.el,
+								verb.words.estar.subjunctive.este,
+							],
+							reference: ref(
+								"estarHowAndWhere",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 10,
+					sentence: "They want me to be a lawyer",
+					translation: "They want QUE YO SEA lawyer",
+					data: [
+						{ phrase: "They" },
+						{
+							phrase: "want me to be",
+							phraseTranslation: "want QUE YO SEA",
+							translation: [
+								conj.words.que,
+								pron.subject.words.yo,
+								verb.words.ser.subjunctive.sea,
+							],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{ phrase: "lawyer" },
+					],
+				},
+				{
+					id: 11,
+					sentence: "I want you to be my teacher",
+					translation: "I want QUE USTED SEA my teacher",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "want you to be",
+							phraseTranslation: "want QUE USTED SEA",
+							translation: [
+								conj.words.que,
+								pron.subject.words.usted,
+								verb.words.ser.subjunctive.sea,
+							],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"usted3rdPerson"
+							),
+							isFormal: true,
+						},
+						{ phrase: "my" },
+						{ phrase: "teacher" },
+					],
+				},
+				{
+					id: 12,
+					sentence: "I want you to be here",
+					translation: "I want QUE ESTÉ AQUÍ",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "want you to be",
+							phraseTranslation: "want QUE ESTÉ",
+							translation: [conj.words.que, verb.words.estar.subjunctive.este],
+							reference: ref(
+								"estarHowAndWhere",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{
+							phrase: "here",
+							translation: advrb.words.aqui,
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "We(M) don't want them to be at the place",
+					translation: "NOSOTROS NO want QUE ESTÉN EN EL LUGAR",
+					data: [
+						{ phrase: "We(M)", translation: pron.subject.words.nosotros },
+						{
+							phrase: "don't want them to be",
+							translation: [
+								advrb.words.no,
+								conj.words.que,
+								verb.words.estar.subjunctive.esten,
+							],
+							phraseTranslation: "NO want QUE ESTÉN",
+							reference: ref(
+								"estarHowAndWhere",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue"
+							),
+							noPronoun: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 14,
+					sentence: "We want you to be a doctor",
+					translation: "We want QUE SEAS doctor",
+					data: [
+						{ phrase: "We" },
+						{
+							phrase: "want you to be",
+							phraseTranslation: "want QUE SEAS",
+							translation: [conj.words.que, verb.words.ser.subjunctive.seas],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue"
+							),
+							noPronoun: true,
+						},
+						{ phrase: "doctor" },
+					],
+				},
+				{
+					id: 15,
+					sentence: "I ask that she be my friend",
+					translation: "I ask QUE ELLA SEA my AMIGA",
+					data: [
+						{ phrase: "I ask" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "she be",
+							translation: verb.words.ser.subjunctive.sea,
+							reference: ref("serIdentity", "subjunctiveIntentionQue"),
+						},
+						{ phrase: "my" },
+						{ phrase: "friend", translation: noun.words.amiga },
+					],
+				},
+				{
+					id: 16,
+					sentence: "I hope that they(M) are at the house",
+					translation: "I hope QUE ELLOS ESTÉN EN LA CASA",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "hope that they(M) are",
+							phraseTranslation: "hope QUE ELLOS ESTÉN",
+							translation: [
+								conj.words.que,
+								pron.subject.words.ellos,
+								verb.words.estar.subjunctive.esten,
+							],
+							reference: ref(
+								"estarHowAndWhere",
+								"queWithSubjunctive",
+								"subjunctiveNoBe"
+							),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "the house",
+							translation: [artcl.words.la, noun.words.casa],
+						},
+					],
+				},
+				{
+					id: 17,
+					sentence: "He hopes that she is the winner",
+					translation: "ÉL hopes QUE ELLA SEA LA winner",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{ phrase: "hopes" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "she is",
+							translation: verb.words.ser.subjunctive.sea,
+							reference: ref("serIdentity", "subjunctiveNoBe"),
+						},
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "winner" },
+					],
+				},
+				{
+					id: 18,
+					sentence: "I want him to be here",
+					translation: "I want QUE ÉL ESTÉ AQUÍ",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "want him to be",
+							phraseTranslation: "want QUE ÉL ESTÉ",
+							translation: [
+								conj.words.que,
+								pron.subject.words.el,
+								verb.words.estar.subjunctive.este,
+							],
+							reference: ref(
+								"estarHowAndWhere",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 19,
+					sentence: "She knows that we were friends(F)",
+					translation: "She knows QUE ÉRAMOS AMIGAS",
+					data: [
+						{ phrase: "She knows" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "we were",
+							translation: verb.words.ser.past.eramos,
+							reference: ref("serIdentity", "noSubjunctive"),
+							noPronoun: true,
+						},
+						{ phrase: "friends(F)", translation: asPlural(noun.words.amiga) },
+					],
+				},
+				{
+					id: 20,
+					sentence: "I think that they are in school",
+					translation: "I think QUE ESTÁN EN school",
+					data: [
+						{ phrase: "I think" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "they are",
+							translation: verb.words.estar.present.estan,
+							reference: ref("estarHowAndWhere", "noSubjunctive"),
+							noPronoun: true,
+						},
+						{ phrase: "in", translation: prep.words.en },
+						{ phrase: "school" },
+					],
+				},
+				{
+					id: 21,
+					sentence: "She asks that they(F) be good students",
+					translation: "She asks QUE ELLAS SEAN good students",
+					data: [
+						{ phrase: "She asks" },
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "they(F)", translation: pron.subject.words.ellas },
+						{
+							phrase: "be",
+							translation: verb.words.ser.subjunctive.sean,
+							reference: ref("serIdentity", "subjunctiveIntentionQue"),
+						},
+						{ phrase: "good students" },
+					],
+				},
+				{
+					id: 22,
+					sentence: "You see that he is not your student",
+					translation: "You see QUE ÉL NO ES your student",
+					data: [
+						{ phrase: "You see" },
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "he" },
+						{
+							phrase: "is not",
+							translation: [advrb.words.no, verb.words.ser.present.es],
+							reference: ref("serIdentity", "noSubjunctive", "noVerbPosition"),
+						},
+						{ phrase: "your student" },
+					],
+				},
+				{
+					id: 23,
+					sentence: "I want you to be here",
+					translation: "I want QUE ESTÉS AQUÍ",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "want you to be",
+							phraseTranslation: "want QUE ESTÉS",
+							translation: [conj.words.que, verb.words.estar.subjunctive.estes],
+							reference: ref(
+								"estarHowAndWhere",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 24,
+					sentence: "I want you to be my teacher",
+					translation: "I want QUE USTED SEA my teacher",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "want you to be",
+							phraseTranslation: "want QUE USTED SEA",
+							translation: [
+								conj.words.que,
+								pron.subject.words.usted,
+								verb.words.ser.subjunctive.sea,
+							],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"usted3rdPerson"
+							),
+							isFormal: true,
+						},
+						{ phrase: "my" },
+						{ phrase: "teacher" },
+					],
+				},
+				{
+					id: 25,
+					sentence: "I saw he was here",
+					translation: "I saw QUE ÉL ESTABA AQUÍ",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "saw he was",
+							phraseTranslation: "saw QUE ÉL ESTABA",
+							translation: [
+								conj.words.que,
+								pron.subject.words.el,
+								verb.words.estar.past.estaba,
+							],
+							reference: ref("estarHowAndWhere", "noSubjunctive"),
+						},
+						{
+							phrase: "here",
+							translation: advrb.words.aqui,
+						},
+					],
+				},
+				{
+					id: 26,
+					sentence: "I think that they are my friends",
+					translation: "I think QUE SON my AMIGOS",
+					data: [
+						{ phrase: "I think" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "they are",
+							translation: verb.words.ser.present.son,
+							reference: ref("serIdentity", "noSubjunctive"),
+							noPronoun: true,
+						},
+						{ phrase: "my" },
+						{ phrase: "friends", translation: asPlural(noun.words.amigo) },
+					],
+				},
+				{
+					id: 27,
+					sentence: "He hopes that we are at the place",
+					translation: "He hopes QUE ESTEMOS EN EL LUGAR",
+					data: [
+						{ phrase: "He" },
+						{ phrase: "hopes" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "we are",
+							translation: verb.words.estar.subjunctive.estemos,
+							reference: ref("estarHowAndWhere", "subjunctiveIntentionQue"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 28,
+					sentence: "I know that you are my friend(M)",
+					translation: "I know QUE TÚ ERES my AMIGO",
+					data: [
+						{ phrase: "I know" },
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.eres,
+							reference: ref("serIdentity", "noSubjunctive"),
+						},
+						{ phrase: "my" },
+						{ phrase: "friend(M)", translation: noun.words.amigo },
+					],
+				},
+			],
+		},
 	],
 }
 
