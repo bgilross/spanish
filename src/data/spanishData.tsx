@@ -3,7 +3,7 @@ import words from "./spanishWords"
 // Optional plural surface helper
 import { asPlural } from "@/lib/wordForms"
 
-const { conj, pron, prep, advrb, noun, verb, artcl } = words
+const { conj, pron, prep, advrb, noun, verb, artcl, adjective } = words
 
 // ---------------------------------------------------------------------------
 // Lightweight reference mapping helper
@@ -13310,6 +13310,64 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 						{ phrase: "their" },
 						{ phrase: "friend(M)", translation: noun.words.amigo },
+					],
+				},
+			],
+		},
+		{
+			lesson: 28,
+			name: "Lesson 28",
+			details: "Spanish Possesive Adjevtives: MI, SU, and TU",
+			info: [
+				"We will continue to practice all the conjugations we learned with SER and ESTAR, including the subjunctive, but let's learn some words that are far easier!",
+				"We know some words that we can use before mouns, like articles: 'una casa' 'el amigo' 'el lugar' etc.",
+				"These new words function the same way to give us 'my house' 'your house' and 'their things'",
+				"These are called 'Possessive Adjectives' and the main three are: MI = my, TU = your, and SU = their, actually SU can mean just about anything else excepting 'my', 'your' and 'ours', including: 'his', 'hers', 'its', 'your(formal)', 'their', and 'it's'",
+				"Obviouslty 'SU casa' can lead to some ambiguity, is it hers? his? theirs? To specify we can say 'la casa de él' but if it's clear by context SU CASA works just fine.",
+				"These spanish Possessives should be pluralized to match the noun, unlike English, by adding an S to the end, So 'my houses' = 'mis casas'",
+				"These words change based on whether the noun is plural or singular, but they don't change based on gender, 'your friend(M) = 'tu amigo' and 'your friend(F) = 'tu amiga'",
+				"The last possessive to learn is slightly more complicated, it's 'Nuestro' meaning Our and this one DOES change based on the nouns gender!",
+				"Some NuESTRO examples: 'Nuestro Amigo' 'Nuestros Amigos' 'Nuestra Casa; and 'Nuestras Casas' note the change in both gender and plural/singular based on the noun it's referring to ",
+				"To add to these possessives let's learn some Easy Conjunctions which basically translate and are used exactly as in English, just like 'Y = And'",
+				"SI = If and is used the same as english's if. and PERO = But. ",
+				"O = Or, and is a lot like Y(and) because you can use it between items in a list, or in between two sentences to join them together",
+				"O has a slight different from English, and that is that it can also how we sap 'Either' as in 'Either she or he' would be 'O ELLA O ÉL",
+				"The last conjunction to learn is a little tricky, it's CUANCO meaning 'When'",
+				"Here's the tricky part: consider this sentence: 'We will do it when you are here', but what time does 'when you are here' refer to? it is Future, or Present, or what??",
+				"In the first clause: 'We will do it' is future tense, but in the second tense for some reason we are saying 'you are here' which sounds like present tense, if it's future shouldn't we say: 'when you will be here'? but we never say 'We will do it when you will be here' in English.",
+				"Basically what's happening is: 'We're referring to when something happens in the future, and the rule in Spanish is:",
+				"When you say when something happens and it happens in the future you actually use the Subjunctive.",
+				"Why is this? It's not indicating intention, or an emotion.. the fact it there are just some situations in Spanish that flip a switch and trigger the subjunctive. ",
+				"You will stumble over more situations once in a while as you learn more and more Spanish words, and the word CUANDO is just one of them. It's simply a new sentence template to learn for subjunctives.",
+				"Now, note that this specifically happens only in the FUTURE tense situations, if you use CUANDO in the past: 'We were friends when we were kids', you DON'T use the subjunctive, just normal past tense.",
+				"You also wouldn't do this when talking about the present if you're referring to things that are repeated, like: 'I always give easy assignments when I am the teacher'",
+				"We will be learning the Future tenses of SER and ESTAR next Lesson, so the only thing to worry about with future for now is that it triggers subjunctive specifically when CUANDO is involved.",
+			],
+			wordBank: [
+				conj.words.o,
+				conj.words.si,
+				conj.words.cuando,
+				conj.words.pero,
+				adjective.possessive.words.mi,
+				adjective.possessive.words.tu,
+				adjective.possessive.words.su,
+				adjective.possessive.words.nuestro,
+				adjective.possessive.words.nuestra,
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "We(M) did it or they(F) did it",
+					translation: "NOSOTROS LO did O ELLAS LO did",
+					data: [
+						{ phrase: "We(M)", translation: pron.subject.words.nosotros },
+						{
+							phrase: "did it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
+						},
+						{ phrase: "or", translation: conj.words.o },
 					],
 				},
 			],

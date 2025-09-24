@@ -1,4 +1,9 @@
-import { WordGroup, VerbGroup, PronounGroup } from "../data/types"
+import {
+	WordGroup,
+	VerbGroup,
+	PronounGroup,
+	AdjectiveGroup,
+} from "../data/types"
 
 interface SpanishWords {
 	artcl: WordGroup
@@ -8,6 +13,7 @@ interface SpanishWords {
 	advrb: WordGroup
 	noun: WordGroup
 	verb: VerbGroup
+	adjective: AdjectiveGroup
 	// dObj: WordGroup
 }
 
@@ -99,6 +105,63 @@ const spanishWords: SpanishWords = {
 			},
 		},
 	},
+	adjective: {
+		id: "adjectives",
+		name: "Adjective",
+		info: [],
+		words: {},
+		possessive: {
+			id: "adjectives.possessive",
+			name: "Possessive",
+			info: [
+				"Possessive adjectives indicate ownership. Use plural forms when the owned noun is plural.",
+			],
+			words: {
+				mi: {
+					id: "adjectives.possessive.mi",
+					translations: ["my"],
+					word: "mi",
+					forms: ["mis"],
+					pos: "Adjective",
+					info: [],
+				},
+				tu: {
+					id: "adjectives.possessive.tu",
+					translations: ["your"],
+					word: "tu",
+					forms: ["tus"],
+					pos: "Adjective",
+					info: [],
+				},
+				su: {
+					id: "adjectives.possessive.su",
+					translations: ["his", "her", "your(formal)", "their", "its"],
+					word: "su",
+					forms: ["sus"],
+					pos: "Adjective",
+					info: [],
+				},
+				nuestro: {
+					id: "adjectives.possessive.nuestro",
+					translations: ["our (M)"],
+					word: "nuestro",
+					forms: ["nuestros"],
+					pos: "Adjective",
+					gender: "masculine",
+					info: [],
+				},
+				nuestra: {
+					id: "adjectives.possessive.nuestra",
+					translations: ["our (F)"],
+					word: "nuestra",
+					forms: ["nuestras"],
+					pos: "Adjective",
+					gender: "feminine",
+					info: [],
+				},
+			},
+		},
+	},
 	conj: {
 		id: "conj",
 		name: "Conjunction",
@@ -131,6 +194,34 @@ const spanishWords: SpanishWords = {
 					"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=and&tl=es&total=1&idx=0&textlen=3",
 				pos: "Conjunction",
 				info: ["Y is another CONJUNCTION and is a direct translation of AND"],
+			},
+			si: {
+				id: "conj.si",
+				translations: ["if"],
+				word: "si",
+				pos: "Conjunction",
+				info: [],
+			},
+			pero: {
+				id: "conj.pero",
+				translations: ["but"],
+				word: "pero",
+				pos: "Conjunction",
+				info: [],
+			},
+			o: {
+				id: "conj.o",
+				translations: ["or", "either"],
+				word: "o",
+				pos: "Conjunction",
+				info: [],
+			},
+			cuando: {
+				id: "conj.cuando",
+				translations: ["when"],
+				word: "cuando",
+				pos: "Conjunction",
+				info: [],
 			},
 		},
 	},

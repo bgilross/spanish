@@ -85,6 +85,20 @@ export type WordGroup = {
 	words: Record<string, WordObject>
 }
 
+/** Adjectives can have subcategories like possessive or descriptive. Possessive
+ * adjectives frequently have plural surface forms (e.g. mi -> mis, nuestro -> nuestros)
+ */
+export type AdjectiveGroup = {
+	id: string
+	name: string
+	info: string[]
+	/** Generic adjective bucket (keeps backward compatibility) */
+	words: Record<string, WordObject>
+	/** Named adjective subcategories (possessive, descriptive, etc.) */
+	possessive: WordGroup
+	descriptive?: WordGroup
+}
+
 export type PronounGroup = {
 	id: string
 	name: string
