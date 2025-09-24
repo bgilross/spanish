@@ -210,6 +210,18 @@ const referenceMap = {
 		path: "conj.words.que",
 		indices: [4],
 	} as ReferenceEntry,
+	paraQueSubjunctiveFor: {
+		path: "prep.words.para",
+		indices: [8],
+	} as ReferenceEntry,
+	noSubjunctiveYourself: {
+		path: "verb",
+		indices: [16],
+	} as ReferenceEntry,
+	queExclamationSubjunctive: {
+		path: "pron.interrogative.words.que",
+		indices: [2],
+	} as ReferenceEntry,
 } as const
 
 type ReferenceKey = keyof typeof referenceMap
@@ -12613,6 +12625,690 @@ const spanishData: { lessons: Lesson[] } = {
 							reference: ref("serIdentity", "noSubjunctive"),
 						},
 						{ phrase: "my" },
+						{ phrase: "friend(M)", translation: noun.words.amigo },
+					],
+				},
+			],
+		},
+		{
+			lesson: 27,
+			name: "Lesson 27",
+			details: "Subjunctives to express abstract ideas/concepts",
+			info: [
+				"Last lesson we learned the Subjunctive forms of SER and ESTAR and how they are used to express intentions/hopes/desire/wants in Spanish",
+				"Example: 'I hope that they are here' = 'I hope QUE ESTÉN AQUÍ' not 'I hope QUE ESTÁN AQUÍ'",
+				"That is the most common sentence template for Subjunctives, but there are others, and one of them involves using the prepositing 'PARA'",
+				"We already know about using PARA in simple situations to express Intention such as 'This is for you' = 'This ES PARA you'",
+				"Another way to use PARA we've been practicing is the use of 'PARA QUE' which indicates the 'intention that something be the case' this form will always be followed by a subjunctive, no matter what kind of verb occurs before it",
+				"Here's an example: 'We did it so that you be here' = 'We did it PARA QUE ESTÉS AQUÍ'",
+				"The english translation of ESTÉS is weird here, in English we do use the phrase 'so that' or 'in order that' (para que) quite a bit, but we don't say 'so that you be here' or 'in order that you be here'",
+				"Instead, in English, we usually say 'We did it so that you WOULD be here' or 'we did it so that you COULD be here', or even 'we did it in order for you to be here'",
+				"These are three different jumbled ways of saying the same thing in English, while in Spanish it's very mechanical and simple.",
+				"Here's the rule: If you do something with an intended outcome for someone or something else, you will use 'para que' followed by a subjunctive.",
+				"So English's: 'Would Be', 'Could Be' and 'For To be' or anything simillar are all triggering subjunctive in spanish, using para que, para que sea",
+				"There is an exception here, and it's that 'to be' get's translated as it's normal infinitive (SER or ESTAR) when someone is doing something and has an intention for themselves.",
+				"Example: 'She did it in order to be here' = 'ELLA LO did PARA ESTAR AQUÍ' (not para que esté)",
+				"Basically you still use the infinitive form for intention SPECIFICALLY if the person doing the intention is intending the thing for themself.",
+				"Other examples: 'We did it in order to be here' = 'NOSOTROS LO did PARA ESTAR AQUÍ', and.'You(formal) did it in order to be the winner = 'USTED LO did PARA SER the winnder'",
+				"This infinitive wouldn't be used if the person intending the thing is intendint it for themselves and others: 'You did it for us to be friends' = 'TÚ LO did PARA QUE SEAMOS AMIGOS'(subjunctive) ",
+				"One last subjunctive quirk: Remember the 'How Strange' = 'QUÉ Strange' template, using QUÉ for exclamations? Well when this comes up and is followed by a possible QUE phrase it triggers the subjunctive,",
+				"QUÉ [emotion] QUE [something be the case], example: 'How weird that they are here' = 'How weird that they be here' =  'QUÉ weird QUE ESTÉN AQUÍ",
+				"To summarize we now have 3 sentence templates to use with Subjunctive conjugations:",
+				"Someone intends QUE something be the case(for someone else/themselves and someone else)",
+				"Someone does something PARA QUE something be the case (for someone else/themselves and someone else)",
+				"and: QUÉ [reaction] QUE something be the case",
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "They want me to be their friend(M)",
+					translation: "ELLOS want QUE YO SEA their AMIGO",
+					data: [
+						{ phrase: "They", translation: pron.subject.words.ellos },
+						{
+							phrase: "want me to be",
+							phraseTranslation: "want QUE YO SEA",
+							translation: [
+								conj.words.que,
+								pron.subject.words.yo,
+								verb.words.ser.subjunctive.sea,
+							],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe"
+							),
+						},
+						{ phrase: "their" },
+						{ phrase: "friend(M)", translation: noun.words.amigo },
+					],
+				},
+				{
+					id: 2,
+					sentence: "I hope we're students",
+					translation: "I hope QUE SEAMOS students",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "hope we're",
+							phraseTranslation: "hope QUE SEAMOS",
+							translation: [conj.words.que, verb.words.ser.subjunctive.seamos],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe"
+							),
+						},
+						{ phrase: "students" },
+					],
+				},
+				{
+					id: 3,
+					sentence: "Why is the doctor(F) your friend",
+					translation: "POR QUÉ ES LA Doctor your AMIGA",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							reference: ref("porQueWhy"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "doctor(F)" },
+						{ phrase: "your" },
+						{ phrase: "friend", translation: noun.words.amiga },
+					],
+				},
+				{
+					id: 4,
+					sentence: "I did it for them to be at home",
+					translation: "YO LO did PARA QUE ESTÉN EN CASA",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "did it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
+						},
+						{
+							phrase: "for them to be",
+							phraseTranslation: "PARA QUE ESTÉN",
+							translation: [
+								prep.words.para,
+								conj.words.que,
+								verb.words.estar.subjunctive.esten,
+							],
+							reference: ref("estarHowAndWhere", "paraQueSubjunctiveFor"),
+							noPronoun: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "home", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 5,
+					sentence: "I hope that they're taller than she",
+					translation: "YO hope QUE SEAN taller QUE ELLA",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "they're",
+							translation: verb.words.ser.subjunctive.sean,
+							reference: ref("serIdentity", "subjunctiveNoBe"),
+							noPronoun: true,
+						},
+						{ phrase: "taller" },
+						{
+							phrase: "than",
+							translation: conj.words.que,
+							reference: ref("queAsThan"),
+						},
+						{ phrase: "she", translation: pron.subject.words.ella },
+					],
+				},
+				{
+					id: 6,
+					sentence: "You want me to be at the place?",
+					translation: "TÚ want QUE YO ESTÉ EN EL LUGAR?",
+					data: [
+						{ phrase: "You", translation: pron.subject.words.tu },
+						{
+							phrase: "want me to be",
+							phraseTranslation: "want QUE YO ESTÉ",
+							translation: [
+								conj.words.que,
+								pron.subject.words.yo,
+								verb.words.estar.subjunctive.este,
+							],
+							reference: ref(
+								"estarHowAndWhere",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe"
+							),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 7,
+					sentence: "I'm here in order to be at home",
+					translation: "YO ESTOY AQUÍ PARA ESTAR EN CASA",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "am",
+							translation: verb.words.estar.present.estoy,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{
+							phrase: "in order to be",
+							phraseTranslation: "PARA ESTAR",
+							translation: [prep.words.para, verb.words.estar],
+							reference: ref("estarHowAndWhere", "paraInOrder"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "home", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 8,
+					sentence: "The problem was that they(M) wanted to be students",
+					translation: "The problem ERA QUE ELLOS wanted SER students",
+					data: [
+						{ phrase: "The problem" },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "they(M)", translation: pron.subject.words.ellos },
+						{
+							phrase: "wanted to be",
+							phraseTranslation: "wanted SER",
+							translation: verb.words.ser,
+							reference: ref("serIdentity", "noSubjunctiveYourself"),
+						},
+						{ phrase: "students" },
+					],
+				},
+				{
+					id: 9,
+					sentence: "They(F) did it for you to be the winner(F)",
+					translation: "ELLAS LO did PARA QUE SEAS LA winner",
+					data: [
+						{
+							phrase: "They(F)",
+							translation: pron.subject.words.ellas,
+						},
+						{
+							phrase: "did it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
+						},
+						{
+							phrase: "for",
+							phraseTranslation: "PARA QUE",
+							translation: [prep.words.para, conj.words.que],
+							reference: ref("estarHowAndWhere", "paraQueSubjunctiveFor"),
+						},
+						{
+							phrase: "you to be",
+							phraseTranslation: "SEAS",
+							translation: verb.words.ser.subjunctive.seas,
+							reference: ref(
+								"serIdentity",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe"
+							),
+							noPronoun: true,
+						},
+						{ phrase: "the", translation: artcl.words.la },
+						{ phrase: "winner(F)" },
+					],
+				},
+				{
+					id: 10,
+					sentence: "Do you want to be at the place?",
+					translation: "You want ESTAR EN EL LUGAR?",
+					data: [
+						{ phrase: "Do you want" },
+						{
+							phrase: "to be",
+							translation: verb.words.estar,
+							phraseTranslation: "ESTAR",
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 11,
+					sentence: "How silly that we are at home!",
+					translation: "QUÉ silly QUE ESTEMOS EN CASA!",
+					data: [
+						{
+							phrase: "How silly",
+							translation: pron.interrogative.words.que,
+							reference: ref("queExclamation"),
+							phraseTranslation: "QUÉ silly",
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "we are",
+							translation: verb.words.estar.subjunctive.estemos,
+							reference: ref(
+								"estarHowAndWhere",
+								"subjunctiveNoBe",
+								"queExclamationSubjunctive"
+							),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "home", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 12,
+					sentence: "I studied a lot in order to be a good student(M)",
+					translation: "YO studied a lot PARA SER UN good student",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "studied a lot" },
+						{
+							phrase: "in order",
+							translation: prep.words.para,
+							reference: ref("paraInOrder"),
+						},
+						{
+							phrase: "to be",
+							translation: verb.words.ser,
+							reference: ref("serIdentity", "noSubjunctiveYourself"),
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{ phrase: "good student(M)" },
+					],
+				},
+				{
+					id: 13,
+					sentence: "How sad that you're not present.",
+					translation: "QUÉ sad QUE NO ESTÉS.",
+					data: [
+						{
+							phrase: "How sad",
+							translation: pron.interrogative.words.que,
+							reference: ref("queExclamation"),
+							phraseTranslation: "QUÉ sad",
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you're not",
+							translation: [advrb.words.no, verb.words.estar.subjunctive.estes],
+							reference: ref(
+								"estarHowAndWhere",
+								"queExclamationSubjunctive",
+								"subjunctiveNoBe",
+								"estarPresent"
+							),
+						},
+					],
+				},
+				{
+					id: 14,
+					sentence: "We(F) did it in order to be at the place",
+					translation: "NOSOTRAS LO did PARA ESTAR EN EL LUGAR",
+					data: [
+						{ phrase: "We(F)", translation: pron.subject.words.nosotras },
+						{
+							phrase: "did it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
+						},
+						{
+							phrase: "in order",
+							translation: prep.words.para,
+							reference: ref("paraInOrder"),
+						},
+						{
+							phrase: "to be",
+							translation: verb.words.estar,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 15,
+					sentence: "Do you want to be a millionaire?",
+					translation: "USTED want SER millionaire",
+					data: [
+						{
+							phrase: "Do you want",
+							translation: pron.subject.words.usted,
+							reference: ref("noDo"),
+							phraseTranslation: "USTED want",
+						},
+						{
+							phrase: "to be a millionaire",
+							translation: verb.words.ser,
+							reference: ref("serIdentity", "serProfession"),
+						},
+					],
+				},
+				{
+					id: 16,
+					sentence: "I did it in order for the girl to be at the place",
+					translation: "YO LO did PARA QUE LA CHICA ESTÉ EN EL LUGAR",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "did it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
+						},
+						{
+							phrase: "in order for",
+							phraseTranslation: "PARA QUE",
+							translation: [prep.words.para, conj.words.que],
+							reference: ref("paraQueSubjunctiveFor"),
+						},
+						{
+							phrase: "the girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "to be",
+							translation: verb.words.estar.subjunctive.este,
+							reference: ref(
+								"estarHowAndWhere",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe"
+							),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 17,
+					sentence: "You want her to be your friend and me not to be?",
+					translation: "You want QUE ELLA SEA your AMIGA Y QUE YO NO LO SEA?",
+					data: [
+						{ phrase: "You" },
+						{
+							phrase: "want her to be",
+							phraseTranslation: "want QUE ELLA SEA",
+							translation: [
+								conj.words.que,
+								pron.subject.words.ella,
+								verb.words.ser.subjunctive.sea,
+							],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe"
+							),
+						},
+						{ phrase: "your" },
+						{ phrase: "friend", translation: noun.words.amiga },
+						{ phrase: "and", translation: conj.words.y },
+						{
+							phrase: "me not to be",
+							phraseTranslation: "QUE YO NO LO SEA",
+							translation: [
+								conj.words.que,
+								pron.subject.words.yo,
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.ser.subjunctive.sea,
+							],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe",
+								"noVerbPosition",
+								"attributeLo"
+							),
+						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "I am here in order to be a friend(M) ",
+					translation: "ESTOY AQUÍ PARA SER UN AMIGO",
+					data: [
+						{
+							phrase: "I am",
+							noPronoun: true,
+							translation: verb.words.estar.present.estoy,
+							reference: ref("estarHowAndWhere"),
+						},
+						{
+							phrase: "here",
+							translation: advrb.words.aqui,
+						},
+						{
+							phrase: "in order",
+							translation: prep.words.para,
+							reference: ref("paraInOrder"),
+						},
+						{
+							phrase: "to be",
+							translation: verb.words.ser,
+							reference: ref("serIdentity", "noSubjunctiveYourself"),
+						},
+						{
+							phrase: "a",
+							translation: artcl.words.un,
+						},
+						{
+							phrase: "friend(M)",
+							translation: noun.words.amigo,
+						},
+					],
+				},
+				{
+					id: 19,
+					sentence: "He's here so that you be at home.",
+					translation: "ÉL ESTÁ AQUÍ PARA QUE ESTÉS EN CASA.",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{
+							phrase: "is",
+							translation: verb.words.estar.present.esta,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{
+							phrase: "so that",
+							translation: [prep.words.para, conj.words.que],
+							reference: ref("paraQueConj"),
+						},
+						{
+							phrase: "you be",
+							translation: verb.words.estar.subjunctive.estes,
+							reference: ref("estarHowAndWhere", "subjunctiveIntentionQue"),
+							noPronoun: true,
+						},
+						{
+							phrase: "at",
+							translation: prep.words.en,
+						},
+						{ phrase: "home", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 20,
+					sentence: "How nice that they're at home early",
+					translation: "QUÉ nice QUE ESTÉN EN CASA early",
+					data: [
+						{
+							phrase: "How nice",
+							translation: pron.interrogative.words.que,
+							reference: ref("queExclamation"),
+							phraseTranslation: "QUÉ nice",
+						},
+						{
+							phrase: "that",
+							translation: conj.words.que,
+						},
+						{
+							phrase: "they're",
+							translation: verb.words.estar.subjunctive.esten,
+							reference: ref(
+								"estarHowAndWhere",
+								"queExclamationSubjunctive",
+								"subjunctiveNoBe"
+							),
+							noPronoun: true,
+						},
+						{
+							phrase: "at",
+							translation: prep.words.en,
+						},
+						{
+							phrase: "home",
+							translation: noun.words.casa,
+						},
+						{
+							phrase: "early",
+						},
+					],
+				},
+				{
+					id: 21,
+					sentence: "We want to be friends(M)",
+					translation: "We want SER AMIGOS",
+					data: [
+						{ phrase: "We" },
+						{ phrase: "want" },
+						{
+							phrase: "to be friends(M)",
+							translation: [verb.words.ser, asPlural(noun.words.amigo)],
+							reference: ref("serIdentity", "noSubjunctiveYourself"),
+						},
+					],
+				},
+				{
+					id: 22,
+					sentence: "We(F) ran in order to be here early",
+					translation: "NOSOTRAS ran PARA ESTAR AQUÍ early",
+					data: [
+						{ phrase: "We(F)", translation: pron.subject.words.nosotras },
+						{ phrase: "ran" },
+						{
+							phrase: "in order",
+							translation: prep.words.para,
+							reference: ref("paraInOrder"),
+						},
+						{
+							phrase: "to be",
+							translation: verb.words.estar,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "early" },
+					],
+				},
+				{
+					id: 23,
+					sentence: "I want her to be my friend",
+					translation: "I want QUE ELLA SEA my AMIGA",
+					data: [
+						{ phrase: "I" },
+						{
+							phrase: "want her to be",
+							phraseTranslation: "want QUE ELLA SEA",
+							translation: [
+								conj.words.que,
+								pron.subject.words.ella,
+								verb.words.ser.subjunctive.sea,
+							],
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe"
+							),
+						},
+						{ phrase: "my" },
+						{ phrase: "friend", translation: noun.words.amiga },
+					],
+				},
+				{
+					id: 24,
+					sentence: "I'm here in order to be at home",
+					translation: "ESTOY AQUÍ PARA ESTAR EN CASA",
+					data: [
+						{
+							phrase: "I am",
+							noPronoun: true,
+							translation: verb.words.estar.present.estoy,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{
+							phrase: "in order",
+							translation: prep.words.para,
+							reference: ref("paraInOrder"),
+						},
+						{
+							phrase: "to be",
+							translation: verb.words.estar,
+							reference: ref("estarHowAndWhere", "noSubjunctiveYourself"),
+						},
+					],
+				},
+				{
+					id: 25,
+					sentence: "They did it so that I would be their friend(M)",
+					translation: "ELLOS LO did PARA QUE YO SEA their AMIGO",
+					data: [
+						{ phrase: "They", translation: pron.subject.words.ellos },
+						{
+							phrase: "did it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
+						},
+						{
+							phrase: "so that",
+							translation: [prep.words.para, conj.words.que],
+							reference: ref("paraQueConj"),
+						},
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "would be",
+							translation: verb.words.ser.subjunctive.sea,
+							reference: ref(
+								"subjunctiveNoBe",
+								"serIdentity",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{ phrase: "their" },
 						{ phrase: "friend(M)", translation: noun.words.amigo },
 					],
 				},

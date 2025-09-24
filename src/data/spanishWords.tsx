@@ -168,6 +168,7 @@ const spanishWords: SpanishWords = {
 					info: [
 						"Qué can mean HOW in the sense of HOW lucky, would be Qué Lucky! or What Lucky!/What Luck!",
 						"Para qué is an idiom which means 'So that' or 'In order that'",
+						"QUÉ [emotion/reaction] followed by a QUE phrase is a definite indicator of a Subjunctive situation. 'How silly that you be here' = 'Qué silly que tú estés aquí'",
 					],
 					pos: "Pronoun",
 				},
@@ -434,6 +435,7 @@ const spanishWords: SpanishWords = {
 					"'PARA QUE' is an idiom which means 'So that' or 'In order that', or even 'intending that'",
 					"'PARA SER' has the meaning: 'in order to be', 'intending to be' or even 'for being', etc.",
 					"PARA can be translated as 'in order' like 'in order to be' or 'in order that', think of it like 'with the intention of' or 'with the purpose of'",
+					"PARA QUE when used in subjunctive takes the place of a lot of different English phrases. Including 'For' 'In order for' 'so that' 'could' 'would'. All these boil down to Para Que with subjunctive, think of it as I did it 'intending that'/PARA QUE",
 				],
 			},
 			por: {
@@ -593,7 +595,8 @@ const spanishWords: SpanishWords = {
 			"There isn't a concept of 'DO/DID have', 'DO/DID say', or 'DO/DID' preceding any Verb in Spanish. Instead of saying 'I do have it' you would say 'I have it', and instead of 'I don't have it' you would say 'I no have it'. Untie the NOT, and make the DO disappear!",
 			"Subjunctive Conjugation is used for sentences where intention is implied, look for words like Recommend, Hope, Wish, Desire, Want, Ask, Intend, etc. and QUE phrases 'I hope that/QUE you be his teacher'. Subjunctive doesn't apply to facts/observations",
 			"Subjunctive isn't used if we are stating a fact or observation, only when there is some sort of intention, desire, or hope involved.",
-			"Just because a sentence doesn't use the exact word 'he be/she be/they be/we be' doesn't mean it's not subjunctive, look for the intention/desire/hope/wish etc. behind the sentence.",
+			"Just because a sentence doesn't use the exact word 'he be/she be/they be/we be' doesn't mean it's not subjunctive, look for the intention/desire/hope/wish etc. behind the sentence. I would be, could be, should be, might be, etc. are all subjunctive, and translated as 'I be'/SEA/ESTE etc.",
+			"Subjunctive isn't used when intentions are in a sentence IF the intention is being expressed by someone intended for themselves. 'I want to be a good person' is NOT subjunctive, but 'I want you to be a good person' IS subjunctive.",
 		],
 
 		words: {
