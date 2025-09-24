@@ -222,6 +222,10 @@ const referenceMap = {
 		path: "pron.interrogative.words.que",
 		indices: [2],
 	} as ReferenceEntry,
+	cuandoSubjunctive: {
+		path: "conj.words.cuando",
+		indices: [0],
+	} as ReferenceEntry,
 } as const
 
 type ReferenceKey = keyof typeof referenceMap
@@ -13368,6 +13372,91 @@ const spanishData: { lessons: Lesson[] } = {
 							reference: ref("dObjPosition"),
 						},
 						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "they(F)", translation: pron.subject.words.ellas },
+						{
+							phrase: "did it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
+						},
+					],
+				},
+				{
+					id: 2,
+					sentence: "Our friend(M) is here so that you be his friend",
+					translation: "NUESTRO AMIGO ESTÁ AQUÍ PARA QUE SEAS SU AMIGO",
+					data: [
+						{
+							phrase: "Our friend(M)",
+							translation: [
+								adjective.possessive.words.nuestro,
+								noun.words.amigo,
+							],
+						},
+						{
+							phrase: "is",
+							translation: verb.words.estar.present.esta,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{
+							phrase: "so that",
+							translation: [prep.words.para, conj.words.que],
+							reference: ref("paraQueConj"),
+						},
+						{
+							phrase: "you be",
+							translation: verb.words.ser.subjunctive.seas,
+							reference: ref("serIdentity", "subjunctiveIntentionQue"),
+							noPronoun: true,
+						},
+						{
+							phrase: "his friend",
+							translation: [adjective.possessive.words.su, noun.words.amigo],
+						},
+					],
+				},
+				{
+					id: 3,
+					sentence: "Our boy wants us to be friends(M)",
+					translation: "NUESTRO CHICO want QUE SEAMOS AMIGOS",
+					data: [
+						{
+							phrase: "Our boy",
+							translation: [
+								adjective.possessive.words.nuestro,
+								noun.words.chico,
+							],
+						},
+						{
+							phrase: "wants us to be",
+							translation: "want QUE SEAMOS",
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe"
+							),
+							phraseTranslation: "want QUE SEAMOS",
+							noPronoun: true,
+						},
+						{ phrase: "friends(M)", translation: asPlural(noun.words.amigo) },
+					],
+				},
+				{
+					id: 4,
+					sentence: "We will be relieved when we are at home",
+					translation: "NOSOTROS will be relieved CUANDO ESTEMOS EN CASA",
+					data: [
+						{ phrase: "We(M)", translation: pron.subject.words.nosotros },
+						{ phrase: "will be relieved" },
+						{ phrase: "when", translation: conj.words.cuando },
+						{
+							phrase: "we are",
+							translation: verb.words.estar.subjunctive.estemos,
+							reference: ref("estarHowAndWhere", "cuandoSubjunctive"),
+							noPronoun: true,
+						},
 					],
 				},
 			],

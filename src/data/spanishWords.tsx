@@ -221,7 +221,9 @@ const spanishWords: SpanishWords = {
 				translations: ["when"],
 				word: "cuando",
 				pos: "Conjunction",
-				info: [],
+				info: [
+					"CUANDO and Subjunctive: CUANDO trigger subjunctive usage when it is referring to something happening in the future, 'when we be there'",
+				],
 			},
 		},
 	},
