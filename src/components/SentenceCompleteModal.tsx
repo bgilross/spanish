@@ -99,11 +99,12 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 		}))
 	}
 
+	// Only collect referenced topics from submissions that were incorrect
 	const refs = Array.from(
 		new Set(
-			submissions.flatMap((s) =>
-				getSectionReferences(s.section).map((r) => r.key)
-			)
+			submissions
+				.filter((s) => !s.isCorrect)
+				.flatMap((s) => getSectionReferences(s.section).map((r) => r.key))
 		)
 	)
 	return (
@@ -237,37 +238,38 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 											</div>
 										)
 									})()}
-								{/* show references attached to this section */}
-								{(() => {
-									const list = getSectionReferences(s.section)
-									if (list.length === 0) return null
-									return (
-										<div className="mt-2 text-xs text-zinc-400">
-											<div className="font-medium text-amber-300">
-												References
+								{/* show references attached to this section only for incorrect submissions */}
+								{!s.isCorrect &&
+									(() => {
+										const list = getSectionReferences(s.section)
+										if (list.length === 0) return null
+										return (
+											<div className="mt-2 text-xs text-zinc-400">
+												<div className="font-medium text-amber-300">
+													References
+												</div>
+												<ul className="list-disc ml-5 text-xs text-zinc-200">
+													{list
+														.flatMap((item) => resolveReferenceList(item.refs))
+														.map((r, idx) => (
+															<li
+																key={idx}
+																className="mb-1"
+															>
+																<div className="font-medium">{r.label}</div>
+																{r.info && r.info.length > 0 && (
+																	<ul className="list-disc ml-5 text-xs text-zinc-300">
+																		{r.info.map((ln, ii) => (
+																			<li key={ii}>{ln}</li>
+																		))}
+																	</ul>
+																)}
+															</li>
+														))}
+												</ul>
 											</div>
-											<ul className="list-disc ml-5 text-xs text-zinc-200">
-												{list
-													.flatMap((item) => resolveReferenceList(item.refs))
-													.map((r, idx) => (
-														<li
-															key={idx}
-															className="mb-1"
-														>
-															<div className="font-medium">{r.label}</div>
-															{r.info && r.info.length > 0 && (
-																<ul className="list-disc ml-5 text-xs text-zinc-300">
-																	{r.info.map((ln, ii) => (
-																		<li key={ii}>{ln}</li>
-																	))}
-																</ul>
-															)}
-														</li>
-													))}
-											</ul>
-										</div>
-									)
-								})()}
+										)
+									})()}
 							</li>
 						))}
 					</ul>

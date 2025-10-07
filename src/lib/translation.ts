@@ -34,11 +34,52 @@ export function spanishWordCount(entry: SentenceDataEntry): number {
 		entry as { reference?: Record<string, (number | string)[] | undefined> }
 	).reference
 	if (ref && typeof ref === "object") {
-		let total = 0
-		for (const v of Object.values(ref)) {
-			if (Array.isArray(v)) total += v.length
+		// Only count reference entries that appear to correspond to the
+		// translation word objects for this entry. Some entries include
+		// pedagogical references (unrelated topics) which should not affect
+		// the expected word count.
+		const t = (entry as { translation?: unknown }).translation
+		const translationWordIds: string[] = []
+
+		if (isWordObject(t) && typeof t.id === "string") {
+			translationWordIds.push(t.id)
+		} else if (Array.isArray(t)) {
+			for (const item of t) {
+				if (isWordObject(item) && typeof item.id === "string")
+					translationWordIds.push(item.id)
+			}
 		}
-		if (total > 0) return total
+
+		// Helper to decide whether a reference key likely maps to a translated
+		// word object id. We compare the prefix/group and the specific word
+		// segment (e.g., 'verb' and 'estar' in 'verb.estar.subjunctive.estemos')
+		// against the reference path (e.g., 'verb.words.estar'). This is a
+		// heuristic but works for the project's naming conventions.
+		const refKeyMatchesId = (key: string, id: string) => {
+			const keyParts = key.split(".")
+			const idParts = id.split(".")
+			if (!keyParts.length || !idParts.length) return false
+			// Require same top-level group (e.g., 'verb')
+			if (keyParts[0] !== idParts[0]) return false
+			// Also require the key to include the second id segment (the word name)
+			// e.g., 'estar' must appear in the ref key like 'verb.words.estar'
+			return idParts.length > 1 && keyParts.includes(idParts[1])
+		}
+
+		let total = 0
+		if (translationWordIds.length > 0) {
+			for (const [k, v] of Object.entries(ref)) {
+				if (!Array.isArray(v)) continue
+				// Count this ref only if it appears to match any translated word id
+				if (translationWordIds.some((id) => refKeyMatchesId(k, id))) {
+					total += v.length
+				}
+			}
+			if (total > 0) return total
+		} else {
+			// No word objects in translation: fall back to conservative behavior
+			// and ignore reference-based totals to avoid counting unrelated refs.
+		}
 	}
 
 	const t = (entry as { translation?: unknown }).translation
