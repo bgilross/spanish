@@ -13459,6 +13459,722 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 					],
 				},
+				{
+					id: 5,
+					sentence: "Is it your house?",
+					translation: "ES SU CASA?",
+					data: [
+						{
+							phrase: "Is it",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "your",
+							translation: adjective.possessive.words.su,
+							isFormal: true,
+							reference: ref("usted3rdPerson"),
+						},
+						{ phrase: "house", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 6,
+					sentence: "The guy was at your house",
+					translation: "EL CHICO ESTABA EN TU CASA",
+					data: [
+						{
+							phrase: "The guy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "your", translation: adjective.possessive.words.tu },
+						{ phrase: "house", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 7,
+					sentence: "He or she is here",
+					translation: "ÉL O ELLA ESTÁ AQUÍ",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{
+							phrase: "is",
+							translation: verb.words.estar.present.esta,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 8,
+					sentence: "Not if your friend(F) is here",
+					translation: "NO SI TU AMIGA ESTÁ AQUÍ",
+					data: [
+						{ phrase: "Not", translation: advrb.words.no },
+						{ phrase: "if", translation: conj.words.si },
+						{
+							phrase: "your friend(F)",
+							translation: [adjective.possessive.words.tu, noun.words.amiga],
+						},
+						{
+							phrase: "is",
+							translation: verb.words.estar.present.esta,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 9,
+					sentence: "Either he isn't present or she isn't present",
+					translation: "O ÉL NO ESTÁ O ELLA NO ESTÁ",
+					data: [
+						{ phrase: "Either", translation: conj.words.o },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "isn't present",
+							translation: [advrb.words.no, verb.words.estar.present.esta],
+							reference: ref("estarHowAndWhere", "estarPresent"),
+						},
+						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{
+							phrase: "isn't present",
+							translation: [advrb.words.no, verb.words.estar.present.esta],
+							reference: ref("estarHowAndWhere", "estarPresent"),
+						},
+					],
+				},
+				{
+					id: 10,
+					sentence: "Either they(F) or we(F) are friends",
+					translation: "O ELLAS O NOSOTRAS SOMOS AMIGAS",
+					data: [
+						{ phrase: "Either", translation: conj.words.o },
+						{ phrase: "they(F)", translation: pron.subject.words.ellas },
+						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "we(F)", translation: pron.subject.words.nosotras },
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.somos,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "friends(F)", translation: asPlural(noun.words.amiga) },
+					],
+				},
+				{
+					id: 11,
+					sentence:
+						"Either it's because of being friends, or it's because of being here",
+					translation: "O ES POR SER AMIGOS, O ES POR ESTAR AQUÍ",
+					data: [
+						{ phrase: "Either", translation: conj.words.o },
+						{
+							phrase: "it's",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "because of",
+							translation: prep.words.por,
+							reference: ref("porBecauseOf"),
+						},
+						{
+							phrase: "being friends",
+							translation: [verb.words.ser, asPlural(noun.words.amigo)],
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "or", translation: conj.words.o },
+						{
+							phrase: "it's",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "because of",
+							translation: prep.words.por,
+							reference: ref("porBecauseOf"),
+						},
+						{
+							phrase: "being here",
+							translation: [verb.words.estar, advrb.words.aqui],
+							reference: ref("estarHowAndWhere"),
+						},
+					],
+				},
+				{
+					id: 12,
+					sentence: "Either we(M) are here or they(M) are.",
+					translation: "O NOSOTROS ESTAMOS AQUÍ O ELLOS LO ESTÁN.",
+					data: [
+						{ phrase: "Either", translation: conj.words.o },
+						{ phrase: "we(M)", translation: pron.subject.words.nosotros },
+						{
+							phrase: "are",
+							translation: verb.words.estar.present.estamos,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "they(M)", translation: pron.subject.words.ellos },
+						{
+							phrase: "are",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.estar.present.estan,
+							],
+							reference: ref("estarHowAndWhere", "attributeLo"),
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "Their house was near my house",
+					translation: "SU CASA ESTABA POR MI CASA",
+					data: [
+						{
+							phrase: "Their house",
+							translation: [adjective.possessive.words.su, noun.words.casa],
+						},
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere"),
+						},
+						{
+							phrase: "near",
+							translation: prep.words.por,
+							reference: ref("porLocation"),
+						},
+						{
+							phrase: "my house",
+							translation: [adjective.possessive.words.mi, noun.words.casa],
+						},
+					],
+				},
+				{
+					id: 14,
+					sentence: "His friends(M) are at my house",
+					translation: "SUS AMIGOS ESTÁN EN MI CASA",
+					data: [
+						{
+							phrase: "His friends(M)",
+							translation: [
+								adjective.possessive.words.su,
+								asPlural(noun.words.amigo),
+							],
+						},
+						{
+							phrase: "are",
+							translation: verb.words.estar.present.estan,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "my house",
+							translation: [adjective.possessive.words.mi, noun.words.casa],
+						},
+					],
+				},
+				{
+					id: 15,
+					sentence: "The problem was that either she or he wasn't here",
+					translation: "The problem ERA QUE O ELLA O ÉL NO ESTABA AQUÍ",
+					data: [
+						{ phrase: "The problem" },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "either", translation: conj.words.o },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "wasn't here",
+							translation: [
+								advrb.words.no,
+								verb.words.estar.past.estaba,
+								advrb.words.aqui,
+							],
+							reference: ref("estarHowAndWhere"),
+						},
+					],
+				},
+				{
+					id: 16,
+					sentence: "Your friends(M) are at home, but I'm not",
+					translation: "TUS AMIGOS ESTÁN EN CASA, PERO YO NO LO ESTOY",
+					data: [
+						{
+							phrase: "Your friends(M)",
+							translation: [
+								asPlural(adjective.possessive.words.tu),
+								asPlural(noun.words.amigo),
+							],
+						},
+						{
+							phrase: "are",
+							translation: verb.words.estar.present.estan,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "home", translation: noun.words.casa },
+						{ phrase: "but", translation: conj.words.pero },
+						{
+							phrase: "I'm not",
+							translation: [
+								pron.subject.words.yo,
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.estar.present.estoy,
+							],
+							reference: ref(
+								"estarHowAndWhere",
+								"noVerbPosition",
+								"attributeLo"
+							),
+						},
+					],
+				},
+				{
+					id: 17,
+					sentence: "I always give easy assignments when I am the teacher(M)",
+					translation: "YO always give easy assignments CUANDO SOY EL teacher",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "always give easy assignments" },
+						{ phrase: "when", translation: conj.words.cuando },
+						{
+							phrase: "I am",
+							translation: verb.words.ser.present.soy,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "the", translation: artcl.words.el },
+						{ phrase: "teacher(M)" },
+					],
+				},
+				{
+					id: 18,
+					sentence: "I was here but they(M) weren't",
+					translation: "YO ESTABA AQUÍ PERO ELLOS NO LO ESTABAN",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "but", translation: conj.words.pero },
+						{ phrase: "they(M)", translation: pron.subject.words.ellos },
+						{
+							phrase: "weren't",
+							translation: [
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.estar.past.estaban,
+							],
+							reference: ref(
+								"estarHowAndWhere",
+								"noVerbPosition",
+								"attributeLo"
+							),
+						},
+					],
+				},
+				{
+					id: 19,
+					sentence: "I do it if he does it",
+					translation: "YO LO do SI ÉL LO does",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "do it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO do",
+							reference: ref("dObjPosition"),
+						},
+						{ phrase: "if", translation: conj.words.si },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "does it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO does",
+							reference: ref("dObjPosition"),
+						},
+					],
+				},
+				{
+					id: 20,
+					sentence: "How funny that our houses are close",
+					translation: "QUÉ funny QUE NUESTRAS CASAS ESTÉN close",
+					data: [
+						{
+							phrase: "How funny",
+							translation: pron.interrogative.words.que,
+							reference: ref("queExclamation"),
+							phraseTranslation: "QUÉ funny",
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "our houses",
+							translation: [
+								asPlural(adjective.possessive.words.nuestra),
+								asPlural(noun.words.casa),
+							],
+						},
+						{
+							phrase: "are",
+							translation: verb.words.estar.subjunctive.esten,
+							reference: ref("estarHowAndWhere", "queExclamationSubjunctive"),
+						},
+						{ phrase: "close" },
+					],
+				},
+				{
+					id: 21,
+					sentence: "Your houses are very big!",
+					translation: "TUS CASAS SON very big",
+					data: [
+						{
+							phrase: "Your houses",
+							translation: [
+								asPlural(adjective.possessive.words.tu),
+								asPlural(noun.words.casa),
+							],
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.son,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "very big" },
+					],
+				},
+				{
+					id: 22,
+					sentence: "Why are their houses bigger than my houses?",
+					translation: "POR QUÉ SON SUS CASAS bigger QUE MIS CASAS?",
+					data: [
+						{
+							phrase: "Why",
+							translation: [prep.words.por, pron.interrogative.words.que],
+							reference: ref("porQueWhy"),
+						},
+						{
+							phrase: "are",
+							translation: verb.words.ser.present.son,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "their houses",
+							translation: [
+								asPlural(adjective.possessive.words.su),
+								asPlural(noun.words.casa),
+							],
+						},
+						{ phrase: "bigger" },
+						{
+							phrase: "than",
+							translation: conj.words.que,
+							reference: ref("queAsThan"),
+						},
+						{
+							phrase: "my houses",
+							translation: [
+								asPlural(adjective.possessive.words.mi),
+								asPlural(noun.words.casa),
+							],
+						},
+					],
+				},
+				{
+					id: 23,
+					sentence: "He was happy when he was my friend(M)",
+					translation: "ÉL ESTABA happy CUANDO ÉL ERA MI AMIGO",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "happy" },
+						{ phrase: "when", translation: conj.words.cuando },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "my friend(M)",
+							translation: [adjective.possessive.words.mi, noun.words.amigo],
+						},
+					],
+				},
+				{
+					id: 24,
+					sentence: "We were friends when we were kids",
+					translation: "ÉRAMOS AMIGOS CUANDO ÉRAMOS kids",
+					data: [
+						{
+							phrase: "We were",
+							translation: verb.words.ser.past.eramos,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{ phrase: "friends(M)", translation: asPlural(noun.words.amigo) },
+						{ phrase: "when", translation: conj.words.cuando },
+						{
+							phrase: "we were",
+							translation: verb.words.ser.past.eramos,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{ phrase: "kids" },
+					],
+				},
+				{
+					id: 25,
+					sentence: "We were at our houses in order to be safe",
+					translation: "ESTÁBAMOS EN NUESTRAS CASAS PARA ESTAR safe",
+					data: [
+						{
+							phrase: "We were",
+							translation: verb.words.estar.past.estabamos,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "our houses",
+							translation: [
+								asPlural(adjective.possessive.words.nuestra),
+								asPlural(noun.words.casa),
+							],
+						},
+						{
+							phrase: "in order",
+							translation: prep.words.para,
+							reference: ref("paraInOrder"),
+						},
+						{
+							phrase: "to be",
+							translation: verb.words.estar,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "safe" },
+					],
+				},
+				{
+					id: 26,
+					sentence: "We(M) did it or they(F) did it",
+					translation: "NOSOTROS LO did O ELLAS LO did",
+					data: [
+						{ phrase: "We(M)", translation: pron.subject.words.nosotros },
+						{
+							phrase: "did it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
+						},
+						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "they(F)", translation: pron.subject.words.ellas },
+						{
+							phrase: "did it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO did",
+							reference: ref("dObjPosition"),
+						},
+					],
+				},
+				{
+					id: 27,
+					sentence: "We'll(M) do it when my friend(M) is here",
+					translation: "NOSOTROS LO will do CUANDO MI AMIGO ESTÉ AQUÍ",
+					data: [
+						{ phrase: "We(M)", translation: pron.subject.words.nosotros },
+						{
+							phrase: "will do it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO will do",
+							reference: ref("dObjPosition"),
+						},
+						{ phrase: "when", translation: conj.words.cuando },
+						{
+							phrase: "my friend(M)",
+							translation: [adjective.possessive.words.mi, noun.words.amigo],
+						},
+						{
+							phrase: "is",
+							translation: verb.words.estar.subjunctive.este,
+							reference: ref("estarHowAndWhere", "cuandoSubjunctive"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 28,
+					sentence: "We(M) will do it when you are here",
+					translation: "NOSOTROS LO will do CUANDO TÚ ESTÉS AQUÍ",
+					data: [
+						{ phrase: "We(M)", translation: pron.subject.words.nosotros },
+						{
+							phrase: "will do it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO will do",
+							reference: ref("dObjPosition"),
+						},
+						{ phrase: "when", translation: conj.words.cuando },
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{
+							phrase: "are",
+							translation: verb.words.estar.subjunctive.estes,
+							reference: ref("estarHowAndWhere", "cuandoSubjunctive"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 29,
+					sentence: "But I hope that he's here if she is",
+					translation: "PERO YO hope QUE ÉL ESTÉ AQUÍ SI ELLA ESTÁ",
+					data: [
+						{ phrase: "But", translation: conj.words.pero },
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "he's",
+							translation: [
+								pron.subject.words.el,
+								verb.words.estar.subjunctive.este,
+							],
+							reference: ref("estarHowAndWhere", "subjunctiveIntentionQue"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "if", translation: conj.words.si },
+						{
+							phrase: "she is",
+							translation: [
+								pron.subject.words.ella,
+								verb.words.estar.present.esta,
+							],
+							reference: ref("estarHowAndWhere", "estarPresent"),
+						},
+					],
+				},
+				{
+					id: 30,
+					sentence: "I hope that my friends(F) are here",
+					translation: "YO hope QUE MIS AMIGAS ESTÉN AQUÍ",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "my friends(F)",
+							translation: [
+								asPlural(adjective.possessive.words.mi),
+								asPlural(noun.words.amiga),
+							],
+						},
+						{
+							phrase: "are",
+							translation: verb.words.estar.subjunctive.esten,
+							reference: ref("estarHowAndWhere", "subjunctiveIntentionQue"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 31,
+					sentence: "I hope that it's their house",
+					translation: "YO hope QUE SEA SU CASA",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "it's",
+							translation: verb.words.ser.subjunctive.sea,
+							reference: ref("serIdentity", "subjunctiveIntentionQue"),
+							noPronoun: true,
+						},
+						{
+							phrase: "their house",
+							translation: [adjective.possessive.words.su, noun.words.casa],
+						},
+					],
+				},
+				{
+					id: 32,
+					sentence: "I will do it when I'm at the place",
+					translation: "YO LO will do CUANDO ESTÉ EN EL LUGAR",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "will do it",
+							translation: pron.attribute.words.lo,
+							phraseTranslation: "LO will do",
+							reference: ref("dObjPosition"),
+						},
+						{ phrase: "when", translation: conj.words.cuando },
+						{
+							phrase: "I'm",
+							translation: verb.words.estar.subjunctive.este,
+							reference: ref("estarHowAndWhere", "cuandoSubjunctive"),
+							noPronoun: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "the place",
+							translation: [artcl.words.el, noun.words.lugar],
+						},
+					],
+				},
+				{
+					id: 33,
+					sentence: "I want her to be our(F) friend",
+					translation: "YO want QUE ELLA SEA NUESTRA AMIGA",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "want her to be",
+							translation: "want QUE ELLA SEA",
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue",
+								"subjunctiveNoBe"
+							),
+							phraseTranslation: "want QUE ELLA SEA",
+						},
+						{
+							phrase: "our(F)",
+							translation: adjective.possessive.words.nuestra,
+						},
+						{ phrase: "friend", translation: noun.words.amiga },
+					],
+				},
 			],
 		},
 	],

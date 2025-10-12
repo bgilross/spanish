@@ -62,11 +62,9 @@ function buildVerbIndex(): Record<string, VerbSurfaceInfo> {
 
 const VERB_INDEX: Record<string, VerbSurfaceInfo> = buildVerbIndex()
 
-// Attempt to find a verb surface within a possibly multi-word input
 function lookupVerbInFreeText(input: string): VerbSurfaceInfo | undefined {
 	const direct = VERB_INDEX[normalizeText(input)]
 	if (direct) return direct
-	// tokenize by whitespace and strip leading/trailing punctuation
 	const tokens = normalizeText(input)
 		.split(/\s+/)
 		.map((t) => t.replace(/^[^\p{L}]+|[^\p{L}]+$/gu, ""))
