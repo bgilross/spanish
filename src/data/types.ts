@@ -47,6 +47,10 @@ export interface WordObject {
 	forms?: string[]
 	/** If set, treat this object as a fixed surface (e.g. cloned plural form) */
 	exactForm?: string
+	/** For adjectives: where can it occur relative to a noun? 'before', 'after', or 'both' */
+	adjPlacement?: "before" | "after" | "both"
+	/** For adjectives: apocope surface to use before masculine singular nouns (e.g., 'bueno' -> 'buen') */
+	apocopeBeforeMascSing?: string
 }
 
 // ---------------------------------------------------------------------------

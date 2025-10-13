@@ -161,6 +161,42 @@ const spanishWords: SpanishWords = {
 				},
 			},
 		},
+		descriptive: {
+			id: "adjectives.descriptive",
+			name: "Descriptive",
+			info: [
+				"Many descriptive adjectives follow the noun, but some can also precede it for emphasis or idiomatic reasons.",
+				"Bueno/Buena is flexible: it can go before or after the noun. Before a singular masculine noun, bueno shortens to 'buen'.",
+			],
+			words: {
+				bueno: {
+					id: "adjectives.descriptive.bueno",
+					translations: ["good"],
+					word: "bueno",
+					forms: ["buenos", "buen"],
+					pos: "Adjective",
+					gender: "masculine",
+					adjPlacement: "both",
+					apocopeBeforeMascSing: "buen",
+					info: [
+						"Can be placed before or after the noun: 'la casa buena' / 'la buena casa'.",
+						"Apocope: before a masculine singular noun, 'bueno' becomes 'buen' (e.g., 'el buen amigo').",
+					],
+				},
+				buena: {
+					id: "adjectives.descriptive.buena",
+					translations: ["good"],
+					word: "buena",
+					forms: ["buenas"],
+					pos: "Adjective",
+					gender: "feminine",
+					adjPlacement: "both",
+					info: [
+						"Can be placed before or after the noun: 'la casa buena' / 'la buena casa'.",
+					],
+				},
+			},
+		},
 	},
 	conj: {
 		id: "conj",

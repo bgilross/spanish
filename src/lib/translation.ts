@@ -132,6 +132,85 @@ export function expectedAnswers(entry: SentenceDataEntry): string[] {
 			for (const item of t) if (isWordObject(item)) addForms(item)
 	}
 
+	// General handling: adjective placement flexibility using adjPlacement and apocope metadata on WordObject.
+	// If translation is an array like [article?, noun, adjective] or [article?, adjective, noun] and the adjective has adjPlacement 'both' or 'before',
+	// generate order variants with appropriate surface (apocopeBeforeMascSing when applicable).
+	let flexVariantsAdded = false
+	try {
+		if (Array.isArray(t)) {
+			const items = t.filter(
+				(x): x is WordObject | string =>
+					typeof x === "string" || isWordObject(x)
+			)
+			const article = items.find(
+				(x) => isWordObject(x) && (x.id?.startsWith("artcl.") ?? false)
+			) as WordObject | undefined
+			const noun = items.find(
+				(x) => isWordObject(x) && (x.id?.startsWith("noun.") ?? false)
+			) as WordObject | undefined
+			const adj = items.find(
+				(x) => isWordObject(x) && x.pos?.toLowerCase() === "adjective"
+			) as WordObject | undefined
+
+			if (adj && noun) {
+				const placement = (adj.adjPlacement || "after") as
+					| "before"
+					| "after"
+					| "both"
+				const allowBefore = placement === "before" || placement === "both"
+				const allowAfter = placement === "after" || placement === "both"
+				const artWord = article?.word?.toLowerCase()
+				const nounGender = (noun.gender || "").toLowerCase()
+				// Prefer noun gender; fall back to article only if gender is missing
+				const isMasc = nounGender
+					? nounGender.startsWith("m")
+					: artWord === "el" || artWord === "los" || artWord === "un"
+				const isPlural = artWord === "los" || artWord === "las"
+				// Determine adjective surface after noun: use base word or plural forms heuristically if they exist
+				let adjAfter = adj.word
+				if (isPlural && Array.isArray(adj.forms)) {
+					// prefer plural-specific form matching gender if present
+					const mascPl = adj.forms.find((f) => f.toLowerCase().endsWith("os"))
+					const femPl = adj.forms.find((f) => f.toLowerCase().endsWith("as"))
+					adjAfter = isMasc ? mascPl || adjAfter : femPl || adjAfter
+				} else if (!isPlural && Array.isArray(adj.forms)) {
+					// prefer feminine singular if noun is feminine and base is masculine variant
+					if (!isMasc) {
+						const femSg = adj.forms.find((f) => f.toLowerCase().endsWith("a"))
+						if (femSg) adjAfter = femSg
+					}
+				}
+				// Determine adjective surface before noun (apocope if masc sg and provided)
+				let adjBefore = adjAfter
+				if (!isPlural && isMasc && adj.apocopeBeforeMascSing) {
+					adjBefore = adj.apocopeBeforeMascSing
+				}
+
+				const artSurface = article ? article.word : undefined
+				const nounSurface = noun.word
+				if (nounSurface) {
+					// After-noun order if allowed
+					if (allowAfter) {
+						const optionAfter = [artSurface, nounSurface, adjAfter]
+							.filter(Boolean)
+							.join(" ")
+						answers.push(normalizeText(optionAfter))
+					}
+					// Before-noun order if allowed
+					if (allowBefore) {
+						const optionBefore = [artSurface, adjBefore, nounSurface]
+							.filter(Boolean)
+							.join(" ")
+						answers.push(normalizeText(optionBefore))
+					}
+					flexVariantsAdded = true
+				}
+			}
+		}
+	} catch {
+		// ignore flexibility generation errors
+	}
+
 	// If a specific expectedForm is set, override and require only that form
 	if (expectedForm) return [normalizeText(expectedForm)]
 
@@ -143,6 +222,13 @@ export function expectedAnswers(entry: SentenceDataEntry): string[] {
 		if (pluralForms.length) return Array.from(new Set(pluralForms))
 		// Fallback: if no distinct plural found, still return base to avoid empty acceptable set
 		return base ? [base] : []
+	}
+
+	// If we generated flexible phrase variants (e.g., adjective placement), accept all unique variants regardless of allowForms.
+	if (flexVariantsAdded) {
+		const uniq = Array.from(new Set(answers))
+		// Keep only multi-token phrase candidates to avoid stray single-word forms
+		return uniq.filter((s) => /\s/.test(s))
 	}
 
 	// If allowForms flagged, return unique set. Otherwise restrict to the base word only
