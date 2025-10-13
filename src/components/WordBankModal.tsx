@@ -45,17 +45,12 @@ const WordBankModal: React.FC<Props> = ({
 
 	const collapseAll = React.useCallback(() => setOpenSet(new Set()), [])
 
-	// Aggregate previous lessons' words grouped by POS (exclude current lesson)
-	// Only include a small window of recent previous lessons to avoid showing the
-	// entire global word list. Default window is the two lessons immediately
-	// before the current lesson (configurable).
+	// Aggregate ALL previous lessons' words grouped by POS (exclude current lesson)
 	const prevGroups = React.useMemo(() => {
 		const obj: Record<string, PrevWord[]> = {}
 		if (!lessons || lessons.length === 0) return obj
-		const WINDOW_SIZE = 2 // show up to 2 previous lessons; change if desired
-		const start = Math.max(0, (currentLessonIndex || 0) - WINDOW_SIZE)
 		const end = Math.max(0, (currentLessonIndex || 0) - 1)
-		for (let idx = start; idx <= end; idx++) {
+		for (let idx = 0; idx <= end; idx++) {
 			const L = lessons[idx]
 			if (!L) continue
 			const bank = L?.wordBank || []
