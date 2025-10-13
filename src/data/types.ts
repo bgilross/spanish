@@ -100,7 +100,7 @@ export type AdjectiveGroup = {
 	words: Record<string, WordObject>
 	/** Named adjective subcategories (possessive, descriptive, etc.) */
 	possessive: WordGroup
-	descriptive?: WordGroup
+	descriptive: WordGroup
 }
 
 export type PronounGroup = {

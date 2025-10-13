@@ -51,6 +51,14 @@ const spanishWords: SpanishWords = {
 			"Articles are really just part of the NOUN PHRASE",
 		],
 		words: {
+			lo: {
+				id: "artcl.lo",
+				translations: ["the (N)"],
+				word: "lo",
+				pos: "Article",
+				gender: "neuter",
+				info: [],
+			},
 			el: {
 				id: "artcl.el",
 				translations: ["the (M)"],
@@ -637,6 +645,13 @@ const spanishWords: SpanishWords = {
 				info: [],
 				audio:
 					"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=aquí&tl=es&total=1&idx=0&textlen=3",
+			},
+			bien: {
+				id: "advrb.bien",
+				translations: ["well", "fine", "OK", "good"],
+				word: "bien",
+				pos: "Adverb",
+				info: [],
 			},
 		},
 	},
