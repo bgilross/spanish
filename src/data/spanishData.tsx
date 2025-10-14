@@ -226,6 +226,26 @@ const referenceMap = {
 		path: "conj.words.cuando",
 		indices: [0],
 	} as ReferenceEntry,
+	theOneThat: {
+		path: "artcl",
+		indices: [2],
+	} as ReferenceEntry,
+	bienWell: {
+		path: "advrb.words.bien",
+		indices: [0],
+	} as ReferenceEntry,
+	buenoApocopated: {
+		path: "adjective.words.bueno",
+		indices: [1],
+	} as ReferenceEntry,
+	loQue: {
+		path: "artcl.words.lo",
+		indices: [0],
+	} as ReferenceEntry,
+	loAsNoun: {
+		path: "artcl.words.lo",
+		indices: [1],
+	} as ReferenceEntry,
 } as const
 
 type ReferenceKey = keyof typeof referenceMap
@@ -14223,8 +14243,313 @@ const spanishData: { lessons: Lesson[] } = {
 				"Another IMPLIED QUESTION example is: 'I don't know what he said' where technically you COULD make that 'I don't know the one that he said' but really this still counts as an implied question, We are ALMOST asking 'What did he say?' so we use QUÉ",
 				"",
 			],
-			wordBank: [],
-			sentences: [],
+			wordBank: [
+				artcl.words.lo,
+				adjective.descriptive.words.bueno,
+				adjective.descriptive.words.buena,
+				advrb.words.bien,
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "She was the one that was in the place",
+					translation: "ELLA ERA LA QUE ESTABA EN EL LUGAR",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "the one that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "in", translation: prep.words.en },
+						{
+							phrase: "the place",
+							translation: [artcl.words.el, noun.words.lugar],
+						},
+					],
+				},
+				{
+					id: 2,
+					sentence: "You're the one(M) that I met yesterday",
+					translation: "ERES EL QUE I met yesterday",
+					data: [
+						{
+							phrase: "You're",
+							translation: verb.words.ser.present.eres,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "the one(M) that",
+							translation: [artcl.words.el, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{ phrase: "I met yesterday" },
+					],
+				},
+				{
+					id: 3,
+					sentence: "We're fine!",
+					translation: "ESTAMOS BIEN",
+					data: [
+						{
+							phrase: "We're",
+							translation: verb.words.estar.present.estamos,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{
+							phrase: "fine",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 4,
+					sentence: "But are you OK?",
+					translation: "PERO ESTÁS BIEN?",
+					data: [
+						{ phrase: "But", translation: conj.words.pero },
+						{
+							phrase: "are you",
+							translation: verb.words.estar.present.estas,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{
+							phrase: "OK",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 5,
+					sentence: "But what is it?",
+					translation: "PERO QUÉ ES?",
+					data: [
+						{ phrase: "But", translation: conj.words.pero },
+						{ phrase: "what", translation: pron.interrogative.words.que },
+						{
+							phrase: "is it",
+							translation: [verb.words.ser.present.es],
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 6,
+					sentence: "The one(M) that was here was good",
+					translation: "EL QUE ESTABA AQUÍ ERA BUENO",
+					data: [
+						{
+							phrase: "The one(M) that",
+							translation: [artcl.words.el, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.bueno },
+					],
+				},
+				{
+					id: 7,
+					sentence: "She is the one that is here",
+					translation: "ELLA ES LA QUE ESTÁ AQUÍ",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "the one that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.estar.present.esta,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 8,
+					sentence: "He's a good boy",
+					translation: "ÉL ES UN BUEN CHICO",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{
+							phrase: "good",
+							translation: adjective.descriptive.words.buen,
+							reference: ref("buenoApocopated"),
+						},
+						{ phrase: "boy", translation: noun.words.chico },
+					],
+				},
+				{
+					id: 9,
+					sentence: "It's a good place",
+					translation: "ES UN BUEN LUGAR",
+					data: [
+						{
+							phrase: "It is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{
+							phrase: "good",
+							translation: adjective.descriptive.words.buen,
+							reference: ref("buenoApocopated"),
+						},
+						{ phrase: "place", translation: noun.words.lugar },
+					],
+				},
+				{
+					id: 10,
+					sentence: "I like what you're cooking",
+					translation: "I like LO QUE you're cooking",
+					data: [
+						{ phrase: "I like" },
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{ phrase: "you're cooking" },
+					],
+				},
+				{
+					id: 11,
+					sentence: "The house was good",
+					translation: "LA CASA ERA BUENA",
+					data: [
+						{
+							phrase: "The house",
+							translation: [artcl.words.la, noun.words.casa],
+						},
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.buena },
+					],
+				},
+				{
+					id: 12,
+					sentence: "The girl is good",
+					translation: "LA CHICA ES BUENA",
+					data: [
+						{
+							phrase: "The girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.buena },
+					],
+				},
+				{
+					id: 13,
+					sentence: "The girls are well",
+					translation: "LAS CHICAS ESTÁN BIEN",
+					data: [
+						{
+							phrase: "The girls",
+							translation: [artcl.words.las, asPlural(noun.words.chica)],
+						},
+						{
+							phrase: "are",
+							translation: verb.words.estar.present.estan,
+							reference: ref("estarHowAndWhere"),
+						},
+						{
+							phrase: "well",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 14,
+					sentence: "The good (thing) is that we're here",
+					translation: "LO BUENO ES QUE ESTAMOS AQUÍ",
+					data: [
+						{
+							phrase: "The good (thing)",
+							translation: [artcl.words.lo, adjective.descriptive.words.bueno],
+							reference: ref("loAsNoun"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "we're",
+							translation: verb.words.estar.present.estamos,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 15,
+					sentence: "What he said was funny",
+					translation: "LO QUE he said ERA funny",
+					data: [
+						{
+							phrase: "What",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{ phrase: "he said" },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "funny" },
+					],
+				},
+			],
 		},
 	],
 }

@@ -49,6 +49,7 @@ const spanishWords: SpanishWords = {
 		info: [
 			"Articles are almost ALWAYS used directly before a NOUN",
 			"Articles are really just part of the NOUN PHRASE",
+			"'The one that' gets translated as 'el/la que' or 'los/las que' depending on gender, because we don't use 'one' in this way in Spanish, just 'the that'",
 		],
 		words: {
 			lo: {
@@ -57,7 +58,10 @@ const spanishWords: SpanishWords = {
 				word: "lo",
 				pos: "Article",
 				gender: "neuter",
-				info: [],
+				info: [
+					"LO QUE: is used to mean 'the thing that' or 'what' when referring to an idea or situation rather than a specific noun. It is neuter because it doesn't refer to a specific gendered noun.",
+					"LO [description] (no thing), thing isn't used in Spanish as often as in english, instead of 'The good thing' you would say 'Lo bueno', or 'The bad thing' = 'Lo malo', or 'What is good is rarely cheap' = 'Lo bueno es raramente barato'",
+				],
 			},
 			el: {
 				id: "artcl.el",
@@ -651,7 +655,9 @@ const spanishWords: SpanishWords = {
 				translations: ["well", "fine", "OK", "good"],
 				word: "bien",
 				pos: "Adverb",
-				info: [],
+				info: [
+					"Bien is used to describe HOW something is (well), whereas BUENO is used to describe WHAT something is (good), like it's moral character. If you can replace the word with WELL it's BIEN",
+				],
 			},
 		},
 	},
