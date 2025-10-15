@@ -246,6 +246,10 @@ const referenceMap = {
 		path: "artcl.words.lo",
 		indices: [1],
 	} as ReferenceEntry,
+	queImpliedQuestion: {
+		path: "pron.words.interrogative.que",
+		indices: [3],
+	} as ReferenceEntry,
 } as const
 
 type ReferenceKey = keyof typeof referenceMap
@@ -14241,7 +14245,7 @@ const spanishData: { lessons: Lesson[] } = {
 				"'I want what he has' could also be said as 'I want theone that he has' and there you would definitely use LO QUE. Or 'I like WHAT you're cooking' = 'I like LO QUE you're cooking",
 				"A trickier example is: 'I don't know what to say', you can't really say 'I don't know the one that to say', but it's also not really a question, This situation is called an IMPLIED QUESTION, and in these cases you would use the word QUÉ or WHAT?, ",
 				"Another IMPLIED QUESTION example is: 'I don't know what he said' where technically you COULD make that 'I don't know the one that he said' but really this still counts as an implied question, We are ALMOST asking 'What did he say?' so we use QUÉ",
-				"",
+				"Note that we will use the word GOOD to translate to Bueno for the most part unless it is contextually clear that GOOD is definitely meaning BIEN like WELL/OK/FINE",
 			],
 			wordBank: [
 				artcl.words.lo,
@@ -14547,6 +14551,535 @@ const spanishData: { lessons: Lesson[] } = {
 							reference: ref("serIdentity"),
 						},
 						{ phrase: "funny" },
+					],
+				},
+				{
+					id: 16,
+					sentence: "What we did surprised him",
+					translation: "LO QUE we did surptised him",
+					data: [
+						{
+							phrase: "What",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{ phrase: "we did" },
+						{ phrase: "surprised him" },
+					],
+				},
+				{
+					id: 17,
+					sentence: "The boys were good",
+					translation: "LOS CHICOS ERAN BUENOS",
+					data: [
+						{
+							phrase: "The boys",
+							translation: [artcl.words.los, asPlural(noun.words.chico)],
+						},
+						{
+							phrase: "were",
+							translation: verb.words.ser.past.eran,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "good",
+							translation: asPlural(adjective.descriptive.words.bueno),
+						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "Either they're(F) not well or I'm not",
+					translation: "O ELLAS NO ESTÁN BIEN O YO NO LO ESTOY",
+					data: [
+						{ phrase: "Either", translation: conj.words.o },
+						{ phrase: "they're(F)", translation: pron.subject.words.ellas },
+						{ phrase: "not", translation: advrb.words.no },
+						{
+							phrase: "well",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+						{ phrase: "or", translation: conj.words.o },
+						{
+							phrase: "I'm not",
+							translation: [
+								pron.subject.words.yo,
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.estar.present.estoy,
+							],
+							reference: ref("noVerbPosition", "dObjPosition", "attributeLo"),
+						},
+					],
+				},
+				{
+					id: 19,
+					sentence: "But our house was good.",
+					translation: "PERO NUESTRA CASA ERA BUENA",
+					data: [
+						{ phrase: "But", translation: conj.words.pero },
+						{
+							phrase: "our house",
+							translation: [
+								adjective.possessive.words.nuestra,
+								noun.words.casa,
+							],
+						},
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.buena },
+					],
+				},
+				{
+					id: 20,
+					sentence: "If it's the one that was here, it's my house",
+					translation: "SI ES LA QUE ESTABA AQUÍ, ES MI CASA",
+					data: [
+						{ phrase: "If", translation: conj.words.si },
+						{
+							phrase: "it's",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "the one that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{
+							phrase: "it's",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "my house",
+							translation: [adjective.possessive.words.mi, noun.words.casa],
+						},
+					],
+				},
+				{
+					id: 21,
+					sentence: "I am what I am",
+					translation: "SOY LO QUE SOY",
+					data: [
+						{
+							phrase: "I am",
+							translation: verb.words.ser.present.soy,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{
+							phrase: "I am",
+							translation: verb.words.ser.present.soy,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 22,
+					sentence: "His friends and I are here",
+					translation: "SUS AMIGOS Y YO ESTAMOS AQUÍ",
+					data: [
+						{
+							phrase: "His friends",
+							translation: [
+								asPlural(adjective.possessive.words.su),
+								asPlural(noun.words.amigo),
+							],
+						},
+						{ phrase: "and", translation: conj.words.y },
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "are",
+							translation: verb.words.estar.present.estamos,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 23,
+					sentence: "I don't know what to say",
+					translation: "YO NO know QUÉ to say",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "don't know",
+							translation: advrb.words.no,
+							reference: ref("noVerbPosition", "noDo"),
+						},
+						{
+							phrase: "what",
+							translation: pron.interrogative.words.que,
+							reference: ref("queImpliedQuestion"),
+						},
+						{ phrase: "to say" },
+					],
+				},
+				{
+					id: 24,
+					sentence: "I see what you did there",
+					translation: "YO see LO QUE you did there",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "see" },
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{ phrase: "you did there" },
+					],
+				},
+				{
+					id: 25,
+					sentence: "I want what he has",
+					translation: "YO want LO QUE ÉL has",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "want" },
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{ phrase: "he", translation: pron.subject.words.el },
+						{ phrase: "has" },
+					],
+				},
+				{
+					id: 26,
+					sentence: "When we're here, your friend(M) will do it",
+					translation: "CUANDO ESTEMOS AQUÍ, TU AMIGO will do it",
+					data: [
+						{ phrase: "When", translation: conj.words.cuando },
+						{
+							phrase: "we're",
+							translation: verb.words.estar.subjunctive.estemos,
+							reference: ref("estarHowAndWhere", "cuandoSubjunctive"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{
+							phrase: "your friend(M)",
+							translation: [adjective.possessive.words.tu, noun.words.amigo],
+						},
+						{
+							phrase: "will do it",
+						},
+					],
+				},
+				{
+					id: 27,
+					sentence: "I hope that the good boy is OK",
+					translation: "YO hope QUE EL BUEN CHICO ESTÉ BIEN",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "the", translation: artcl.words.el },
+						{
+							phrase: "good",
+							translation: adjective.descriptive.words.bueno,
+							reference: ref("buenoApocopated"),
+						},
+						{ phrase: "boy", translation: noun.words.chico },
+						{
+							phrase: "is",
+							translation: verb.words.estar.subjunctive.este,
+							reference: ref("estarHowAndWhere", "subjunctiveIntentionQue"),
+							noPronoun: true,
+						},
+						{
+							phrase: "OK",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 28,
+					sentence: "I hope that he's the one that is doing well",
+					translation: "YO hope QUE ÉL SEA EL QUE ESTÁ BIEN",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "is",
+							translation: verb.words.ser.subjunctive.sea,
+							reference: ref("serIdentity", "subjunctiveIntentionQue"),
+							noPronoun: true,
+						},
+						{
+							phrase: "the one that",
+							translation: [artcl.words.el, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.estar.present.esta,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{
+							phrase: "doing well",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 29,
+					sentence: "I hope that you are well",
+					translation: "I hope QUE ESTÉS BIEN",
+					data: [
+						{ phrase: "I hope" },
+						{
+							phrase: "that",
+							translation: conj.words.que,
+						},
+						{
+							phrase: "you are",
+							translation: verb.words.estar.subjunctive.estes,
+						},
+						{
+							phrase: "well",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 30,
+					sentence: "I hope that they are what I want",
+					translation: "I hope QUE SEAN LO QUE want",
+					data: [
+						{ phrase: "I hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "they are",
+							translation: verb.words.ser.subjunctive.sean,
+							reference: ref("serIdentity", "subjunctiveIntentionQue"),
+							noPronoun: true,
+						},
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{ phrase: "I want", translation: "I want" },
+					],
+				},
+				{
+					id: 31,
+					sentence: "I want it to be what it was",
+					translation: "I want QUE SEA LO QUE ERA",
+					data: [
+						{ phrase: "I want" },
+						{
+							phrase: "it to be",
+							translation: "QUE SEA",
+							reference: ref(
+								"serIdentity",
+								"queWithSubjunctive",
+								"subjunctiveIntentionQue"
+							),
+							phraseTranslation: "QUE SEA",
+						},
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{
+							phrase: "it was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 32,
+					sentence: "The difficult (thing) is that they are friends",
+					translation: "LO difficult ES QUE SON AMIGOS",
+					data: [
+						{
+							phrase: "The difficult (thing)",
+							translation: artcl.words.lo,
+							phraseTranslation: "Lo difficult",
+							reference: ref("loAsNoun"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "they are",
+							translation: verb.words.ser.present.son,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{ phrase: "friends", translation: asPlural(noun.words.amigo) },
+					],
+				},
+				{
+					id: 33,
+					sentence: "The sad (thing) was that he wasn't a good boy",
+					translation: "LO sad ERA QUE NO ERA UN CHICO BUENO",
+					data: [
+						{
+							phrase: "The sad (thing)",
+							translation: artcl.words.lo,
+							phraseTranslation: "Lo sad",
+							reference: ref("loAsNoun"),
+						},
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "he wasn't",
+							translation: [advrb.words.no, verb.words.ser.past.era],
+							reference: ref("noVerbPosition", "serIdentity"),
+							noPronoun: true,
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{
+							phrase: "good boy",
+							translation: [
+								noun.words.chico,
+								adjective.descriptive.words.bueno,
+							],
+						},
+					],
+				},
+				{
+					id: 34,
+					sentence: "I like the one that(F) we saw yesterday",
+					translation: "I like LA QUE we saw yesterday",
+					data: [
+						{ phrase: "I like" },
+						{
+							phrase: "the one that(F)",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{ phrase: "we saw yesterday" },
+					],
+				},
+				{
+					id: 35,
+					sentence: "My friends(F) know what to say",
+					translation: "MIS AMIGAS know QUÉ to say",
+					data: [
+						{
+							phrase: "My friends(F)",
+							translation: [
+								asPlural(adjective.possessive.words.mi),
+								asPlural(noun.words.amiga),
+							],
+						},
+						{ phrase: "know" },
+						{
+							phrase: "what",
+							translation: pron.interrogative.words.que,
+							reference: ref("queImpliedQuestion"),
+						},
+						{ phrase: "to say" },
+					],
+				},
+				{
+					id: 36,
+					sentence: "Our(M) friends(M) don't know what to do",
+					translation: "NUESTROS AMIGOS NO know QUÉ to do",
+					data: [
+						{
+							phrase: "Our(M) friends(M)",
+							translation: [
+								asPlural(adjective.possessive.words.nuestro),
+								asPlural(noun.words.amigo),
+							],
+						},
+						{
+							phrase: "don't know",
+							translation: advrb.words.no,
+							reference: ref("noVerbPosition", "noDo"),
+							phraseTranslation: "NO know",
+						},
+						{
+							phrase: "what",
+							translation: pron.interrogative.words.que,
+							reference: ref("queImpliedQuestion"),
+						},
+						{ phrase: "to do" },
+					],
+				},
+				{
+					id: 37,
+					sentence: "I hope that they're OK",
+					translation: "YO hope QUE ESTÉN BIEN",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{ phrase: "hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "they're",
+							translation: verb.words.estar.subjunctive.esten,
+							reference: ref("estarHowAndWhere", "subjunctiveIntentionQue"),
+							noPronoun: true,
+						},
+						{
+							phrase: "OK",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 38,
+					sentence: "I don't know what they(M) do",
+					translation: "YO NO know QUÉ ELLOS do",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "don't know",
+							translation: advrb.words.no,
+							reference: ref("noVerbPosition", "noDo"),
+							phraseTranslation: "NO know",
+						},
+						{
+							phrase: "what",
+							translation: pron.interrogative.words.que,
+							reference: ref("queImpliedQuestion"),
+						},
+						{ phrase: "they(M)", translation: pron.subject.words.ellos },
+						{ phrase: "do" },
 					],
 				},
 			],

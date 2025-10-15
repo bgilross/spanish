@@ -310,6 +310,7 @@ const spanishWords: SpanishWords = {
 						"Qué can mean HOW in the sense of HOW lucky, would be Qué Lucky! or What Lucky!/What Luck!",
 						"Para qué is an idiom which means 'So that' or 'In order that'",
 						"QUÉ [emotion/reaction] followed by a QUE phrase is a definite indicator of a Subjunctive situation. 'How silly that you be here' = 'Qué silly que tú estés aquí'",
+						"Implied questions: Qué can be used to imply a question without directly asking it, like 'I wonder what he wants' = 'Me pregunto qué él quiere', or 'I don't know what she is doing' = 'No sé qué ella está haciendo'. This usage often conveys curiosity or uncertainty about information.",
 					],
 					pos: "Pronoun",
 				},
