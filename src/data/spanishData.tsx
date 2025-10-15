@@ -15084,6 +15084,601 @@ const spanishData: { lessons: Lesson[] } = {
 				},
 			],
 		},
+		{
+			lesson: 30,
+			name: "Lesson 30",
+			details: "Quizzing LO/EL/LA QUE, and SER/ESTAR Subjunctives.",
+			info: [],
+			sentences: [
+				{
+					id: 1,
+					sentence: "You're the one(M) that is at the place",
+					translation: "ERES EL QUE ESTÁ EN EL LUGAR",
+					data: [
+						{
+							phrase: "You're",
+							translation: verb.words.ser.present.eres,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "the one(M) that",
+							translation: [artcl.words.el, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.estar.present.esta,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "the place",
+							translation: [artcl.words.el, noun.words.lugar],
+						},
+					],
+				},
+				{
+					id: 2,
+					sentence: "How good that the boy is OK",
+					translation: "QUÉ BUENO QUE EL CHICO ESTÉ BIEN",
+					data: [
+						{
+							phrase: "How good",
+							translation: [
+								pron.interrogative.words.que,
+								adjective.descriptive.words.bueno,
+							],
+							reference: ref("queExclamation"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "the boy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+						{
+							phrase: "is",
+							translation: verb.words.estar.subjunctive.este,
+							reference: ref("estarHowAndWhere", "queExclamationSubjunctive"),
+							noPronoun: true,
+						},
+						{
+							phrase: "OK",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 3,
+					sentence: "How good that you're here",
+					translation: "QUÉ BUENO QUE ESTÉS AQUÍ",
+					data: [
+						{
+							phrase: "How good",
+							translation: [
+								pron.interrogative.words.que,
+								adjective.descriptive.words.bueno,
+							],
+							reference: ref("queExclamation"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you're",
+							translation: verb.words.estar.subjunctive.estes,
+							reference: ref("estarHowAndWhere", "queExclamationSubjunctive"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 4,
+					sentence: "Were you with the one(F) that was here?",
+					translation: "ESTABAS CON LA QUE ESTABA AQUÍ?",
+					data: [
+						{
+							phrase: "Were you",
+							translation: verb.words.estar.past.estabas,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "the one(F) that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 5,
+					sentence: "Are you(FORMAL) well?",
+					translation: "USTED ESTÁ BIEN?",
+					data: [
+						{
+							phrase: "Are you(FORMAL)",
+							translation: [
+								pron.subject.words.usted,
+								verb.words.estar.present.esta,
+							],
+							reference: ref("estarHowAndWhere", "usted3rdPerson"),
+						},
+						{
+							phrase: "well",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 6,
+					sentence: "He is nicer than she",
+					translation: "ÉL ES nicer QUE ELLA",
+					data: [
+						{ phrase: "He", translation: pron.subject.words.el },
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "nicer" },
+						{
+							phrase: "than",
+							translation: conj.words.que,
+							reference: ref("queAsThan"),
+						},
+						{ phrase: "she", translation: pron.subject.words.ella },
+					],
+				},
+				{
+					id: 7,
+					sentence: "It's a good place, or a good house",
+					translation: "ES UN BUEN LUGAR, O UNA BUENA CASA",
+					data: [
+						{
+							phrase: "It's",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{
+							phrase: "good",
+							translation: adjective.descriptive.words.bueno,
+							reference: ref("buenoApocopated"),
+						},
+						{ phrase: "place", translation: noun.words.lugar },
+						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "a", translation: artcl.words.una },
+						{ phrase: "good", translation: adjective.descriptive.words.buena },
+						{ phrase: "house", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 8,
+					sentence: "We were at the good houses",
+					translation: "ESTÁBAMOS EN LAS CASAS BUENAS",
+					data: [
+						{
+							phrase: "We were",
+							translation: verb.words.estar.past.estabamos,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "the", translation: artcl.words.las },
+						{
+							phrase: "good houses",
+							translation: [
+								asPlural(noun.words.casa),
+								asPlural(adjective.descriptive.words.buena),
+							],
+						},
+					],
+				},
+				{
+					id: 9,
+					sentence: "We are with your(FORMAL) friends(M)",
+					translation: "ESTAMOS CON SUS AMIGOS",
+					data: [
+						{
+							phrase: "We are",
+							translation: verb.words.estar.present.estamos,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "your(FORMAL) friends(M)",
+							translation: [
+								asPlural(adjective.possessive.words.su),
+								asPlural(noun.words.amigo),
+							],
+							reference: ref("usted3rdPerson"),
+						},
+					],
+				},
+				{
+					id: 10,
+					sentence: "I am here so that the girls be friends",
+					translation: "ESTOY AQUÍ PARA QUE LAS CHICAS SEAN AMIGAS",
+					data: [
+						{
+							phrase: "I am",
+							translation: verb.words.estar.present.estoy,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{
+							phrase: "so that",
+							translation: [prep.words.para, conj.words.que],
+							reference: ref("paraQueConj"),
+						},
+						{
+							phrase: "the girls",
+							translation: [artcl.words.las, asPlural(noun.words.chica)],
+						},
+						{
+							phrase: "be",
+							translation: verb.words.ser.subjunctive.sean,
+							reference: ref(
+								"serIdentity",
+								"subjunctiveIntentionQue",
+								"paraQueSubjunctiveFor"
+							),
+							noPronoun: true,
+						},
+						{ phrase: "friends", translation: asPlural(noun.words.amiga) },
+					],
+				},
+				{
+					id: 11,
+					sentence: "The good (thing) is that they are not present",
+					translation: "LO BUENO ES QUE NO ESTÁN",
+					data: [
+						{
+							phrase: "The good (thing)",
+							translation: [artcl.words.lo, adjective.descriptive.words.bueno],
+							reference: ref("loAsNoun"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "They are not present",
+							translation: [advrb.words.no, verb.words.estar.present.estan],
+							reference: ref(
+								"noVerbPosition",
+								"estarHowAndWhere",
+								"estarPresent"
+							),
+							noPronoun: true,
+						},
+					],
+				},
+				{
+					id: 12,
+					sentence: "My friends are at your(FORMAL) house",
+					translation: "MIS AMIGOS ESTÁN EN SU CASA",
+					data: [
+						{
+							phrase: "My friends",
+							translation: [
+								asPlural(adjective.possessive.words.mi),
+								asPlural(noun.words.amigo),
+							],
+						},
+						{
+							phrase: "are",
+							translation: verb.words.estar.present.estan,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "your(FORMAL) house",
+							translation: [adjective.possessive.words.su, noun.words.casa],
+							reference: ref("usted3rdPerson"),
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "If you're not here, I want to be at home",
+					translation: "SI TÚ NO ESTÁS AQUÍ, I want ESTAR EN CASA",
+					data: [
+						{ phrase: "If", translation: conj.words.si },
+						{
+							phrase: "you're not",
+							translation: [
+								pron.subject.words.tu,
+								advrb.words.no,
+								verb.words.estar.present.estas,
+							],
+							reference: ref(
+								"noVerbPosition",
+								"dObjPosition",
+								"estarHowAndWhere"
+							),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "I want", translation: "I want" },
+						{
+							phrase: "to be",
+							translation: verb.words.estar,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "home", translation: noun.words.casa },
+					],
+				},
+				{
+					id: 14,
+					sentence: "I am the one(F) that wants to be a student",
+					translation: "SOY LA QUE wants SER student",
+					data: [
+						{
+							phrase: "I am",
+							translation: verb.words.ser.present.soy,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "the one(F) that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{ phrase: "wants" },
+						{
+							phrase: "to be",
+							translation: verb.words.ser,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "student" },
+					],
+				},
+				{
+					id: 15,
+					sentence: "I was at my house, but they(F) weren't",
+					translation: "YO ESTABA EN MI CASA< PERO ELLAS NO LO ESTABAN",
+					data: [
+						{
+							phrase: "I was",
+							translation: [
+								pron.subject.words.yo,
+								verb.words.estar.past.estaba,
+							],
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "my house",
+							translation: [adjective.possessive.words.mi, noun.words.casa],
+						},
+						{ phrase: "but", translation: conj.words.pero },
+						{
+							phrase: "they(F) weren't",
+							translation: [
+								pron.subject.words.ellas,
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.estar.past.estaban,
+							],
+							reference: ref(
+								"noVerbPosition",
+								"dObjPosition",
+								"attributeLo",
+								"estarHowAndWhere"
+							),
+						},
+					],
+				},
+				{
+					id: 16,
+					sentence: "I want what your friends(M) have",
+					translation: "I want LO QUE TUS AMIGOS have",
+					data: [
+						{ phrase: "I want" },
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{
+							phrase: "your friends(M)",
+							translation: [
+								asPlural(adjective.possessive.words.tu),
+								asPlural(noun.words.amigo),
+							],
+						},
+						{ phrase: "have" },
+					],
+				},
+				{
+					id: 17,
+					sentence: "I want the place to be good",
+					translation: "I want QUE EL LUGAR SEA BUENO",
+					data: [
+						{ phrase: "I want" },
+						{
+							phrase: "the place",
+							translation: [conj.words.que, artcl.words.el, noun.words.lugar],
+							reference: ref("queConnector"),
+						},
+						{
+							phrase: "to be",
+							translation: verb.words.ser.subjunctive.sea,
+							reference: ref("serIdentity", "subjunctiveIntentionQue"),
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.bueno },
+					],
+				},
+				{
+					id: 18,
+					sentence: "Our friend(M) wants me to be your mentor",
+					translation: "NUESTRO AMIGO wants QUE YO SEA TU mentor",
+					data: [
+						{
+							phrase: "Our friend(M)",
+							translation: [
+								adjective.possessive.words.nuestro,
+								noun.words.amigo,
+							],
+						},
+						{ phrase: "wants" },
+						{
+							phrase: "me to be",
+							translation: [
+								conj.words.que,
+								pron.subject.words.yo,
+								verb.words.ser.subjunctive.sea,
+							],
+							reference: ref(
+								"queConnector",
+								"serIdentity",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{
+							phrase: "your",
+							translation: adjective.possessive.words.tu,
+						},
+						{ phrase: "mentor" },
+					],
+				},
+				{
+					id: 19,
+					sentence:
+						"Either they are friends(F) or they want us to be friends(F)",
+					translation: "O SON AMIGAS O they want QUE SEAMOS AMIGAS",
+					data: [
+						{ phrase: "Either", translation: conj.words.o },
+						{
+							phrase: "they are friends(F)",
+							translation: [
+								verb.words.ser.present.son,
+								asPlural(noun.words.amiga),
+							],
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "they want" },
+						{
+							phrase: "us to be friends(F)",
+							translation: [
+								conj.words.que,
+								verb.words.ser.subjunctive.seamos,
+								asPlural(noun.words.amiga),
+							],
+							reference: ref(
+								"queConnector",
+								"serIdentity",
+								"subjunctiveIntentionQue"
+							),
+						},
+					],
+				},
+				{
+					id: 20,
+					sentence: "They want us to be with the one(M) that knows you",
+					translation: "They want QUE ESTEMOS CON EL QUE TE know",
+					data: [
+						{ phrase: "They want" },
+						{
+							phrase: "us to be",
+							translation: [
+								conj.words.que,
+								verb.words.estar.subjunctive.estemos,
+							],
+							reference: ref(
+								"queConnector",
+								"estarHowAndWhere",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "the one(M) that",
+							translation: [artcl.words.el, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "knows you",
+							translation: pron.dObj.words.te,
+							phraseTranslation: "te knows",
+						},
+					],
+				},
+				{
+					id: 21,
+					sentence: "We want you to be the one(F) that does it",
+					translation: "We want QUE SEAS LA QUE LO does",
+					data: [
+						{
+							phrase: "We want",
+						},
+						{
+							phrase: "you to be",
+							translation: [conj.words.que, verb.words.ser.subjunctive.seas],
+							reference: ref(
+								"queConnector",
+								"serIdentity",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{
+							phrase: "the one(F) that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "does it",
+							translation: [pron.attribute.words.lo],
+							phraseTranslation: "lo does",
+						},
+					],
+				},
+				{
+					id: 22,
+					sentence: "I won't know what to do when they are here",
+					translation: "YO NO will know QUÉ to do CUANDO ESTÉN AQUÍ",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "won't know",
+							translation: advrb.words.no,
+							reference: ref("noVerbPosition", "noContractions"),
+							phraseTranslation: "NO will know",
+						},
+						{
+							phrase: "what",
+							translation: pron.interrogative.words.que,
+							reference: ref("queImpliedQuestion"),
+						},
+						{ phrase: "to do" },
+						{ phrase: "when", translation: conj.words.cuando },
+						{
+							phrase: "they are",
+							translation: verb.words.estar.subjunctive.esten,
+							reference: ref("estarHowAndWhere", "cuandoSubjunctive"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+			],
+		},
 	],
 }
 
