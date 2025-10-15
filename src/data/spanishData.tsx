@@ -15679,6 +15679,28 @@ const spanishData: { lessons: Lesson[] } = {
 				},
 			],
 		},
+		{
+			lesson: 31,
+			name: "Lesson 31",
+			details: "Preterite vs Imperfect Past Tense of SER and ESTAR.",
+			info: [
+				"In the next few lessons we will be learning all the reset of the common forms of SER and ESTAR, including FUTURE, CONDITIONAL, and some UNCONJUGATED forms.",
+				"But to start this process we need to talk a bit more about the PAST tense. So far we have learned Past tense forms for both SER and ESTAR,",
+				"BUT there is another version of the past tense that means something different. The version we've learned so far is called the 'IMPERFECT' Past, and it's the most common type of past tense for both SER and ESTAR",
+				"There is another past tense called the PRETERITE past tense. For every verb in Spanish there is both an Imperfect and a Preterite past tense form. This is not something that happens in English, but in Spanish it helps clarify some tricky situations",
+				"Think about the difference in these two sentences: 'The kid WAS hurting' vs 'The kid GOT hurt', it's clear that the second one is describing a specific event that happened, while the first one is describing a more general situation.",
+				"The problem is: Spanish doesn't really have a word for 'got'. There is no proper translation from English into Spanish for this word.",
+				"So instead we can either say: 'The kid WAS(imperect) hurt' or 'The kid WAS(preterite) hurt'. The first one is more general, and the second one is more specific.",
+				"We really don't need to learn many preterite forms of SER and ESTAR, both of these verbs typically aren't considered 'EVENTS' most of the time, ex: When you say 'I was a kid' you're not talking about 'suddenly becoming a kid'",
+				"BUT Estar does use the Preterite tense on occasion, so we will learn a couple forms for now: ESTUVE and ESTUVO",
+				"ESTUVE means I WAS, and ESTUVO means HE/SHE/IT WAS",
+				"You might use these forms of ESTAR to indicate that someone was at a place emphasizing the 'EVENT' of being there",
+				"An example is: 'I WAS here Yesterday', if you say ESTUVE AQUI yesterday it sounds like you ARRIVED yesterday, but if you use the general/imperfect past tense instead: ESTABA AQUI yesterday, it sounds like you were there all along",
+				"Or consider: 'ESTABA BIEN' vs 'ESTUVO BIEN', saying ESTABA implied that you were doing well all along, wereas ESTUVO BIEN implies that they started feeling well at a particular moment, or that they were doing well for a specific amount of time.",
+				"One way to help tell which past tense you should use is to imagine you are tellin a story about some time in the past, first you set the scene, show the general state of things: that would eb the imperfect past. THEN events start happening at defined moments in time: That's the PRETERITE tense",
+				"An easyhint is that if a sentence includes a specific moment or duration of time, you'll normally use the preterite tense, but if you're talking about something that has a longer duration than the story, you would use the imperfect tense.",
+			],
+		},
 	],
 }
 
