@@ -884,6 +884,26 @@ const spanishWords: SpanishWords = {
 						info: [],
 					},
 				},
+				preterite: {
+					estuve: {
+						id: "verb.estar.preterite.estuve",
+						word: "estuve",
+						translations: ["was", "I was"],
+						pos: "Verb",
+						tense: "Preterite",
+						person: "first",
+						info: [],
+					},
+					estuvo: {
+						id: "verb.estar.preterite.estuvo",
+						word: "estuvo",
+						translations: ["was", "he/she/it/USTED was"],
+						pos: "Verb",
+						tense: "Preterite",
+						person: "third",
+						info: [],
+					},
+				},
 			},
 
 			ser: {
@@ -1031,6 +1051,7 @@ const spanishWords: SpanishWords = {
 						info: [],
 					},
 				},
+				preterite: {},
 			},
 		},
 
