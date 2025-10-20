@@ -250,6 +250,10 @@ const referenceMap = {
 		path: "pron.words.interrogative.que",
 		indices: [3],
 	} as ReferenceEntry,
+	preteriteEvent: {
+		path: "verb",
+		indices: [17],
+	} as ReferenceEntry,
 } as const
 
 type ReferenceKey = keyof typeof referenceMap
@@ -15699,6 +15703,642 @@ const spanishData: { lessons: Lesson[] } = {
 				"Or consider: 'ESTABA BIEN' vs 'ESTUVO BIEN', saying ESTABA implied that you were doing well all along, wereas ESTUVO BIEN implies that they started feeling well at a particular moment, or that they were doing well for a specific amount of time.",
 				"One way to help tell which past tense you should use is to imagine you are tellin a story about some time in the past, first you set the scene, show the general state of things: that would eb the imperfect past. THEN events start happening at defined moments in time: That's the PRETERITE tense",
 				"An easyhint is that if a sentence includes a specific moment or duration of time, you'll normally use the preterite tense, but if you're talking about something that has a longer duration than the story, you would use the imperfect tense.",
+			],
+			wordBank: [
+				verb.words.estar.preterite.estuve,
+				verb.words.estar.preterite.estuvo,
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "How good that you are my friend(M)",
+					translation: "QUÉ BUENO QUE SEAS MI AMIGO",
+					data: [
+						{
+							phrase: "How good",
+							translation: [
+								pron.interrogative.words.que,
+								adjective.descriptive.words.bueno,
+							],
+							reference: ref("queExclamation"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you are",
+							translation: verb.words.ser.subjunctive.seas,
+							reference: ref("serIdentity", "queExclamationSubjunctive"),
+							noPronoun: true,
+						},
+						{
+							phrase: "my friend(M)",
+							translation: [adjective.possessive.words.mi, noun.words.amigo],
+						},
+					],
+				},
+				{
+					id: 2,
+					sentence: "The boy is the one that was my friend",
+					translation: "EL CHICO ES EL QUE ERA MI AMIGO",
+					data: [
+						{
+							phrase: "The boy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "the one that",
+							translation: [artcl.words.el, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "my friend",
+							translation: [adjective.possessive.words.mi, noun.words.amigo],
+						},
+					],
+				},
+				{
+					id: 3,
+					sentence: "She wasn't your friend",
+					translation: "ELLA NO ERA TU AMIGA",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "wasn't",
+							translation: [advrb.words.no, verb.words.ser.past.era],
+							reference: ref("noContractions", "serIdentity"),
+						},
+						{
+							phrase: "your friend",
+							translation: [adjective.possessive.words.tu, noun.words.amiga],
+						},
+					],
+				},
+				{
+					id: 4,
+					sentence: "They(F) were my friends, but he wasn't",
+					translation: "ELLAS ERAN MIS AMIGOS, PERO ÉL NO LO ERA",
+					data: [
+						{ phrase: "They(F)", translation: pron.subject.words.ellas },
+						{
+							phrase: "were",
+							translation: verb.words.ser.past.eran,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "my friends",
+							translation: [
+								asPlural(adjective.possessive.words.mi),
+								asPlural(noun.words.amigo),
+							],
+						},
+						{ phrase: "but", translation: conj.words.pero },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "wasn't",
+							translation: [
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.ser.past.era,
+							],
+							reference: ref("noContractions", "attributeLo", "serIdentity"),
+						},
+					],
+				},
+				{
+					id: 5,
+					sentence: "They were at the house with the girl",
+					translation: "ESTABAN EN LA CASA CON LA CHICA",
+					data: [
+						{ phrase: "They", translation: pron.subject.words.ellos },
+						{
+							phrase: "were",
+							translation: verb.words.estar.past.estaban,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "the house",
+							translation: [artcl.words.la, noun.words.casa],
+						},
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "the girl	",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+					],
+				},
+				{
+					id: 6,
+					sentence: "I was here in order to be with his friends(M)",
+					translation: "ESTUVE AQUÍ PARA ESTAR CON SUS AMIGOS",
+					data: [
+						{
+							phrase: "I was",
+							translation: verb.words.estar.preterite.estuve,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+							noPronoun: true,
+						},
+						{
+							phrase: "here",
+							translation: advrb.words.aqui,
+						},
+						{
+							phrase: "in order",
+							translation: prep.words.para,
+							reference: ref("paraInOrder"),
+						},
+						{
+							phrase: "to be",
+							translation: verb.words.estar,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "his friends(M)",
+							translation: [
+								asPlural(adjective.possessive.words.su),
+								asPlural(noun.words.amigo),
+							],
+						},
+					],
+				},
+				{
+					id: 7,
+					sentence: "The good(thing) is that you were a good girl",
+					translation: "LO BUENO ES QUE ERAS UNA BUENA CHICA",
+					data: [
+						{
+							phrase: "The good(thing)",
+							translation: [artcl.words.lo, adjective.descriptive.words.bueno],
+							reference: ref("loAsNoun"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "you were",
+							translation: verb.words.ser.past.eras,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{ phrase: "a", translation: artcl.words.una },
+						{
+							phrase: "good girl",
+							translation: [
+								noun.words.chica,
+								adjective.descriptive.words.buena,
+							],
+						},
+					],
+				},
+				{
+					id: 8,
+					sentence: "But I was fine when she got here",
+					translation: "PERO ESTUVE BIEN CUANDO ELLA ESTUVO AQUÍ",
+					data: [
+						{ phrase: "But", translation: conj.words.pero },
+						{
+							phrase: "I was",
+							translation: verb.words.estar.preterite.estuve,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+							noPronoun: true,
+						},
+						{
+							phrase: "fine",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+						{ phrase: "when", translation: conj.words.cuando },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{
+							phrase: "got here",
+							translation: [
+								verb.words.estar.preterite.estuvo,
+								advrb.words.aqui,
+							],
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+					],
+				},
+				{
+					id: 9,
+					sentence: "The problem was that I didn't know what to do",
+					translation: "The problem ERA QUE NO I knew QUÉ to do",
+					data: [
+						{ phrase: "The problem" },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "I didn't know",
+						},
+						{
+							phrase: "what",
+							translation: pron.interrogative.words.que,
+							reference: ref("queImpliedQuestion"),
+						},
+						{ phrase: "to do" },
+					],
+				},
+				{
+					id: 10,
+					sentence: "I was a kid(M) when that happened",
+					translation: "YO ERA UN kid CUANDO ESO happened",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "a", translation: artcl.words.un },
+						{ phrase: "kid(M)" },
+						{ phrase: "when", translation: conj.words.cuando },
+						{ phrase: "that", translation: pron.subject.words.eso },
+						{ phrase: "happened" },
+					],
+				},
+				{
+					id: 11,
+					sentence: "I was here when we(F) were here",
+					translation: "YO ESTABA AQUÍ CUANDO NOSOTRAS ESTÁBAMOS AQUÍ",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "was",
+							translation: verb.words.estar.past.estaba,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "when", translation: conj.words.cuando },
+						{ phrase: "we(F)", translation: pron.subject.words.nosotras },
+						{
+							phrase: "were",
+							translation: verb.words.estar.past.estabamos,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 12,
+					sentence: "The girl doesn't have it, you have what I want!",
+					translation: "LA CHICA NO LO has, TÚ have LO QUE I want!",
+					data: [
+						{
+							phrase: "The girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "doesn't have it",
+							translation: [advrb.words.no, pron.attribute.words.lo],
+							phraseTranslation: "NO LO has",
+							reference: ref("noDoContractions", "dObjPosition"),
+						},
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{ phrase: "have" },
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{ phrase: "I want" },
+					],
+				},
+				{
+					id: 13,
+					sentence: "You(FORMAL) were great in the show!",
+					translation: "USTED ESTUVO great EN the show",
+					data: [
+						{ phrase: "You(FORMAL)", translation: pron.subject.words.usted },
+						{
+							phrase: "were",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "great" },
+						{ phrase: "in", translation: prep.words.en },
+						{ phrase: "the show" },
+					],
+				},
+				{
+					id: 14,
+					sentence: "Were you(FORMAL) here just now?",
+					translation: "ESTUVO USTED AQUÍ just now?",
+					data: [
+						{
+							phrase: "Were you(FORMAL)",
+							translation: [
+								verb.words.estar.preterite.estuvo,
+								pron.subject.words.usted,
+							],
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "just now" },
+					],
+				},
+				{
+					id: 15,
+					sentence: "After that, he was OK",
+					translation: "After ESO, ÉL ESTUVO BIEN",
+					data: [
+						{ phrase: "after" },
+						{ phrase: "that", translation: pron.subject.words.eso },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "was",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{
+							phrase: "OK",
+							translation: advrb.words.bien,
+							reference: ref("bienWell"),
+						},
+					],
+				},
+				{
+					id: 16,
+					sentence: "She got sad when you said that",
+					translation: "ELLA ESTUVO sad CUANDO you said ESO",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "got",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "sad" },
+						{ phrase: "when", translation: conj.words.cuando },
+						{ phrase: "you said" },
+						{ phrase: "that", translation: pron.subject.words.eso },
+					],
+				},
+				{
+					id: 17,
+					sentence: "I was here for two days with the boy",
+					translation: "ESTUVE AQUÍ POR two days CON EL CHICO",
+					data: [
+						{
+							phrase: "I was",
+							translation: verb.words.estar.preterite.estuve,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{
+							phrase: "for",
+							translation: prep.words.por,
+							reference: ref("porFor"),
+						},
+						{ phrase: "two days" },
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "the boy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "I was with your friends(F) for a few hours",
+					translation: "ESTUVE CON TUS AMIGAS POR a few hours",
+					data: [
+						{
+							phrase: "I was",
+							translation: verb.words.estar.preterite.estuve,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+							noPronoun: true,
+						},
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "your friends(F)",
+							translation: [
+								asPlural(adjective.possessive.words.tu),
+								asPlural(noun.words.amiga),
+							],
+						},
+						{
+							phrase: "for",
+							translation: prep.words.por,
+							reference: ref("porFor"),
+						},
+						{ phrase: "a few hours" },
+					],
+				},
+				{
+					id: 19,
+					sentence: "I was at the place for two hours",
+					translation: "ESTUVE EN EL LUGAR POR two hours",
+					data: [
+						{
+							phrase: "I was",
+							translation: verb.words.estar.preterite.estuve,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+							noPronoun: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "the place",
+							translation: [artcl.words.el, noun.words.lugar],
+						},
+						{
+							phrase: "for",
+							translation: prep.words.por,
+							reference: ref("porFor"),
+						},
+						{ phrase: "two hours" },
+					],
+				},
+				{
+					id: 20,
+					sentence: "I want them to be in a good place,",
+					translation: "I want QUE ESTÉN EN UN BUEN LUGAR",
+					data: [
+						{ phrase: "I want" },
+						{
+							phrase: "them to be",
+							translation: [conj.words.que, verb.words.estar.subjunctive.esten],
+							reference: ref(
+								"queConnector",
+								"estarHowAndWhere",
+								"subjunctiveIntentionQue"
+							),
+						},
+						{ phrase: "in", translation: prep.words.en },
+						{
+							phrase: "a good place",
+							translation: [
+								artcl.words.un,
+								adjective.descriptive.words.buen,
+								noun.words.lugar,
+							],
+							reference: ref("buenoApocopated"),
+						},
+					],
+				},
+				{
+					id: 21,
+					sentence: "The girl, the one that I know, was not here",
+					translation: "LA CHICA, LA QUE I know, NO ESTABA AQUÍ",
+					data: [
+						{
+							phrase: "The girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "the one that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{ phrase: "I know" },
+						{
+							phrase: "was not",
+							translation: [advrb.words.no, verb.words.estar.past.estaba],
+							reference: ref("noVerbPosition", "estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 22,
+					sentence: "The one(F) that was here today was my friend",
+					translation: "LA QUE ESTUVO AQUÍ today ERA MI AMIGA",
+					data: [
+						{
+							phrase: "The one(F) that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "was",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "today" },
+						{
+							phrase: "was",
+							translation: verb.words.ser.past.era,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "my friend",
+							translation: [adjective.possessive.words.mi, noun.words.amiga],
+						},
+					],
+				},
+				{
+					id: 23,
+					sentence: "Our friend(F) was better after that",
+					translation: "NUESTRA AMIGA ESTUVO better after ESO",
+					data: [
+						{
+							phrase: "Our friend(F)",
+							translation: [
+								adjective.possessive.words.nuestra,
+								noun.words.amiga,
+							],
+						},
+						{
+							phrase: "was",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "better" },
+						{ phrase: "after" },
+						{ phrase: "that", translation: pron.subject.words.eso },
+					],
+				},
+				{
+					id: 24,
+					sentence: "For a little while, either he was here or she was here",
+					translation:
+						"POR a little while, O ÉL ESTUVO AQUÍ O ELLA ESTUVO AQUÍ",
+					data: [
+						{
+							phrase: "For",
+							translation: prep.words.por,
+							reference: ref("porFor"),
+						},
+						{ phrase: "a little while" },
+						{ phrase: "either", translation: conj.words.o },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "was",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "or", translation: conj.words.o },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{
+							phrase: "was",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 25,
+					sentence: "That's why I was at your house this afternoon",
+					translation: "POR ESO ESTUVE EN TU CASA this afternoon",
+					data: [
+						{
+							phrase: "That's why",
+							translation: [prep.words.por, pron.subject.words.eso],
+							reference: ref("porEso"),
+						},
+						{
+							phrase: "I was",
+							translation: verb.words.estar.preterite.estuve,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+							noPronoun: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "your house",
+							translation: [adjective.possessive.words.tu, noun.words.casa],
+						},
+						{ phrase: "this afternoon" },
+					],
+				},
+				{
+					id: 26,
+					sentence: "His friend(M) was here once",
+					translation: "SU AMIGO ESTUVO AQUÍ once",
+					data: [
+						{
+							phrase: "His friend(M)",
+							translation: [adjective.possessive.words.su, noun.words.amigo],
+						},
+						{
+							phrase: "was",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "once" },
+					],
+				},
 			],
 		},
 	],

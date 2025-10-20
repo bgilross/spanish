@@ -748,6 +748,7 @@ const spanishWords: SpanishWords = {
 			"Subjunctive isn't used if we are stating a fact or observation, only when there is some sort of intention, desire, or hope involved.",
 			"Just because a sentence doesn't use the exact word 'he be/she be/they be/we be' doesn't mean it's not subjunctive, look for the intention/desire/hope/wish etc. behind the sentence. I would be, could be, should be, might be, etc. are all subjunctive, and translated as 'I be'/SEA/ESTE etc.",
 			"Subjunctive isn't used when intentions are in a sentence IF the intention is being expressed by someone intended for themselves. 'I want to be a good person' is NOT subjunctive, but 'I want you to be a good person' IS subjunctive.",
+			"Preterite is the other past tense form, used for specific actions that were completed in the past at a certain time, not generally. 'I ate the food', 'I was here', 'I got/was hurt' ",
 		],
 
 		words: {
