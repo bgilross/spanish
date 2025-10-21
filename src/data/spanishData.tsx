@@ -17012,6 +17012,108 @@ const spanishData: { lessons: Lesson[] } = {
 				},
 			],
 		},
+		{
+			lesson: 33,
+			name: "Lesson 33",
+			details: "ESTAR and SER: Future, Conditional, Participle.",
+			info: [
+				"This lesso we will learn the last essential conjugations of Estar including the Future, Conditional, and the Participle",
+				"Starting with the Future Tense: ESTARÁ which means 'He/She/It/USTED will be', simillar to the Future third person tense of SER which is SERÁ, basically the Inifinitive form plus Á",
+				"The Future first person is ESTARÉ meaning 'I will be', simillar to the first person of SER Future which is: SERÉ meaning 'I will be'",
+				"Speaking of simillar patterns across verbs we learned last lesson that SERÌA means 'Would be' for SER, simillarly ESTARÍA means 'would be' for ESTAR",
+				"In fact it's a univeral pattern that every single Spanish verb conjugation that uses the word 'WOULD' in English has a stress on RÌA, some random examples:  “I would eat” is comería, “she would walk” is caminaría, and “he would go” is iría.",
+				"To list the rest of the Conditional conjugations for ESTAR we simply take ESTARÌA and slightly modify it for the person you are talking about",
+				"'They would be' is ESTARÌAN, 'You would be' is ESTARÍAS, and 'We would be' is ESTARÍAMOS",
+				"Learning additional verbs is going to get even easier/faster as the patterns used will become even more predictable as wel go forward. In the future we will learn all the importanbt conjugations of each new verb in one go before moving on to the next verb, you might be surprised how quickly you can learn all the important forms of each new verb",
+				"The participle form of ESTAR is ESTADO meaning 'BEEN', simillar to SIDO, it's unconjugated and is the same form for every person",
+			],
+			wordBank: [
+				verb.words.estar.future.estara,
+				verb.words.estar.conditional.estaria,
+				verb.words.estar.conditional.estarian,
+				verb.words.estar.conditional.estarias,
+				verb.words.estar.conditional.estariamos,
+				verb.words.estar.participle.estado,
+				verb.words.ser.future.sere,
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "I will be your friend(F)",
+					translation: "YO SERÉ TU AMIGA",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "will be",
+							translation: verb.words.ser.future.sere,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "your friend(F)",
+							translation: [adjective.possessive.words.tu, noun.words.amiga],
+						},
+					],
+				},
+				{
+					id: 2,
+					sentence: "She would be at my house?",
+					translation: "¿ELLA ESTARÍA EN MI CASA?",
+					data: [
+						{
+							phrase: "She",
+							translation: pron.subject.words.ella,
+						},
+						{
+							phrase: "would be",
+							translation: verb.words.estar.conditional.estaria,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "my house",
+							translation: [adjective.possessive.words.mi, noun.words.casa],
+						},
+					],
+				},
+				{
+					id: 3,
+					sentence: "Would they be OK?",
+					translation: "¿ESTARÍAN BIEN?",
+					data: [
+						{
+							phrase: "Would they be",
+							translation: verb.words.estar.conditional.estarian,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{
+							phrase: "OK",
+							translation: advrb.words.bien,
+						},
+					],
+				},
+				{
+					id: 4,
+					sentence: "Would you be here or would I be here?",
+					translation: "¿ESTARÍAS AQUÍ O ESTARÍA AQUÍ?",
+					data: [
+						{
+							phrase: "Would you be",
+							translation: verb.words.estar.conditional.estarias,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "or", translation: conj.words.o },
+						{
+							phrase: "would I be",
+							translation: verb.words.estar.conditional.estaria,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+			],
+		},
 	],
 }
 
