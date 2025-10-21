@@ -16503,7 +16503,513 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "good", translation: adjective.descriptive.words.buena },
 					],
 				},
-				{},
+				{
+					id: 6,
+					sentence: "She is being a good friend",
+					translation: "ESTÁ SIENDO UNA BUENA AMIGA",
+					data: [
+						{
+							phrase: "She is being",
+							translation: [
+								verb.words.estar.present.esta,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+							noPronoun: true,
+						},
+						{ phrase: "a", translation: artcl.words.una },
+						{
+							phrase: "good friend",
+							translation: [
+								adjective.descriptive.words.buena,
+								noun.words.amiga,
+							],
+						},
+					],
+				},
+				{
+					id: 7,
+					sentence: "We are being good friends",
+					translation: "ESTAMOS SIENDO BUENOS AMIGOS",
+					data: [
+						{
+							phrase: "We are being",
+							translation: [
+								verb.words.estar.present.estamos,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+							noPronoun: true,
+						},
+						{
+							phrase: "good friends",
+							translation: [
+								asPlural(adjective.descriptive.words.bueno),
+								asPlural(noun.words.amigo),
+							],
+						},
+					],
+				},
+				{
+					id: 8,
+					sentence: "They(M) are being good friends",
+					translation: "ESTÁN SIENDO BUENOS AMIGOS",
+					data: [
+						{
+							phrase: "They(M) are being",
+							translation: [
+								verb.words.estar.present.estan,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+						},
+						{
+							phrase: "good friends",
+							translation: [
+								asPlural(adjective.descriptive.words.bueno),
+								asPlural(noun.words.amigo),
+							],
+						},
+					],
+				},
+				{
+					id: 9,
+					sentence: "You are being a good friend(M)",
+					translation: "ESTÁS SIENDO UN BUEN AMIGO",
+					data: [
+						{
+							phrase: "You are being",
+							translation: [
+								verb.words.estar.present.estas,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+						},
+						{
+							phrase: "a good friend(M)",
+							translation: [
+								artcl.words.un,
+								adjective.descriptive.words.buen,
+								noun.words.amigo,
+							],
+						},
+					],
+				},
+				{
+					id: 10,
+					sentence: "I am being a good friend(M)",
+					translation: "ESTOY SIENDO UN BUEN AMIGO",
+					data: [
+						{
+							phrase: "I am being",
+							translation: [
+								verb.words.estar.present.estoy,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+						},
+						{
+							phrase: "a good friend(M)",
+							translation: [
+								artcl.words.un,
+								adjective.descriptive.words.buen,
+								noun.words.amigo,
+							],
+						},
+					],
+				},
+				{
+					id: 11,
+					sentence: "He was here yesterday because of being your friend",
+					translation: "ESTUVO AQUÍ yesterday POR SER TU AMIGO",
+					data: [
+						{
+							phrase: "He was",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "yesterday" },
+						{
+							phrase: "because of",
+							translation: prep.words.por,
+							reference: ref("porBecauseOf"),
+						},
+						{ phrase: "being", translation: verb.words.ser },
+						{
+							phrase: "your friend",
+							translation: [adjective.possessive.words.tu, noun.words.amigo],
+						},
+					],
+				},
+				{
+					id: 12,
+					sentence: "The boys are not being good",
+					translation: "LOS CHICOS NO ESTÁN SIENDO BUENOS",
+					data: [
+						{
+							phrase: "The boys",
+							translation: [artcl.words.los, asPlural(noun.words.chico)],
+						},
+						{
+							phrase: "are not being",
+							translation: [
+								advrb.words.no,
+								verb.words.estar.present.estan,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("noVerbPosition", "serGerund"),
+						},
+						{
+							phrase: "good",
+							translation: asPlural(adjective.descriptive.words.bueno),
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "But your house will be the one that is good",
+					translation: "PERO TU CASA SERÁ LA QUE ES BUENA",
+					data: [
+						{ phrase: "But", translation: conj.words.pero },
+						{
+							phrase: "your house",
+							translation: [adjective.possessive.words.tu, noun.words.casa],
+						},
+						{
+							phrase: "will be",
+							translation: verb.words.ser.future.sera,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "the one that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.buena },
+					],
+				},
+				{
+					id: 14,
+					sentence: "It would be good",
+					translation: "SERÍA BUENO",
+					data: [
+						{
+							phrase: "It would be",
+							translation: verb.words.ser.conditional.seria,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.bueno },
+					],
+				},
+				{
+					id: 15,
+					sentence: "Her house will be a good place",
+					translation: "SU CASA SERÁ UN BUEN LUGAR",
+					data: [
+						{
+							phrase: "Her house",
+							translation: [adjective.possessive.words.su, noun.words.casa],
+						},
+						{
+							phrase: "will be",
+							translation: verb.words.ser.future.sera,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "a good place",
+							translation: [
+								artcl.words.un,
+								adjective.descriptive.words.buen,
+								noun.words.lugar,
+							],
+							reference: ref("buenoApocopated"),
+						},
+					],
+				},
+				{
+					id: 16,
+					sentence: "I would be your friend(M)",
+					translation: "YO SERÍA TU AMIGO",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "would be",
+							translation: verb.words.ser.conditional.seria,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "your friend(M)",
+							translation: [adjective.possessive.words.tu, noun.words.amigo],
+						},
+					],
+				},
+				{
+					id: 17,
+					sentence: "What are we being mean for?",
+					translation: "PARA QUÉ ESTAMOS SIENDO mean?",
+					data: [
+						{
+							phrase: "What",
+							translation: advrb.words.paraQue,
+							reference: ref("paraQuePron"),
+						},
+						{
+							phrase: "are we being",
+							translation: [
+								verb.words.estar.present.estamos,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+						},
+						{ phrase: "mean" },
+					],
+				},
+				{
+					id: 18,
+					sentence: "After what you did, I was fine",
+					translation: "After LO QUE TÚ did, ESTUVE BIEN",
+					data: [
+						{ phrase: "After" },
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{ phrase: "did" },
+						{
+							phrase: "I was",
+							translation: verb.words.estar.preterite.estuve,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "fine", translation: advrb.words.bien },
+					],
+				},
+				{
+					id: 19,
+					sentence: "That has been good",
+					translation: "ESO has SIDO BUENO",
+					data: [
+						{ phrase: "That", translation: pron.subject.words.eso },
+						{ phrase: "has" },
+						{ phrase: "been", translation: verb.words.ser.participle.sido },
+						{ phrase: "good", translation: adjective.descriptive.words.bueno },
+					],
+				},
+				{
+					id: 20,
+					sentence: "You're being mean",
+					translation: "TÚ ESTÁS SIENDO mean",
+					data: [
+						{ phrase: "You", translation: pron.subject.words.tu },
+						{
+							phrase: "are being",
+							translation: [
+								verb.words.estar.present.estas,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+						},
+						{ phrase: "mean" },
+					],
+				},
+				{
+					id: 21,
+					sentence: "I hope that they're being good boys",
+					translation: "I hope QUE ESTÉN SIENDO BUENOS CHICOS",
+					data: [
+						{ phrase: "I hope" },
+						{ phrase: "that", translation: conj.words.que },
+						{
+							phrase: "they're being",
+							translation: [
+								verb.words.estar.subjunctive.esten,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund", "subjunctiveIntentionQue"),
+						},
+						{
+							phrase: "good	boys",
+							translation: [
+								asPlural(adjective.descriptive.words.bueno),
+								asPlural(noun.words.chico),
+							],
+						},
+					],
+				},
+				{
+					id: 22,
+					sentence: "I want to be what she will be",
+					translation: "I want SER LO QUE ELLA SERÁ",
+					data: [
+						{ phrase: "I want" },
+						{ phrase: "to be", translation: verb.words.ser },
+						{ phrase: "what", translation: [artcl.words.lo, conj.words.que] },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{ phrase: "will be", translation: verb.words.ser.future.sera },
+					],
+				},
+				{
+					id: 23,
+					sentence: "The good (thing) is that he has been our friend",
+					translation: "LO BUENO ES QUE ÉL has SIDO NUESTRO AMIGO",
+					data: [
+						{
+							phrase: "The good (thing)",
+							translation: [artcl.words.lo, adjective.descriptive.words.bueno],
+							reference: ref("loAsNoun"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+						},
+						{
+							phrase: "that",
+							translation: conj.words.que,
+						},
+						{
+							phrase: "he",
+							translation: pron.subject.words.el,
+						},
+						{ phrase: "has" },
+						{ phrase: "been", translation: verb.words.ser.participle.sido },
+						{
+							phrase: "our friend",
+							translation: [
+								adjective.possessive.words.nuestro,
+								noun.words.amigo,
+							],
+						},
+					],
+				},
+				{
+					id: 24,
+					sentence: "My friends have been good guys",
+					translation: "MIS AMIGOS have SIDO BUENOS CHICOS",
+					data: [
+						{
+							phrase: "My friends",
+							translation: [
+								asPlural(adjective.possessive.words.mi),
+								asPlural(noun.words.amigo),
+							],
+						},
+						{
+							phrase: "have",
+						},
+						{ phrase: "been", translation: verb.words.ser.participle.sido },
+						{
+							phrase: "good guys",
+							translation: [
+								asPlural(adjective.descriptive.words.bueno),
+								asPlural(noun.words.chico),
+							],
+						},
+					],
+				},
+				{
+					id: 25,
+					sentence: "If she is being good, I want to be good(F) too",
+					translation: "SI ELLA ESTÁ SIENDO BUENA, I want SER BUENA too",
+					data: [
+						{ phrase: "If", translation: conj.words.si },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{
+							phrase: "is being",
+							translation: [
+								verb.words.estar.present.esta,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+						},
+						{
+							phrase: "good(F)",
+							translation: adjective.descriptive.words.buena,
+						},
+						{ phrase: "I want" },
+						{ phrase: "to be", translation: verb.words.ser },
+						{
+							phrase: "good(F)",
+							translation: adjective.descriptive.words.buena,
+						},
+						{ phrase: "too" },
+					],
+				},
+				{
+					id: 26,
+					sentence: "Her friends(F) are being weird",
+					translation: "SUS AMIGAS ESTÁN SIENDO weird",
+					data: [
+						{
+							phrase: "Her friends(F)",
+						},
+						{
+							phrase: "are being",
+							translation: [
+								verb.words.estar.present.estan,
+								verb.words.ser.gerund.siendo,
+							],
+						},
+						{
+							phrase: "weird",
+						},
+					],
+				},
+				{
+					id: 27,
+					sentence: "We have been friends(M) for many years",
+					translation: "We have SIDO AMIGOS POR many years",
+					data: [
+						{ phrase: "We have" },
+						{ phrase: "been", translation: verb.words.ser.participle.sido },
+						{
+							phrase: "friends(M)",
+							translation: asPlural(noun.words.amigo),
+						},
+						{
+							phrase: "for",
+							translation: prep.words.por,
+							reference: ref("porFor"),
+						},
+						{
+							phrase: "many years",
+						},
+					],
+				},
+				{
+					id: 28,
+					sentence: "I don't know what to do when he's being mean",
+					translation: "YO NO know QUÉ to do CUANDO ÉL ESTÁ SIENDO mean",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "don't know",
+							translation: advrb.words.no,
+							phraseTranslation: "NO know",
+							reference: ref("noVerbPosition"),
+						},
+						{ phrase: "what", translation: pron.subject.words.que },
+						{ phrase: "to do" },
+						{ phrase: "when", translation: conj.words.cuando },
+						{ phrase: "he", translation: pron.subject.words.el },
+						{
+							phrase: "is being",
+							translation: [
+								verb.words.estar.present.esta,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+						},
+						{ phrase: "mean" },
+					],
+				},
 			],
 		},
 	],
