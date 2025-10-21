@@ -1128,7 +1128,10 @@ const spanishWords: SpanishWords = {
 						translations: ["being"],
 						pos: "Verb",
 						tense: "Gerund",
-						info: [],
+						info: [
+							"Often with the SER GERUND form the word BEING/SIENDO is preceded by another form of TO BE as ESTAR, like 'is being' = 'ESTA SIENDO' or 'was being' = 'ESTABA SIENDO'.",
+						],
+
 						person: "none",
 					},
 				},

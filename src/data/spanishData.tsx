@@ -254,6 +254,10 @@ const referenceMap = {
 		path: "verb",
 		indices: [17],
 	} as ReferenceEntry,
+	serGerund: {
+		path: "verb.words.ser.gerund.siendo",
+		indices: [0],
+	} as ReferenceEntry,
 } as const
 
 type ReferenceKey = keyof typeof referenceMap
@@ -16374,6 +16378,132 @@ const spanishData: { lessons: Lesson[] } = {
 				"They both mean 'You are a good friend', but they are worded in a slightly different way. The first example is more like: 'You are being a good friend, in this moment' and the second example is saying 'you are a good friend in general'",
 				"One question that can come up with SIENDO is that we already learned that the INFINITIVE SER can be translated as BEING so how do we know which one it should be translated as?",
 				"In general if the word BEING passes the food test, you translate it as SER, if it doesn't and instead it's being used after another form of TO BE then you will probably translate it as SIENDO",
+			],
+			wordBank: [
+				verb.words.ser.conditional.seria,
+				verb.words.ser.future.sera,
+				verb.words.ser.participle.sido,
+				verb.words.ser.gerund.siendo,
+			],
+			sentences: [
+				{
+					id: 1,
+					sentence: "Would she be the girl or would he be the boy?",
+					translation: "¿ELLA SERÍA LA CHICA O ÉL SERÍA EL CHICO?",
+					data: [
+						{
+							phrase: "Would she be",
+							translation: [
+								pron.subject.words.ella,
+								verb.words.ser.conditional.seria,
+							],
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "the girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{ phrase: "or", translation: conj.words.o },
+						{
+							phrase: "would he be",
+							translation: [
+								pron.subject.words.el,
+								verb.words.ser.conditional.seria,
+							],
+							reference: ref("serIdentity"),
+						},
+					],
+				},
+				{
+					id: 2,
+					sentence: "The girl will be my friend?",
+					translation: "¿LA CHICA SERÁ MI AMIGA?",
+					data: [
+						{
+							phrase: "The girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+						{
+							phrase: "will be",
+							translation: verb.words.ser.future.sera,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "my friend",
+							translation: [adjective.possessive.words.mi, noun.words.amiga],
+						},
+					],
+				},
+				{
+					id: 3,
+					sentence: "Will he be my friend?",
+					translation: "¿SERÁ MI AMIGO?",
+					data: [
+						{
+							phrase: "Will he be",
+							translation: verb.words.ser.future.sera,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "my friend",
+							translation: [adjective.possessive.words.mi, noun.words.amigo],
+						},
+					],
+				},
+				{
+					id: 4,
+					sentence: "The one(M) that is in that place would be a good friend",
+					translation: "EL QUE ESTÁ EN that LUGAR SERÍA UN BUEN AMIGO",
+					data: [
+						{
+							phrase: "The one(M) that",
+							translation: [artcl.words.el, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.estar.present.esta,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "in", translation: prep.words.en },
+						{ phrase: "that" },
+						{ phrase: "place", translation: noun.words.lugar },
+						{
+							phrase: "would be",
+							translation: verb.words.ser.conditional.seria,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "a good friend",
+							translation: [
+								artcl.words.un,
+								adjective.descriptive.words.buen,
+								noun.words.amigo,
+							],
+							reference: ref("buenoApocopated"),
+						},
+					],
+				},
+				{
+					id: 5,
+					sentence: "She is being good",
+					translation: "ELLA ESTÁ SIENDO BUENA",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "is being",
+							translation: [
+								verb.words.estar.present.esta,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.buena },
+					],
+				},
+				{},
 			],
 		},
 	],
