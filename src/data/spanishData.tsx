@@ -17112,6 +17112,58 @@ const spanishData: { lessons: Lesson[] } = {
 						{ phrase: "here", translation: advrb.words.aqui },
 					],
 				},
+				{
+					id: 5,
+					sentence: "Would it be the boy or the girl",
+					translation: "SERÍA EL CHICO O LA CHICA",
+					data: [
+						{
+							phrase: "Would it be",
+							translation: verb.words.ser.conditional.seria,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "the boy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+						{ phrase: "or", translation: conj.words.o },
+						{
+							phrase: "the girl",
+							translation: [artcl.words.la, noun.words.chica],
+						},
+					],
+				},
+				{
+					id: 6,
+					sentence: "Would I be their friend(M)? He will be",
+					translation: "SERÍA SU AMIGO? ÉL LO SERÁ",
+					data: [
+						{
+							phrase: "Would I be",
+							translation: verb.words.ser.conditional.seria,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "their friend(M)",
+							translation: [adjective.possessive.words.su, noun.words.amigo],
+						},
+						{
+							phrase: "He",
+							translation: pron.subject.words.el,
+						},
+						{
+							phrase: "will be",
+							translation: [
+								pron.attribute.words.lo,
+								verb.words.ser.future.sera,
+							],
+							reference: ref("serIdentity", "attributeLo"),
+							phraseTranslation: "LO SERÁ",
+						},
+					],
+				},
 			],
 		},
 	],
