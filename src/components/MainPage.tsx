@@ -62,7 +62,7 @@ const MainPage = () => {
 	}
 	const [currentSummary, setCurrentSummary] =
 		React.useState<LessonSummaryLike | null>(null)
-	const [saveStatus] = React.useState<
+	const [saveStatus, setSaveStatus] = React.useState<
 		| { state: "idle" }
 		| { state: "saving" }
 		| { state: "saved"; id?: string }
@@ -175,20 +175,80 @@ const MainPage = () => {
 	])
 
 	React.useEffect(() => {
-		// Cleaned placeholder effect: previously contained debug JSX and summary logic
-		// that was accidentally injected during refactor. Keep a harmless
-		// debug marker here until summary persistence logic is re-added in a
-		// controlled way.
-		console.debug("[LessonSummaryCheck] noop effect (cleaned)")
-	}, [
-		userId,
-		isLessonComplete,
-		currentLessonIndex,
-		currentSentenceIndex,
-		currentSentenceProgress,
-		getLessonSummary,
-		mixupMap,
-	])
+		// When the lesson summary is shown, persist the attempt either to the server (if signed in)
+		// or to localStorage (if anonymous). We include the current mixupMap snapshot so the
+		// server can aggregate mixups into UserMixup rows.
+		if (!showSummary) return
+		// Avoid duplicate saves
+		if (saveStatus.state !== "idle") return
+		const summary = getLessonSummary()
+		// capture a stable snapshot for the modal as well
+		setCurrentSummary(summary as unknown as LessonSummaryLike)
+		let cancelled = false
+		;(async () => {
+			try {
+				setSaveStatus({ state: "saving" })
+				if (userId) {
+					const res = await fetch("/api/lessonAttempts", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							userId,
+							lessonNumber: summary.lessonNumber,
+							summary: { ...summary, mixupMap },
+						}),
+					})
+					if (!res.ok) {
+						let message = res.statusText
+						try {
+							const j = await res.json()
+							message = j?.error || message
+						} catch {}
+						throw new Error(message)
+					}
+					const json = await res.json()
+					if (!cancelled)
+						setSaveStatus({ state: "saved", id: json?.attempt?.id })
+				} else {
+					// Anonymous: persist to localStorage so the dashboard can show local attempts
+					try {
+						const raw = localStorage.getItem("lessonAttempts:local") || "[]"
+						const arr = JSON.parse(raw)
+						const attempt = {
+							id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+							userId: "local",
+							lessonNumber: summary.lessonNumber,
+							correctCount: summary.correctCount,
+							incorrectCount: summary.incorrectCount,
+							totalSubmissions: summary.totalSubmissions,
+							references: summary.references || [],
+							createdAt: new Date().toISOString(),
+							summary: { ...summary, mixupMap },
+						}
+						const next = Array.isArray(arr) ? [attempt, ...arr] : [attempt]
+						localStorage.setItem("lessonAttempts:local", JSON.stringify(next))
+						if (!cancelled) setSaveStatus({ state: "saved", id: attempt.id })
+					} catch (e) {
+						if (!cancelled)
+							setSaveStatus({
+								state: "error",
+								message:
+									e instanceof Error ? e.message : "Failed to save locally",
+							})
+					}
+				}
+			} catch (e) {
+				if (!cancelled)
+					setSaveStatus({
+						state: "error",
+						message: e instanceof Error ? e.message : "Failed to save",
+					})
+			}
+		})()
+		return () => {
+			cancelled = true
+		}
+	}, [showSummary, saveStatus.state, getLessonSummary, userId, mixupMap])
 
 	React.useEffect(() => {
 		const onOpen = () => setShowSummary(true)
@@ -348,6 +408,7 @@ const MainPage = () => {
 						onClose={() => {
 							setShowSummary(false)
 							setCurrentSummary(null)
+							setSaveStatus({ state: "idle" })
 						}}
 						summary={
 							(currentSummary as unknown as ReturnType<
