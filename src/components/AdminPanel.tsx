@@ -47,7 +47,6 @@ type Props = {
 
 export default function AdminPanel({
 	mounted = true,
-	rawIsAdmin = false,
 	userId,
 	currentLesson,
 	currentLessonIndex = 0,
@@ -180,9 +179,7 @@ export default function AdminPanel({
 	// If viewing-as-user, hide admin UI entirely
 	if (viewAsUser) return null
 
-	// Privileged users (admins or dev) may perform admin actions; others see a read-only view
-	const isPrivileged =
-		rawIsAdmin || isAdminLocal || process.env.NODE_ENV === "development"
+	// Admin gating removed: all actions available to all users
 
 	return (
 		<section className="mt-4 p-3 rounded border border-zinc-700 bg-zinc-900/40 w-full sm:max-w-4xl mx-auto">
@@ -208,18 +205,13 @@ export default function AdminPanel({
 					/>
 				</div>
 				<div className="flex flex-wrap items-center gap-2">
-					{!isPrivileged && (
-						<div className="text-xs text-zinc-400 mr-2">
-							(Read-only — admin actions disabled)
-						</div>
-					)}
+					{/* Admin actions are available to all users now */}
 					<label className="inline-flex items-center gap-2 text-xs">
 						<input
 							type="checkbox"
 							checked={showCompleteAlways}
 							onChange={(e) => setShowCompleteAlways(e.target.checked)}
 							className="w-4 h-4"
-							disabled={!isPrivileged}
 						/>
 						<span className="text-zinc-300">
 							Show sentence modal after every sentence
@@ -228,13 +220,8 @@ export default function AdminPanel({
 					{userId && (
 						<button
 							onClick={onClearHistory}
-							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
-							title={
-								isPrivileged
-									? "Clear stored lesson attempts for this user"
-									: "Admin only"
-							}
-							disabled={!isPrivileged}
+							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40"
+							title="Clear stored lesson attempts for this user"
 						>
 							Clear History
 						</button>
@@ -242,13 +229,8 @@ export default function AdminPanel({
 					{userId && (
 						<button
 							onClick={handleDeleteAll}
-							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
-							title={
-								isPrivileged
-									? "Delete ALL lesson attempts for this user"
-									: "Admin only"
-							}
-							disabled={!isPrivileged}
+							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40"
+							title="Delete ALL lesson attempts for this user"
 						>
 							{deleting === "ALL" ? "Deleting…" : "Delete All"}
 						</button>
@@ -258,10 +240,7 @@ export default function AdminPanel({
 							href={`/api/lessonAttempts?userId=${encodeURIComponent(userId)}`}
 							target="_blank"
 							rel="noopener noreferrer"
-							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800 ${
-								!isPrivileged ? "opacity-60 pointer-events-none" : ""
-							}`}
-							aria-disabled={!isPrivileged}
+							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800`}
 						>
 							View API Attempts
 						</a>
@@ -271,10 +250,7 @@ export default function AdminPanel({
 							href={`/api/mixups?userId=${encodeURIComponent(userId)}`}
 							target="_blank"
 							rel="noopener noreferrer"
-							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800 ${
-								!isPrivileged ? "opacity-60 pointer-events-none" : ""
-							}`}
-							aria-disabled={!isPrivileged}
+							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800`}
 						>
 							View API Mixups
 						</a>
@@ -282,10 +258,7 @@ export default function AdminPanel({
 					{process.env.NODE_ENV === "development" && (
 						<button
 							onClick={handleViewLocalAttempts}
-							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800 ${
-								!isPrivileged ? "opacity-60 pointer-events-none" : ""
-							}`}
-							disabled={!isPrivileged}
+							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800`}
 						>
 							View Local Attempts
 						</button>
@@ -293,10 +266,7 @@ export default function AdminPanel({
 					{process.env.NODE_ENV === "development" && (
 						<button
 							onClick={handleToggleAdmin}
-							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800 ${
-								!isPrivileged ? "opacity-60 pointer-events-none" : ""
-							}`}
-							disabled={!isPrivileged}
+							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800`}
 						>
 							{isAdminLocal ? "Revoke Admin" : "Promote to Admin"}
 						</button>
@@ -322,8 +292,7 @@ export default function AdminPanel({
 						type="button"
 						onClick={() => setShowQuiz(true)}
 						className="text-xs px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-black font-medium border border-emerald-500/60 disabled:opacity-40"
-						disabled={!isPrivileged}
-						title={isPrivileged ? "Create Custom Quiz" : "Admin only"}
+						title="Create Custom Quiz"
 					>
 						Create Custom Quiz
 					</button>
