@@ -23,6 +23,7 @@ import Tooltip from "@/components/Tooltip"
 import { useViewAsUser } from "@/lib/viewAs"
 import ViewAsHeaderToggle from "@/components/ViewAsHeaderToggle"
 import { useShowCompleteAlways } from "@/lib/adminSettings"
+import { useShowAdminPanel } from "@/lib/adminSettings"
 
 const MainPage = () => {
 	const lessons = useDataStore((s) => s.lessons)
@@ -47,6 +48,7 @@ const MainPage = () => {
 	const submissionLog = useDataStore((s) => s.submissionLog)
 
 	const [showSummary, setShowSummary] = React.useState(false)
+	const [showAdminPanel, setShowAdminPanel] = useShowAdminPanel()
 	// Minimal typing for lesson summary snapshot used by the modal
 	type LessonSummaryLike = {
 		lessonNumber: number
@@ -291,6 +293,18 @@ const MainPage = () => {
 					<div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
 						{/* Header toggle for admins to view the page as a regular user */}
 						<ViewAsHeaderToggle mounted={mounted} />
+						{/* Toggle visibility for Admin Panel (available to all users) */}
+						{mounted && (
+							<button
+								className={`px-2 py-1 text-xs rounded border border-zinc-600 hover:bg-zinc-800 ${
+									showAdminPanel ? "bg-zinc-800" : ""
+								}`}
+								onClick={() => setShowAdminPanel(!showAdminPanel)}
+								aria-pressed={showAdminPanel}
+							>
+								Admin
+							</button>
+						)}
 						<div className="flex items-center gap-3 ml-auto">
 							{mounted && <AuthButton />}
 						</div>

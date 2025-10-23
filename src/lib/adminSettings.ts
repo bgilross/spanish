@@ -37,3 +37,35 @@ export function useShowCompleteAlways() {
 }
 
 export default useShowCompleteAlways
+
+// --- Admin panel visibility (available to all users as a view toggle) ---
+const ADMIN_PANEL_KEY = "admin:showPanel:v1"
+
+export function getShowAdminPanel(): boolean {
+	try {
+		if (typeof window === "undefined" || !window.localStorage) return false
+		const v = window.localStorage.getItem(ADMIN_PANEL_KEY)
+		return v === "1"
+	} catch {
+		return false
+	}
+}
+
+export function setShowAdminPanel(val: boolean) {
+	try {
+		if (typeof window === "undefined" || !window.localStorage) return
+		window.localStorage.setItem(ADMIN_PANEL_KEY, val ? "1" : "0")
+		window.dispatchEvent(new Event("admin:showPanel:change"))
+	} catch {}
+}
+
+export function useShowAdminPanel() {
+	const [state, setState] = React.useState<boolean>(() => getShowAdminPanel())
+	React.useEffect(() => {
+		const onChange = () => setState(getShowAdminPanel())
+		window.addEventListener("admin:showPanel:change", onChange)
+		return () => window.removeEventListener("admin:showPanel:change", onChange)
+	}, [])
+	const setter = React.useCallback((v: boolean) => setShowAdminPanel(v), [])
+	return [state, setter] as const
+}

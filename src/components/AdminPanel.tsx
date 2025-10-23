@@ -9,7 +9,7 @@ import type { GeneratedQuiz } from "@/lib/quiz/types"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useViewAsUser } from "@/lib/viewAs"
-import { useShowCompleteAlways } from "@/lib/adminSettings"
+import { useShowCompleteAlways, useShowAdminPanel } from "@/lib/adminSettings"
 
 type SentenceObj = {
 	id?: number
@@ -66,6 +66,7 @@ export default function AdminPanel({
 	const [viewAsUser] = useViewAsUser()
 	const [deleting, setDeleting] = React.useState<string | null>(null)
 	const [showCompleteAlways, setShowCompleteAlways] = useShowCompleteAlways()
+	const [showAdminPanel] = useShowAdminPanel()
 
 	const handleSimulate = async () => {
 		if (simulating) return
@@ -173,25 +174,52 @@ export default function AdminPanel({
 		}
 	}
 
+	// Hide entirely if not mounted or if user has toggled the panel off
 	if (!mounted) return null
-	// If viewing-as-user, hide admin UI entirely (header toggle controls this)
+	if (!showAdminPanel) return null
+	// If viewing-as-user, hide admin UI entirely
 	if (viewAsUser) return null
-	// Otherwise show panel only to raw admins or dev fallback
-	if (!(rawIsAdmin || isAdminLocal || process.env.NODE_ENV === "development"))
-		return null
+
+	// Privileged users (admins or dev) may perform admin actions; others see a read-only view
+	const isPrivileged =
+		rawIsAdmin || isAdminLocal || process.env.NODE_ENV === "development"
 
 	return (
-		<section className="mt-4 p-3 rounded border border-zinc-700 bg-zinc-900/40">
-			<div className="flex items-center justify-between gap-4">
+		<section className="mt-4 p-3 rounded border border-zinc-700 bg-zinc-900/40 w-full sm:max-w-4xl mx-auto">
+			<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 				<h3 className="text-sm font-medium">Admin Panel</h3>
-				<div className="flex items-center gap-2">
-					{/* admin-only toggle: show sentence-complete modal after every sentence */}
+				<div className="mt-4">
+					<DebugPanel
+						currentLessonIndex={currentLessonIndex}
+						currentSentenceIndex={currentSentenceIndex}
+						sentenceText={currentSentenceObject?.sentence}
+						activeIndex={activeIndex}
+						currentSentenceData={
+							(currentSentenceObject?.data as
+								| SentenceDataEntry[]
+								| undefined) || undefined
+						}
+						translationSections={(
+							currentSentenceProgress?.translationSections || []
+						).map((s) => ({
+							index: s.index,
+							isTranslated: !!s.isTranslated,
+						}))}
+					/>
+				</div>
+				<div className="flex flex-wrap items-center gap-2">
+					{!isPrivileged && (
+						<div className="text-xs text-zinc-400 mr-2">
+							(Read-only — admin actions disabled)
+						</div>
+					)}
 					<label className="inline-flex items-center gap-2 text-xs">
 						<input
 							type="checkbox"
 							checked={showCompleteAlways}
 							onChange={(e) => setShowCompleteAlways(e.target.checked)}
 							className="w-4 h-4"
+							disabled={!isPrivileged}
 						/>
 						<span className="text-zinc-300">
 							Show sentence modal after every sentence
@@ -200,18 +228,27 @@ export default function AdminPanel({
 					{userId && (
 						<button
 							onClick={onClearHistory}
-							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40"
-							title="Clear stored lesson attempts for this user"
+							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
+							title={
+								isPrivileged
+									? "Clear stored lesson attempts for this user"
+									: "Admin only"
+							}
+							disabled={!isPrivileged}
 						>
 							Clear History
 						</button>
 					)}
-					{/* view-as-user toggle moved to header; panel will hide when active */}
 					{userId && (
 						<button
 							onClick={handleDeleteAll}
-							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40"
-							title="Delete ALL lesson attempts for this user"
+							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-red-600 text-red-300 hover:bg-red-900/40 disabled:opacity-40"
+							title={
+								isPrivileged
+									? "Delete ALL lesson attempts for this user"
+									: "Admin only"
+							}
+							disabled={!isPrivileged}
 						>
 							{deleting === "ALL" ? "Deleting…" : "Delete All"}
 						</button>
@@ -221,7 +258,10 @@ export default function AdminPanel({
 							href={`/api/lessonAttempts?userId=${encodeURIComponent(userId)}`}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800 ${
+								!isPrivileged ? "opacity-60 pointer-events-none" : ""
+							}`}
+							aria-disabled={!isPrivileged}
 						>
 							View API Attempts
 						</a>
@@ -231,7 +271,10 @@ export default function AdminPanel({
 							href={`/api/mixups?userId=${encodeURIComponent(userId)}`}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800 ${
+								!isPrivileged ? "opacity-60 pointer-events-none" : ""
+							}`}
+							aria-disabled={!isPrivileged}
 						>
 							View API Mixups
 						</a>
@@ -239,7 +282,10 @@ export default function AdminPanel({
 					{process.env.NODE_ENV === "development" && (
 						<button
 							onClick={handleViewLocalAttempts}
-							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800 ${
+								!isPrivileged ? "opacity-60 pointer-events-none" : ""
+							}`}
+							disabled={!isPrivileged}
 						>
 							View Local Attempts
 						</button>
@@ -247,7 +293,10 @@ export default function AdminPanel({
 					{process.env.NODE_ENV === "development" && (
 						<button
 							onClick={handleToggleAdmin}
-							className="px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800"
+							className={`px-2 py-1 text-[11px] sm:text-xs rounded border border-zinc-600 hover:bg-zinc-800 ${
+								!isPrivileged ? "opacity-60 pointer-events-none" : ""
+							}`}
+							disabled={!isPrivileged}
 						>
 							{isAdminLocal ? "Revoke Admin" : "Promote to Admin"}
 						</button>
@@ -272,7 +321,9 @@ export default function AdminPanel({
 					<button
 						type="button"
 						onClick={() => setShowQuiz(true)}
-						className="text-xs px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-black font-medium border border-emerald-500/60"
+						className="text-xs px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-black font-medium border border-emerald-500/60 disabled:opacity-40"
+						disabled={!isPrivileged}
+						title={isPrivileged ? "Create Custom Quiz" : "Admin only"}
 					>
 						Create Custom Quiz
 					</button>
@@ -310,7 +361,7 @@ export default function AdminPanel({
 				)}
 			</div>
 
-			<div className="mt-3 flex items-center gap-3">
+			<div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center gap-3">
 				<div className="flex items-center gap-2">
 					<span className="text-zinc-400 text-xs">Sentence:</span>
 					{currentLesson?.sentences?.length ? (
@@ -318,7 +369,7 @@ export default function AdminPanel({
 							aria-label="Admin select sentence"
 							value={currentSentenceIndex}
 							onChange={(e) => onSelectSentence(Number(e.target.value))}
-							className="ml-1 bg-zinc-900 border border-zinc-700 text-sm px-2 py-1 rounded"
+							className="ml-1 bg-zinc-900 border border-zinc-700 text-sm px-2 py-1 rounded w-32"
 						>
 							{Array.from({ length: currentLesson.sentences.length }).map(
 								(_, i) => (
@@ -335,43 +386,24 @@ export default function AdminPanel({
 						<span className="text-xs text-zinc-500">—</span>
 					)}
 				</div>
-				<div className="ml-4">
+				<div className="ml-0 sm:ml-4 mt-2 sm:mt-0">
 					<button
 						onClick={handleSimulate}
-						disabled={simulating}
-						className="px-2 py-1 rounded border border-zinc-700 bg-zinc-800 text-sm"
-						title="Simulate lesson (admin)"
+						disabled={simulating || !isPrivileged}
+						className="px-2 py-2 rounded border border-zinc-700 bg-zinc-800 text-sm disabled:opacity-40"
+						title={isPrivileged ? "Simulate lesson (admin)" : "Admin only"}
 					>
 						{simulating ? "Simulating…" : "Simulate"}
 					</button>
 					<button
 						onClick={handleSimulateVerbs}
-						disabled={simulating}
-						className="ml-2 px-2 py-1 rounded border border-amber-700 bg-amber-900/30 text-amber-300 text-sm hover:bg-amber-900/40"
+						disabled={simulating || !isPrivileged}
+						className="ml-2 px-2 py-2 rounded border border-amber-700 bg-amber-900/30 text-amber-300 text-sm hover:bg-amber-900/40 disabled:opacity-40"
 						title="Simulate targeted verb mistakes (conjugation/tense/ser vs estar)"
 					>
 						{simulating ? "Simulating…" : "Simulate Verbs"}
 					</button>
 				</div>
-			</div>
-
-			<div className="mt-4">
-				<DebugPanel
-					currentLessonIndex={currentLessonIndex}
-					currentSentenceIndex={currentSentenceIndex}
-					sentenceText={currentSentenceObject?.sentence}
-					activeIndex={activeIndex}
-					currentSentenceData={
-						(currentSentenceObject?.data as SentenceDataEntry[] | undefined) ||
-						undefined
-					}
-					translationSections={(
-						currentSentenceProgress?.translationSections || []
-					).map((s) => ({
-						index: s.index,
-						isTranslated: !!s.isTranslated,
-					}))}
-				/>
 			</div>
 		</section>
 	)

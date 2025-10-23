@@ -654,7 +654,7 @@ const SummaryModal: React.FC<Props> = ({
 									<div>
 										{/* Clearing mixups clears the global aggregate only; per-summary snapshot remains on saved attempt */}
 										<button
-											className="px-2 py-1 text-xs rounded border bg-zinc-100"
+											className="px-2 py-1 text-xs rounded border border-zinc-300 bg-zinc-100 text-zinc-900 hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-400"
 											onClick={() => {
 												clearMixups()
 												setMixups([])
