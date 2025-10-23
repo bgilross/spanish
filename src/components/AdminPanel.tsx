@@ -389,17 +389,21 @@ export default function AdminPanel({
 				<div className="ml-0 sm:ml-4 mt-2 sm:mt-0">
 					<button
 						onClick={handleSimulate}
-						disabled={simulating || !isPrivileged}
+						disabled={simulating}
 						className="px-2 py-2 rounded border border-zinc-700 bg-zinc-800 text-sm disabled:opacity-40"
-						title={isPrivileged ? "Simulate lesson (admin)" : "Admin only"}
+						title={simulating ? "Simulating…" : "Simulate lesson"}
 					>
 						{simulating ? "Simulating…" : "Simulate"}
 					</button>
 					<button
 						onClick={handleSimulateVerbs}
-						disabled={simulating || !isPrivileged}
+						disabled={simulating}
 						className="ml-2 px-2 py-2 rounded border border-amber-700 bg-amber-900/30 text-amber-300 text-sm hover:bg-amber-900/40 disabled:opacity-40"
-						title="Simulate targeted verb mistakes (conjugation/tense/ser vs estar)"
+						title={
+							simulating
+								? "Simulating…"
+								: "Simulate targeted verb mistakes (conjugation/tense/ser vs estar)"
+						}
 					>
 						{simulating ? "Simulating…" : "Simulate Verbs"}
 					</button>

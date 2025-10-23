@@ -217,7 +217,8 @@ const SummaryModal: React.FC<Props> = ({
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
-						<div className="max-h-[60vh] overflow-auto">
+						{/* On small screens, show the right-column content (references/mixups) first */}
+						<div className="max-h-[60vh] overflow-auto order-2 md:order-1">
 							<div className="font-semibold mb-2">Incorrect</div>
 							<ul className="space-y-3">
 								{(localSummary.incorrect || []).length === 0 ? (
@@ -349,7 +350,7 @@ const SummaryModal: React.FC<Props> = ({
 							</ul>
 						</div>
 
-						<div className="max-h-[60vh] overflow-auto space-y-4">
+						<div className="max-h-[60vh] overflow-auto space-y-4 order-1 md:order-2">
 							{/* Verb mistakes summary */}
 							{(() => {
 								const counts = localSummary.errorCategoryCounts || {}
