@@ -29,6 +29,9 @@ export function formatErrorCategory(key: string): string {
 	if (key === "verb.error.tense") return "Verb: wrong tense"
 	if (key === "verb.error.ser-vs-estar") return "Ser vs Estar mixup"
 	if (key === "verb.error.wrong-root") return "Verb: wrong verb"
+	// Friendly labels for pronoun/possessive error categories
+	if (key === "pron.error.category") return "Pronoun/Possessive: wrong category"
+	if (key === "pron.error.person") return "Pronoun/Possessive: wrong person"
 	const parts = key.split(".")
 	if (parts.length === 3 && parts[1] === "words") {
 		const [groupId, , wordId] = parts
@@ -302,6 +305,8 @@ function AttemptRow({
 			indices: Array.from(set.values()),
 		}))
 	}, [sentenceDetails])
+
+	// (Previously used for nested expanders; kept minimal UI now)
 	const getRefLines = React.useCallback(
 		(key: string, indices: (number | string)[]) => {
 			const parts = key.split(".")
@@ -437,6 +442,102 @@ function AttemptRow({
 							))}
 						</div>
 					</div>
+
+					{/* Pronoun/Possessive mistakes summary (simplified) */}
+					{(() => {
+						const counts = attempt.summary?.errorCategoryCounts || {}
+						const pronEntries = Object.entries(counts).filter(([k]) =>
+							k.startsWith("pron.error.")
+						)
+						if (pronEntries.length === 0) return null
+						const label = (k: string) => {
+							if (k === "pron.error.category")
+								return "Wrong category (subject/d.o./possessive)"
+							if (k === "pron.error.person") return "Wrong person"
+							return k
+						}
+						const total = pronEntries.reduce((acc, [, v]) => acc + (v || 0), 0)
+						const breakdown = (
+							attempt.summary as unknown as {
+								pronounMistakeBreakdown?: {
+									totals: { category: number; person: number }
+									categoryTransitions: Record<string, number>
+									personTransitions: Record<string, number>
+								}
+							}
+						).pronounMistakeBreakdown
+
+						const renderPairs = (pairs?: Record<string, number>) => {
+							if (!pairs) return null
+							const entries = Object.entries(pairs)
+								.sort((a, b) => b[1] - a[1])
+								.slice(0, 12)
+							if (entries.length === 0) return null
+							return (
+								<ul className="mt-1 divide-y divide-zinc-800">
+									{entries.map(([kk, vv]) => (
+										<li
+											key={kk}
+											className="flex items-center justify-between px-2 py-1"
+										>
+											<span
+												className="basis-1/2 truncate"
+												title={kk.split("->")[0] || ""}
+											>
+												{kk.split("->")[0] || ""}
+											</span>
+											<span
+												className="basis-1/2 truncate"
+												title={kk.split("->")[1] || ""}
+											>
+												{kk.split("->")[1] || ""}
+											</span>
+											<span className="w-12 text-right text-zinc-400">
+												{vv}
+											</span>
+										</li>
+									))}
+								</ul>
+							)
+						}
+
+						return (
+							<div className="space-y-2">
+								<div className="flex items-center justify-between">
+									<p className="text-[11px] uppercase tracking-wide text-zinc-500">
+										Pronoun/Possessive mistakes
+									</p>
+									<p className="text-xs text-zinc-400">{total} total</p>
+								</div>
+								<ul className="space-y-1 text-sm">
+									{pronEntries
+										.sort((a, b) => b[1] - a[1])
+										.map(([k, v]) => (
+											<li
+												key={k}
+												className="border border-zinc-700 rounded bg-zinc-900/40"
+											>
+												<div className="w-full flex items-center justify-between px-2 py-1">
+													<span>{label(k)}</span>
+													<span className="text-zinc-400">{v}</span>
+												</div>
+												<div className="px-2 pb-2">
+													<div className="flex items-center text-[11px] uppercase text-zinc-400 px-2">
+														<div className="basis-1/2">Your input</div>
+														<div className="basis-1/2">Expected input</div>
+														<div className="w-12 text-right">Count</div>
+													</div>
+													{breakdown &&
+														(k === "pron.error.category"
+															? renderPairs(breakdown.categoryTransitions)
+															: renderPairs(breakdown.personTransitions))}
+												</div>
+											</li>
+										))}
+								</ul>
+							</div>
+						)
+					})()}
 					{aggregatedReferences.length > 0 && (
 						<div className="space-y-2">
 							<p className="text-[11px] uppercase tracking-wide text-zinc-500">

@@ -3,6 +3,7 @@ import spanishData from "./spanishData"
 import { normalizeText } from "@/lib/text"
 import { expectedAnswers } from "@/lib/translation"
 import { classifyVerbMistake, getVerbFeedback } from "@/lib/verbErrors"
+import { classifyPronounMistake, getPronounFeedback } from "@/lib/pronounErrors"
 import type {
 	Lesson,
 	SentenceDataEntry,
@@ -277,6 +278,11 @@ export const useDataStore = create<DataStore>((set, get) => ({
 				const tags = classifyVerbMistake(entry, input)
 				for (const t of tags) refKeys.push(t)
 			} catch {}
+			// Pronoun + possessive mistake classification
+			try {
+				const ptags = classifyPronounMistake(entry, input)
+				for (const t of ptags) refKeys.push(t)
+			} catch {}
 			const error: ErrorEntry = {
 				userInput: input,
 				currentSentence: sentence,
@@ -415,9 +421,9 @@ export const useDataStore = create<DataStore>((set, get) => ({
 					references: refKeys,
 				}
 			})
-		// Aggregated references for the summary (exclude virtual verb error tags)
+		// Aggregated references for the summary (exclude virtual verb/pronoun error tags)
 		const refs = Array.from(new Set(errs.flatMap((e) => e.references))).filter(
-			(r) => !r.startsWith("verb.error.")
+			(r) => !r.startsWith("verb.error.") && !r.startsWith("pron.error.")
 		)
 
 		// --- Added detailed analytics ---
@@ -572,6 +578,52 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			}
 		}
 
+		// Build detailed pronoun mistake breakdown from incorrect submissions
+		const pronTotals = {
+			category: 0,
+			person: 0,
+		}
+		const pronCategoryTransitions: Record<string, number> = {}
+		const pronPersonTransitions: Record<string, number> = {}
+		const pronCatExamplePairs: Record<string, Record<string, number>> = {}
+		const pronPersonExamplePairs: Record<string, Record<string, number>> = {}
+
+		for (const s of incorrect) {
+			try {
+				const items = getPronounFeedback(s.section, s.userInput)
+				for (const it of items) {
+					if (it.tag === "pron.error.category") {
+						pronTotals.category += 1
+						const fromC = (it.wrong?.category || "?").toString()
+						const toC = (it.expected?.category || "?").toString()
+						const key = `${fromC}->${toC}`
+						pronCategoryTransitions[key] =
+							(pronCategoryTransitions[key] || 0) + 1
+						if (it.wrong?.surface && it.expected?.surface) {
+							const pKey = `${it.wrong.surface}||${it.expected.surface}`
+							if (!pronCatExamplePairs[key]) pronCatExamplePairs[key] = {}
+							pronCatExamplePairs[key][pKey] =
+								(pronCatExamplePairs[key][pKey] || 0) + 1
+						}
+					} else if (it.tag === "pron.error.person") {
+						pronTotals.person += 1
+						const fromP = (it.wrong?.person || "unknown").toString()
+						const toP = (it.expected?.person || "unknown").toString()
+						const key = `${fromP}->${toP}`
+						pronPersonTransitions[key] = (pronPersonTransitions[key] || 0) + 1
+						if (it.wrong?.surface && it.expected?.surface) {
+							const pKey = `${it.wrong.surface}||${it.expected.surface}`
+							if (!pronPersonExamplePairs[key]) pronPersonExamplePairs[key] = {}
+							pronPersonExamplePairs[key][pKey] =
+								(pronPersonExamplePairs[key][pKey] || 0) + 1
+						}
+					}
+				}
+			} catch {
+				// ignore feedback parse errors
+			}
+		}
+
 		// Aggregate error categories across entire lesson attempt.
 		// Use error log entries (errs) so we include virtual tags like verb.error.*
 		const errorCategoryCounts: Record<string, number> = {}
@@ -604,7 +656,8 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			if (sentIdx < 0) continue
 			for (const rKey of e.references || []) {
 				// Skip virtual analytics tags from tooltip generation
-				if (rKey.startsWith("verb.error.")) continue
+				if (rKey.startsWith("verb.error.") || rKey.startsWith("pron.error."))
+					continue
 				if (!referenceSourcesMap[rKey]) referenceSourcesMap[rKey] = {}
 				referenceSourcesMap[rKey][sentIdx] =
 					(referenceSourcesMap[rKey][sentIdx] || 0) + 1
@@ -659,6 +712,21 @@ export const useDataStore = create<DataStore>((set, get) => ({
 			),
 		}
 
+		const pronounMistakeExamples = {
+			category: Object.fromEntries(
+				Object.entries(pronCatExamplePairs).map(([k, v]) => [
+					k,
+					toExampleArray(v),
+				])
+			),
+			person: Object.fromEntries(
+				Object.entries(pronPersonExamplePairs).map(([k, v]) => [
+					k,
+					toExampleArray(v),
+				])
+			),
+		}
+
 		return {
 			lessonNumber: lessonNum,
 			correctCount: correct.length,
@@ -678,6 +746,12 @@ export const useDataStore = create<DataStore>((set, get) => ({
 				rootTransitions,
 			},
 			verbMistakeExamples,
+			pronounMistakeBreakdown: {
+				totals: pronTotals,
+				categoryTransitions: pronCategoryTransitions,
+				personTransitions: pronPersonTransitions,
+			},
+			pronounMistakeExamples,
 		}
 	},
 

@@ -1,8 +1,9 @@
 "use client"
 
 import React from "react"
-import { resolveReferenceList, resolveReference } from "@/lib/refs"
+import { resolveReference } from "@/lib/refs"
 import { getVerbFeedback } from "@/lib/verbErrors"
+import { getPronounFeedback } from "@/lib/pronounErrors"
 import type { SubmissionLog, Sentence, SentenceDataEntry } from "@/data/types"
 
 export type SentenceCompleteProps = {
@@ -238,34 +239,94 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 											</div>
 										)
 									})()}
+
+								{/* Pronoun/Possessive feedback for incorrect answers */}
+								{!s.isCorrect &&
+									s.section &&
+									(() => {
+										const pf = getPronounFeedback(
+											s.section as SentenceDataEntry,
+											s.userInput
+										)
+										if (!pf || pf.length === 0) return null
+										return (
+											<div className="mt-2 text-xs text-zinc-200">
+												<div className="font-medium text-sky-300">
+													Why it was wrong (pronoun/possessive)
+												</div>
+												<ul className="list-disc ml-5">
+													{pf.map((fb, k) => (
+														<li
+															key={k}
+															className="mb-1"
+														>
+															<div className="font-medium">{fb.title}</div>
+															{fb.details?.length ? (
+																<ul className="list-disc ml-5 text-zinc-300">
+																	{fb.details.map((d, di) => (
+																		<li key={di}>{d}</li>
+																	))}
+																</ul>
+															) : null}
+														</li>
+													))}
+												</ul>
+											</div>
+										)
+									})()}
 								{/* show references attached to this section only for incorrect submissions */}
 								{!s.isCorrect &&
 									(() => {
 										const list = getSectionReferences(s.section)
 										if (list.length === 0) return null
+										// Determine if the user used a SER form (but was still incorrect)
+										const usedSer = (() => {
+											try {
+												const vf = s.section
+													? getVerbFeedback(
+															s.section as SentenceDataEntry,
+															s.userInput
+													  )
+													: []
+												return vf.some((it) => it.wrong?.root === "ser")
+											} catch {
+												return false
+											}
+										})()
+										const filtered = list.filter((item) => {
+											// Hide SER usage reference if user input already was a SER form
+											if (usedSer && item.key.startsWith("verb.words.ser"))
+												return false
+											return true
+										})
+										if (filtered.length === 0) return null
 										return (
 											<div className="mt-2 text-xs text-zinc-400">
 												<div className="font-medium text-amber-300">
 													References
 												</div>
 												<ul className="list-disc ml-5 text-xs text-zinc-200">
-													{list
-														.flatMap((item) => resolveReferenceList(item.refs))
-														.map((r, idx) => (
+													{filtered.map((item, idx) => {
+														const rr = resolveReference(
+															item.key,
+															item.refs[item.key]
+														)
+														return (
 															<li
-																key={idx}
+																key={`${item.key}-${idx}`}
 																className="mb-1"
 															>
-																<div className="font-medium">{r.label}</div>
-																{r.info && r.info.length > 0 && (
+																<div className="font-medium">{rr.label}</div>
+																{rr.info && rr.info.length > 0 && (
 																	<ul className="list-disc ml-5 text-xs text-zinc-300">
-																		{r.info.map((ln, ii) => (
+																		{rr.info.map((ln, ii) => (
 																			<li key={ii}>{ln}</li>
 																		))}
 																	</ul>
 																)}
 															</li>
-														))}
+														)
+													})}
 												</ul>
 											</div>
 										)

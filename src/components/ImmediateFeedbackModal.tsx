@@ -3,7 +3,8 @@
 import React from "react"
 import { expectedAnswers } from "@/lib/translation"
 import { getVerbFeedback } from "@/lib/verbErrors"
-import { resolveReferenceList } from "@/lib/refs"
+import { resolveReference } from "@/lib/refs"
+import { getPronounFeedback } from "@/lib/pronounErrors"
 import type { Sentence, SentenceDataEntry } from "@/data/types"
 
 export interface ImmediateFeedbackModalProps {
@@ -34,6 +35,28 @@ const ImmediateFeedbackModal: React.FC<ImmediateFeedbackModalProps> = ({
 		if (!section) return []
 		return getVerbFeedback(section, userInput)
 	}, [section, userInput])
+	const pronFeedback = React.useMemo(() => {
+		if (!section) return []
+		return getPronounFeedback(section, userInput)
+	}, [section, userInput])
+	// If the user's wrong input already used a SER form, we'll hide conceptual SER references
+	const usedSerRef = React.useMemo(() => {
+		return verbFeedback.some((it) => it.wrong?.root === "ser")
+	}, [verbFeedback])
+	// Prepare reference entries once for rendering
+	const referenceEntries = React.useMemo((): Array<{
+		key: string
+		idxs: Array<number | string> | undefined
+	}> => {
+		if (!section || !("reference" in section) || !section.reference) return []
+		const refMap =
+			(
+				section as unknown as {
+					reference?: Record<string, (number | string)[]>
+				}
+			).reference || {}
+		return Object.keys(refMap).map((k) => ({ key: k, idxs: refMap[k] }))
+	}, [section])
 	React.useEffect(() => {
 		if (!open || !autoFocus) return
 		const handler = (e: KeyboardEvent) => {
@@ -74,6 +97,18 @@ const ImmediateFeedbackModal: React.FC<ImmediateFeedbackModalProps> = ({
 							<span
 								key={i}
 								className="px-2 py-0.5 rounded-full text-[11px] border border-amber-500/50 text-amber-300 bg-amber-900/20"
+							>
+								{fb.title}
+							</span>
+						))}
+					</div>
+				)}
+				{pronFeedback.length > 0 && (
+					<div className="mb-3 flex flex-wrap gap-2">
+						{pronFeedback.map((fb, i) => (
+							<span
+								key={`p-${i}`}
+								className="px-2 py-0.5 rounded-full text-[11px] border border-sky-500/50 text-sky-300 bg-sky-900/20"
 							>
 								{fb.title}
 							</span>
@@ -150,28 +185,61 @@ const ImmediateFeedbackModal: React.FC<ImmediateFeedbackModalProps> = ({
 							</div>
 						)}
 
-						{/* Show references if the section included any */}
+						{/* Pronoun/Possessive feedback details */}
+						{pronFeedback.length > 0 && (
+							<div className="mt-3">
+								<div className="text-sm font-medium text-sky-300 mb-1">
+									Why this was wrong (pronoun/possessive)
+								</div>
+								<ul className="list-disc ml-5 text-xs text-zinc-200">
+									{pronFeedback.map((fb, i) => (
+										<li
+											key={`p-${i}`}
+											className="mb-2"
+										>
+											<div className="font-medium">{fb.title}</div>
+											{fb.details?.length ? (
+												<ul className="list-disc ml-5 text-xs text-zinc-300">
+													{fb.details.map((d, j) => (
+														<li key={j}>{d}</li>
+													))}
+												</ul>
+											) : null}
+										</li>
+									))}
+								</ul>
+							</div>
+						)}
+
+						{/* Show references if the section included any; hide SER usage if user already used SER */}
 						{section && "reference" in section && section.reference && (
 							<div className="mt-3">
 								<div className="text-sm font-medium text-amber-300 mb-1">
 									Reference
 								</div>
 								<ul className="list-disc ml-5 text-sm text-zinc-200">
-									{resolveReferenceList(section.reference).map((r, idx) => (
-										<li
-											key={idx}
-											className="mb-2"
-										>
-											<div className="font-medium">{r.label}</div>
-											{r.info && r.info.length > 0 && (
-												<ul className="list-disc ml-5 text-xs text-zinc-300">
-													{r.info.map((line, i) => (
-														<li key={i}>{line}</li>
-													))}
-												</ul>
-											)}
-										</li>
-									))}
+									{referenceEntries
+										.filter(
+											(e) => !(usedSerRef && e.key.startsWith("verb.words.ser"))
+										)
+										.map((e, idx) => {
+											const r = resolveReference(e.key, e.idxs)
+											return (
+												<li
+													key={idx}
+													className="mb-2"
+												>
+													<div className="font-medium">{r.label}</div>
+													{r.info && r.info.length > 0 && (
+														<ul className="list-disc ml-5 text-xs text-zinc-300">
+															{r.info.map((line, i) => (
+																<li key={i}>{line}</li>
+															))}
+														</ul>
+													)}
+												</li>
+											)
+										})}
 								</ul>
 							</div>
 						)}

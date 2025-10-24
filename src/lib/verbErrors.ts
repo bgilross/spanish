@@ -30,28 +30,48 @@ function buildVerbIndex(): Record<string, VerbSurfaceInfo> {
 				root: rootKey,
 			}
 		}
-		// present
-		if (root.present) {
-			for (const conj of Object.values(root.present) as VerbConjugation[]) {
+		// Iterate all known tense buckets on the root and index their conjugations
+		const buckets: Array<keyof VerbRoot> = [
+			"present",
+			"past",
+			"preterite",
+			"future",
+			"conditional",
+			"subjunctive",
+			"participle",
+			"gerund",
+		]
+		for (const bucket of buckets) {
+			const group = (root as unknown as Record<string, unknown>)[
+				bucket as string
+			] as Record<string, VerbConjugation> | undefined
+			if (!group) continue
+			for (const conj of Object.values(group) as VerbConjugation[]) {
 				const s = conj.word
 				if (!s) continue
+				// Prefer explicit tense on each conjugation; fallback to bucket name
+				const fallbackTense =
+					bucket === "present"
+						? "Present"
+						: bucket === "past"
+						? "Past"
+						: bucket === "preterite"
+						? "Preterite"
+						: bucket === "future"
+						? "Future"
+						: bucket === "conditional"
+						? "Conditional"
+						: bucket === "subjunctive"
+						? "Subjunctive"
+						: bucket === "participle"
+						? "Participle"
+						: bucket === "gerund"
+						? "Gerund"
+						: undefined
 				index[normalizeText(s)] = {
 					surface: s,
 					root: rootKey,
-					tense: conj.tense || "Present",
-					person: conj.person,
-				}
-			}
-		}
-		// past
-		if (root.past) {
-			for (const conj of Object.values(root.past) as VerbConjugation[]) {
-				const s = conj.word
-				if (!s) continue
-				index[normalizeText(s)] = {
-					surface: s,
-					root: rootKey,
-					tense: conj.tense || "Past",
+					tense: conj.tense || fallbackTense,
 					person: conj.person,
 				}
 			}
@@ -312,36 +332,55 @@ export function resolveExpectedVerb(
 }
 
 /** Return all conjugation surfaces for a root grouped by tense. */
-export function getVerbFormsByRoot(root: string): {
-	present: VerbSurfaceInfo[]
-	past: VerbSurfaceInfo[]
-} {
-	const out: { present: VerbSurfaceInfo[]; past: VerbSurfaceInfo[] } = {
-		present: [],
-		past: [],
-	}
+export function getVerbFormsByRoot(
+	root: string
+): Record<string, VerbSurfaceInfo[]> {
+	const out: Record<string, VerbSurfaceInfo[]> = {}
 	const vg = spanishWords.verb as unknown as VerbGroup
 	const words = (vg?.words || {}) as Record<string, VerbRoot>
 	const r = words[root]
 	if (!r) return out
-	if (r.present) {
-		for (const conj of Object.values(r.present) as VerbConjugation[]) {
+	const buckets: Array<keyof VerbRoot> = [
+		"present",
+		"past",
+		"preterite",
+		"future",
+		"conditional",
+		"subjunctive",
+		"participle",
+		"gerund",
+	]
+	for (const bucket of buckets) {
+		const group = (r as unknown as Record<string, unknown>)[
+			bucket as string
+		] as Record<string, VerbConjugation> | undefined
+		if (!group) continue
+		for (const conj of Object.values(group) as VerbConjugation[]) {
 			if (!conj?.word) continue
-			out.present.push({
+			const fallbackTense =
+				bucket === "present"
+					? "Present"
+					: bucket === "past"
+					? "Past"
+					: bucket === "preterite"
+					? "Preterite"
+					: bucket === "future"
+					? "Future"
+					: bucket === "conditional"
+					? "Conditional"
+					: bucket === "subjunctive"
+					? "Subjunctive"
+					: bucket === "participle"
+					? "Participle"
+					: bucket === "gerund"
+					? "Gerund"
+					: undefined
+			if (!out[fallbackTense || conj.tense || bucket])
+				out[fallbackTense || conj.tense || (bucket as string)] = []
+			out[fallbackTense || conj.tense || (bucket as string)].push({
 				surface: conj.word,
 				root,
-				tense: conj.tense || "Present",
-				person: conj.person,
-			})
-		}
-	}
-	if (r.past) {
-		for (const conj of Object.values(r.past) as VerbConjugation[]) {
-			if (!conj?.word) continue
-			out.past.push({
-				surface: conj.word,
-				root,
-				tense: conj.tense || "Past",
+				tense: conj.tense || fallbackTense,
 				person: conj.person,
 			})
 		}
@@ -366,11 +405,18 @@ export function pickAlternativeVerb(
 	strategy: WrongVerbStrategy
 ): string | undefined {
 	const forms = getVerbFormsByRoot(expected.root)
+	const allBuckets = Object.keys(forms)
+	const expectedTenseKey = expected.tense || ""
+	const expectedBucketKey =
+		allBuckets.find(
+			(k) => k.toLowerCase() === expectedTenseKey.toLowerCase()
+		) || expectedTenseKey
+	const allFormsFlat = allBuckets.flatMap((k) => forms[k] ?? [])
 
 	if (strategy === "conjugation") {
-		const pool = (
-			expected.tense?.toLowerCase() === "past" ? forms.past : forms.present
-		).filter((f) => f.surface !== expected.surface)
+		const pool = (forms[expectedBucketKey] || []).filter(
+			(f) => f.surface !== expected.surface
+		)
 		// Prefer same tense, different person
 		const sameTenseDifferentPerson = pool.filter(
 			(f) => !personMatches(f.person, expected.person)
@@ -380,19 +426,18 @@ export function pickAlternativeVerb(
 	}
 
 	if (strategy === "tense") {
-		// Prefer same person in other tense
-		if (expected.tense?.toLowerCase() === "present") {
-			const samePersonOtherTense = forms.past.find((f) =>
+		// Prefer same person in any other tense bucket
+		const otherBuckets = allBuckets.filter((k) => k !== expectedBucketKey)
+		for (const b of otherBuckets) {
+			const samePerson = (forms[b] || []).find((f) =>
 				personMatches(f.person, expected.person)
 			)
-			if (samePersonOtherTense) return samePersonOtherTense.surface
-			if (forms.past[0]) return forms.past[0].surface
-		} else {
-			const samePersonOtherTense = forms.present.find((f) =>
-				personMatches(f.person, expected.person)
-			)
-			if (samePersonOtherTense) return samePersonOtherTense.surface
-			if (forms.present[0]) return forms.present[0].surface
+			if (samePerson) return samePerson.surface
+		}
+		// Otherwise first available from a different tense
+		for (const b of otherBuckets) {
+			const f = (forms[b] || [])[0]
+			if (f) return f.surface
 		}
 	}
 
@@ -405,11 +450,13 @@ export function pickAlternativeVerb(
 				: undefined
 		if (targetRoot) {
 			const alt = getVerbFormsByRoot(targetRoot)
-			const pool = [...alt.present, ...alt.past]
+			const altBuckets = Object.keys(alt)
+			const pool = altBuckets.flatMap((k) => alt[k] ?? [])
 			// Prefer same tense + person if available
 			const pref = pool.find(
 				(f) =>
-					f.tense === expected.tense && personMatches(f.person, expected.person)
+					(f.tense || "").toLowerCase() === expected.tense?.toLowerCase() &&
+					personMatches(f.person, expected.person)
 			)
 			if (pref) return pref.surface
 			if (pool[0]) return pool[0].surface
@@ -417,17 +464,13 @@ export function pickAlternativeVerb(
 	}
 
 	// Fallback: pick any different form within root, then any ser/estar form
-	const anyDifferent = [...forms.present, ...forms.past].find(
-		(f) => f.surface !== expected.surface
-	)
+	const anyDifferent = allFormsFlat.find((f) => f.surface !== expected.surface)
 	if (anyDifferent) return anyDifferent.surface
 	const serAlt = getVerbFormsByRoot("ser")
 	const estarAlt = getVerbFormsByRoot("estar")
 	const anyBe = [
-		...serAlt.present,
-		...serAlt.past,
-		...estarAlt.present,
-		...estarAlt.past,
+		...Object.keys(serAlt).flatMap((k) => serAlt[k] ?? []),
+		...Object.keys(estarAlt).flatMap((k) => estarAlt[k] ?? []),
 	][0]
 	return anyBe?.surface
 }
