@@ -7,6 +7,11 @@ import {
 	pickAlternativeVerb,
 	type WrongVerbStrategy,
 } from "@/lib/verbErrors"
+import {
+	resolveExpectedPronoun,
+	pickAlternativePronoun,
+	type WrongPronounStrategy,
+} from "@/lib/pronounErrors"
 
 export async function simulateLessonOnce() {
 	// Mirror the simulateLesson behavior from LessonControls but as a callable helper.
@@ -89,7 +94,16 @@ export async function simulateLessonVerbMistakes() {
 	const isLessonComplete = useDataStore.getState().isLessonComplete
 	const initializeSentenceProgress =
 		useDataStore.getState().initializeSentenceProgress
-	const strategies: WrongVerbStrategy[] = ["conjugation", "tense", "ser-estar"]
+	type SimStrategy =
+		| { kind: "verb"; strategy: WrongVerbStrategy }
+		| { kind: "pronoun"; strategy: WrongPronounStrategy }
+	const strategies: SimStrategy[] = [
+		{ kind: "verb", strategy: "conjugation" },
+		{ kind: "verb", strategy: "tense" },
+		{ kind: "verb", strategy: "ser-estar" },
+		{ kind: "pronoun", strategy: "category" },
+		{ kind: "pronoun", strategy: "person" },
+	]
 	let stratIndex = 0
 
 	while (!isLessonComplete?.() && guard < 10000) {
@@ -129,15 +143,33 @@ export async function simulateLessonVerbMistakes() {
 		}
 		const correctAns = answers[0] ?? "si"
 
-		// Try targeted verb error
+		// Try targeted verb or pronoun error depending on strategy rotation
 		const expectedVerb = resolveExpectedVerb(entry)
+		const expectedPron = resolveExpectedPronoun(entry)
 		let wrong = "__wrong__"
-		if (expectedVerb) {
-			// rotate strategy across sections
-			const strat = strategies[stratIndex % strategies.length]
-			stratIndex++
-			const alt = pickAlternativeVerb(expectedVerb, strat)
-			if (alt && alt !== correctAns) wrong = alt
+		const current = strategies[stratIndex % strategies.length]
+		stratIndex++
+
+		if (current.kind === "verb") {
+			if (expectedVerb) {
+				const alt = pickAlternativeVerb(expectedVerb, current.strategy)
+				if (alt && alt !== correctAns) wrong = alt
+			}
+			// If no verb available, try pronoun fallback for this turn
+			else if (expectedPron) {
+				const altP = pickAlternativePronoun(expectedPron, "category")
+				if (altP && altP !== correctAns) wrong = altP
+			}
+		} else if (current.kind === "pronoun") {
+			if (expectedPron) {
+				const altP = pickAlternativePronoun(expectedPron, current.strategy)
+				if (altP && altP !== correctAns) wrong = altP
+			}
+			// If no pronoun available, try verb fallback for this turn
+			else if (expectedVerb) {
+				const alt = pickAlternativeVerb(expectedVerb, "conjugation")
+				if (alt && alt !== correctAns) wrong = alt
+			}
 		}
 
 		useDataStore.getState().checkCurrentAnswer(wrong)

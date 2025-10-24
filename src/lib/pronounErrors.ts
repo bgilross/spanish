@@ -196,3 +196,72 @@ export function getPronounFeedback(
 	}
 	return items
 }
+
+// ---------------------------------------------------------------------------
+// Helpers for simulation and utilities
+// ---------------------------------------------------------------------------
+
+export type WrongPronounStrategy = "category" | "person"
+
+/** Resolve the expected pronoun surface/category/person for a section, if any. */
+export function resolveExpectedPronoun(
+	entry: SentenceDataEntry
+): PronSurfaceInfo | undefined {
+	const expAnswers = expectedAnswers(entry)
+	const expPronCandidates = expAnswers
+		.map((e) => PRON_INDEX[normalizeText(e)])
+		.filter((v): v is PronSurfaceInfo => !!v)
+
+	let expected: PronSurfaceInfo | undefined = expPronCandidates[0]
+	if (!expected) {
+		const surfaces = collectPronExpectedSurfaces(entry)
+		for (const s of surfaces) {
+			const vi = PRON_INDEX[normalizeText(s)]
+			if (vi) {
+				expected = vi
+				break
+			}
+		}
+	}
+	return expected
+}
+
+/** Pick an alternative pronoun to simulate a mistake for the given strategy. */
+export function pickAlternativePronoun(
+	expected: PronSurfaceInfo,
+	strategy: WrongPronounStrategy
+): string | undefined {
+	const values = Object.values(PRON_INDEX)
+
+	if (strategy === "category") {
+		// Prefer same person but different category
+		const samePerson = values.find(
+			(v) =>
+				v.category !== expected.category &&
+				v.person &&
+				v.person === expected.person
+		)
+		if (samePerson) return samePerson.surface
+		const anyDiffCat = values.find((v) => v.category !== expected.category)
+		if (anyDiffCat) return anyDiffCat.surface
+	} else if (strategy === "person") {
+		// Prefer same category but different person (when person metadata exists)
+		const diffPerson = values.find(
+			(v) =>
+				v.category === expected.category &&
+				v.person &&
+				expected.person &&
+				v.person !== expected.person
+		)
+		if (diffPerson) return diffPerson.surface
+		// Fallback: any different person across categories
+		const anyDiffPerson = values.find(
+			(v) => v.person && expected.person && v.person !== expected.person
+		)
+		if (anyDiffPerson) return anyDiffPerson.surface
+	}
+
+	// Final fallback: return a different surface than expected if available
+	const anyOther = values.find((v) => v.surface !== expected.surface)
+	return anyOther?.surface
+}
