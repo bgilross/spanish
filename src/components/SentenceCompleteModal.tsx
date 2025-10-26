@@ -114,245 +114,251 @@ const SentenceCompleteModal: React.FC<SentenceCompleteProps> = ({
 				className="absolute inset-0 bg-black/50"
 				onClick={onClose}
 			/>
-			<div className="relative w-[92%] max-w-2xl bg-zinc-900 text-zinc-100 border border-zinc-700 rounded-xl shadow-2xl p-5">
-				<div className="flex items-center justify-between mb-3">
-					<h3 className="text-lg font-semibold">Sentence complete</h3>
-					<button
-						className="px-2 py-1 text-sm border rounded"
-						onClick={onClose}
-					>
-						Close
-					</button>
-				</div>
-				{sentence && (
-					<div className="mb-3">
-						<div className="text-sm text-zinc-300">{sentence.sentence}</div>
-						{(() => {
-							// Prefer whole-sentence translation when available
-							if (!sentence) return null
-							if (
-								typeof sentence.translation === "string" &&
-								sentence.translation.trim()
-							) {
-								return (
-									<div className="mt-2 text-sm text-emerald-300">
-										{sentence.translation}
-									</div>
-								)
-							}
-							// Fallback: assemble from per-entry translations (only use string translations)
-							const dataEntries = (sentence as Sentence | undefined)?.data as
-								| SentenceDataEntry[]
-								| undefined
-							if (Array.isArray(dataEntries)) {
-								const parts = dataEntries
-									.map((d) => {
-										if (!d) return ""
-										// phraseTranslation preferred
-										if ("phraseTranslation" in d) {
-											const pt = d.phraseTranslation
-											if (typeof pt === "string") return pt
-											if (Array.isArray(pt) && pt.length) return pt[0]
-										}
-										// fallback to string translation when available
-										if ("translation" in d) {
-											const tr = d.translation
-											if (typeof tr === "string") return tr
-										}
-										return ""
-									})
-									.join(" ")
-								if (parts.trim() !== "") {
+			<div className="relative w-[92%] max-w-2xl bg-zinc-900 text-zinc-100 border border-zinc-700 rounded-xl shadow-2xl p-5 flex flex-col overflow-hidden max-h-[90vh]">
+				{/* Scrollable content area */}
+				<div className="overflow-y-auto min-h-0 pr-2">
+					<div className="flex items-center justify-between mb-3">
+						<h3 className="text-lg font-semibold">Sentence complete</h3>
+						<button
+							className="px-2 py-1 text-sm border rounded"
+							onClick={onClose}
+						>
+							Close
+						</button>
+					</div>
+					{sentence && (
+						<div className="mb-3">
+							<div className="text-sm text-zinc-300">{sentence.sentence}</div>
+							{(() => {
+								// Prefer whole-sentence translation when available
+								if (!sentence) return null
+								if (
+									typeof sentence.translation === "string" &&
+									sentence.translation.trim()
+								) {
 									return (
-										<div className="mt-2 text-sm text-emerald-300">{parts}</div>
+										<div className="mt-2 text-sm text-emerald-300">
+											{sentence.translation}
+										</div>
 									)
 								}
-							}
-							return null
-						})()}
-					</div>
-				)}
-				<div className="mb-3">
-					<div className="font-semibold text-sm mb-2">Submissions</div>
-					<ul className="space-y-2 text-sm">
-						{submissions.map((s, i) => (
-							<li
-								key={s.id || i}
-								className="p-2 border rounded bg-zinc-800/40"
-							>
-								<div className="flex items-center justify-between">
-									<div className="font-mono text-xs">{s.userInput}</div>
-									<div
-										className={
-											s.isCorrect
-												? "text-emerald-300 text-xs"
-												: "text-rose-300 text-xs"
-										}
-									>
-										{s.isCorrect ? "Correct" : "Incorrect"}
-									</div>
-								</div>
-								{!s.isCorrect && (
-									<div className="mt-2 text-xs text-zinc-300">
-										Expected:{" "}
-										{s.section
-											? Array.isArray(
-													(s.section as SentenceDataEntry).translation
-											  )
-												? "(see reference)"
-												: "see below"
-											: "-"}
-									</div>
-								)}
-
-								{/* Verb feedback for incorrect answers */}
-								{!s.isCorrect &&
-									s.section &&
-									(() => {
-										const vf = getVerbFeedback(
-											s.section as SentenceDataEntry,
-											s.userInput
-										)
-										if (!vf || vf.length === 0) return null
-										return (
-											<div className="mt-2 text-xs text-zinc-200">
-												<div className="font-medium text-amber-300">
-													Why it was wrong (verb)
-												</div>
-												<ul className="list-disc ml-5">
-													{vf.map((fb, k) => (
-														<li
-															key={k}
-															className="mb-1"
-														>
-															<div className="font-medium">{fb.title}</div>
-															{fb.details?.length ? (
-																<ul className="list-disc ml-5 text-zinc-300">
-																	{fb.details.map((d, di) => (
-																		<li key={di}>{d}</li>
-																	))}
-																</ul>
-															) : null}
-														</li>
-													))}
-												</ul>
-											</div>
-										)
-									})()}
-
-								{/* Pronoun/Possessive feedback for incorrect answers */}
-								{!s.isCorrect &&
-									s.section &&
-									(() => {
-										const pf = getPronounFeedback(
-											s.section as SentenceDataEntry,
-											s.userInput
-										)
-										if (!pf || pf.length === 0) return null
-										return (
-											<div className="mt-2 text-xs text-zinc-200">
-												<div className="font-medium text-sky-300">
-													Why it was wrong (pronoun/possessive)
-												</div>
-												<ul className="list-disc ml-5">
-													{pf.map((fb, k) => (
-														<li
-															key={k}
-															className="mb-1"
-														>
-															<div className="font-medium">{fb.title}</div>
-															{fb.details?.length ? (
-																<ul className="list-disc ml-5 text-zinc-300">
-																	{fb.details.map((d, di) => (
-																		<li key={di}>{d}</li>
-																	))}
-																</ul>
-															) : null}
-														</li>
-													))}
-												</ul>
-											</div>
-										)
-									})()}
-								{/* show references attached to this section only for incorrect submissions */}
-								{!s.isCorrect &&
-									(() => {
-										const list = getSectionReferences(s.section)
-										if (list.length === 0) return null
-										// Determine if the user used a SER form (but was still incorrect)
-										const usedSer = (() => {
-											try {
-												const vf = s.section
-													? getVerbFeedback(
-															s.section as SentenceDataEntry,
-															s.userInput
-													  )
-													: []
-												return vf.some((it) => it.wrong?.root === "ser")
-											} catch {
-												return false
+								// Fallback: assemble from per-entry translations (only use string translations)
+								const dataEntries = (sentence as Sentence | undefined)?.data as
+									| SentenceDataEntry[]
+									| undefined
+								if (Array.isArray(dataEntries)) {
+									const parts = dataEntries
+										.map((d) => {
+											if (!d) return ""
+											// phraseTranslation preferred
+											if ("phraseTranslation" in d) {
+												const pt = d.phraseTranslation
+												if (typeof pt === "string") return pt
+												if (Array.isArray(pt) && pt.length) return pt[0]
 											}
-										})()
-										const filtered = list.filter((item) => {
-											// Hide SER usage reference if user input already was a SER form
-											if (usedSer && item.key.startsWith("verb.words.ser"))
-												return false
-											return true
+											// fallback to string translation when available
+											if ("translation" in d) {
+												const tr = d.translation
+												if (typeof tr === "string") return tr
+											}
+											return ""
 										})
-										if (filtered.length === 0) return null
+										.join(" ")
+									if (parts.trim() !== "") {
 										return (
-											<div className="mt-2 text-xs text-zinc-400">
-												<div className="font-medium text-amber-300">
-													References
-												</div>
-												<ul className="list-disc ml-5 text-xs text-zinc-200">
-													{filtered.map((item, idx) => {
-														const rr = resolveReference(
-															item.key,
-															item.refs[item.key]
-														)
-														return (
+											<div className="mt-2 text-sm text-emerald-300">
+												{parts}
+											</div>
+										)
+									}
+								}
+								return null
+							})()}
+						</div>
+					)}
+					<div className="mb-3">
+						<div className="font-semibold text-sm mb-2">Submissions</div>
+						<ul className="space-y-2 text-sm">
+							{submissions.map((s, i) => (
+								<li
+									key={s.id || i}
+									className="p-2 border rounded bg-zinc-800/40"
+								>
+									<div className="flex items-center justify-between">
+										<div className="font-mono text-xs">{s.userInput}</div>
+										<div
+											className={
+												s.isCorrect
+													? "text-emerald-300 text-xs"
+													: "text-rose-300 text-xs"
+											}
+										>
+											{s.isCorrect ? "Correct" : "Incorrect"}
+										</div>
+									</div>
+									{!s.isCorrect && (
+										<div className="mt-2 text-xs text-zinc-300">
+											Expected:{" "}
+											{s.section
+												? Array.isArray(
+														(s.section as SentenceDataEntry).translation
+												  )
+													? "(see reference)"
+													: "see below"
+												: "-"}
+										</div>
+									)}
+
+									{/* Verb feedback for incorrect answers */}
+									{!s.isCorrect &&
+										s.section &&
+										(() => {
+											const vf = getVerbFeedback(
+												s.section as SentenceDataEntry,
+												s.userInput
+											)
+											if (!vf || vf.length === 0) return null
+											return (
+												<div className="mt-2 text-xs text-zinc-200">
+													<div className="font-medium text-amber-300">
+														Why it was wrong (verb)
+													</div>
+													<ul className="list-disc ml-5">
+														{vf.map((fb, k) => (
 															<li
-																key={`${item.key}-${idx}`}
+																key={k}
 																className="mb-1"
 															>
-																<div className="font-medium">{rr.label}</div>
-																{rr.info && rr.info.length > 0 && (
-																	<ul className="list-disc ml-5 text-xs text-zinc-300">
-																		{rr.info.map((ln, ii) => (
-																			<li key={ii}>{ln}</li>
+																<div className="font-medium">{fb.title}</div>
+																{fb.details?.length ? (
+																	<ul className="list-disc ml-5 text-zinc-300">
+																		{fb.details.map((d, di) => (
+																			<li key={di}>{d}</li>
 																		))}
 																	</ul>
-																)}
+																) : null}
 															</li>
-														)
-													})}
-												</ul>
-											</div>
-										)
-									})()}
-							</li>
-						))}
-					</ul>
-				</div>
-				{refs.length > 0 && (
-					<div className="mb-3">
-						<div className="font-semibold text-sm">Referenced topics</div>
-						<ul className="list-disc ml-5 text-sm text-zinc-200">
-							{refs.map((k) => {
-								const rr = resolveReference(k)
-								return (
-									<li
-										key={k}
-										className=""
-									>
-										{rr.label}
-									</li>
-								)
-							})}
+														))}
+													</ul>
+												</div>
+											)
+										})()}
+
+									{/* Pronoun/Possessive feedback for incorrect answers */}
+									{!s.isCorrect &&
+										s.section &&
+										(() => {
+											const pf = getPronounFeedback(
+												s.section as SentenceDataEntry,
+												s.userInput
+											)
+											if (!pf || pf.length === 0) return null
+											return (
+												<div className="mt-2 text-xs text-zinc-200">
+													<div className="font-medium text-sky-300">
+														Why it was wrong (pronoun/possessive)
+													</div>
+													<ul className="list-disc ml-5">
+														{pf.map((fb, k) => (
+															<li
+																key={k}
+																className="mb-1"
+															>
+																<div className="font-medium">{fb.title}</div>
+																{fb.details?.length ? (
+																	<ul className="list-disc ml-5 text-zinc-300">
+																		{fb.details.map((d, di) => (
+																			<li key={di}>{d}</li>
+																		))}
+																	</ul>
+																) : null}
+															</li>
+														))}
+													</ul>
+												</div>
+											)
+										})()}
+									{/* show references attached to this section only for incorrect submissions */}
+									{!s.isCorrect &&
+										(() => {
+											const list = getSectionReferences(s.section)
+											if (list.length === 0) return null
+											// Determine if the user used a SER form (but was still incorrect)
+											const usedSer = (() => {
+												try {
+													const vf = s.section
+														? getVerbFeedback(
+																s.section as SentenceDataEntry,
+																s.userInput
+														  )
+														: []
+													return vf.some((it) => it.wrong?.root === "ser")
+												} catch {
+													return false
+												}
+											})()
+											const filtered = list.filter((item) => {
+												// Hide SER usage reference if user input already was a SER form
+												if (usedSer && item.key.startsWith("verb.words.ser"))
+													return false
+												return true
+											})
+											if (filtered.length === 0) return null
+											return (
+												<div className="mt-2 text-xs text-zinc-400">
+													<div className="font-medium text-amber-300">
+														References
+													</div>
+													<ul className="list-disc ml-5 text-xs text-zinc-200">
+														{filtered.map((item, idx) => {
+															const rr = resolveReference(
+																item.key,
+																item.refs[item.key]
+															)
+															return (
+																<li
+																	key={`${item.key}-${idx}`}
+																	className="mb-1"
+																>
+																	<div className="font-medium">{rr.label}</div>
+																	{rr.info && rr.info.length > 0 && (
+																		<ul className="list-disc ml-5 text-xs text-zinc-300">
+																			{rr.info.map((ln, ii) => (
+																				<li key={ii}>{ln}</li>
+																			))}
+																		</ul>
+																	)}
+																</li>
+															)
+														})}
+													</ul>
+												</div>
+											)
+										})()}
+								</li>
+							))}
 						</ul>
 					</div>
-				)}
+					{refs.length > 0 && (
+						<div className="mb-3">
+							<div className="font-semibold text-sm">Referenced topics</div>
+							<ul className="list-disc ml-5 text-sm text-zinc-200">
+								{refs.map((k) => {
+									const rr = resolveReference(k)
+									return (
+										<li
+											key={k}
+											className=""
+										>
+											{rr.label}
+										</li>
+									)
+								})}
+							</ul>
+						</div>
+					)}
+				</div>
+				{/* Footer buttons (kept visible) */}
 				<div className="flex gap-2 mt-4">
 					<button
 						ref={nextBtnRef}
