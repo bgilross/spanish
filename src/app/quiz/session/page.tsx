@@ -240,9 +240,11 @@ export default function QuizSessionPage() {
 					No active quiz found. Return to dashboard to build one.
 				</div>
 			) : (
-				<div className="w-full max-w-3xl space-y-6">
+				<div className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl space-y-6 lg:space-y-8">
 					<div className="flex justify-between items-center">
-						<h1 className="text-xl font-semibold">Custom Quiz</h1>
+						<h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
+							Custom Quiz
+						</h1>
 						<div className="flex items-center gap-3">
 							<div className="text-[10px] text-zinc-400 font-mono">
 								{index + 1}/{quiz.questions.length}

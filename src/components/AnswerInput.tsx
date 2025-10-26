@@ -157,7 +157,7 @@ const AnswerInput: React.FC<Props> = ({ activeIndex, sentence, onSubmit }) => {
 				ref={inputRef}
 				// autoFocus removed: focus is now managed programmatically and will
 				// avoid focusing when modal overlays are open (prevents keyboard staying open on mobile)
-				className="px-3 py-2 border rounded min-w-[24ch] text-lg sm:text-xl bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
+				className="px-3 py-2 border rounded min-w-[24ch] lg:min-w-[28ch] xl:min-w-[32ch] text-lg sm:text-xl lg:text-2xl xl:text-3xl bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
 				placeholder={
 					activeIndex == null ? "All parts translated" : "Type answer"
 				}

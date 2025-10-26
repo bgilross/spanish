@@ -320,9 +320,9 @@ const MainPage = () => {
 
 	return (
 		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-20">
-			<div className="w-full max-w-4xl pt-8">
+			<div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl pt-8">
 				<header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-					<h1 className="text-xl sm:text-2xl font-semibold tracking-tight leading-tight flex items-center gap-2">
+					<h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight leading-tight flex items-center gap-2">
 						Spanish Lesson Trainer
 						<span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700 text-zinc-200 font-mono select-none">
 							v{APP_VERSION}
@@ -561,7 +561,7 @@ const MainPage = () => {
 
 				{hasSentences && (
 					<section className="mt-8">
-						<div className="rounded-xl bg-zinc-800/60 backdrop-blur-sm border border-zinc-700 px-6 py-8 shadow-inner shadow-black/40">
+						<div className="rounded-xl bg-zinc-800/60 backdrop-blur-sm border border-zinc-700 px-6 py-8 lg:px-8 lg:py-10 xl:px-10 xl:py-12 shadow-inner shadow-black/40">
 							{/* Controls placed inside the sentence card */}
 							<div className="flex items-start justify-between mb-4">
 								<div className="flex items-center gap-3">

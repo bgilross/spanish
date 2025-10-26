@@ -17,9 +17,9 @@ export default function DashboardPage() {
 	const [showQuiz, setShowQuiz] = React.useState(false)
 	return (
 		<div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 px-4 pb-16">
-			<div className="w-full max-w-5xl pt-8 space-y-4">
+			<div className="w-full max-w-6xl xl:max-w-7xl pt-8 space-y-4">
 				<div className="flex items-center justify-between flex-wrap gap-3">
-					<h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
+					<h1 className="text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight flex items-center gap-2">
 						Progress Dashboard
 						<span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700 text-zinc-200 font-mono">
 							v{APP_VERSION}
@@ -41,7 +41,7 @@ export default function DashboardPage() {
 			</div>
 			{showQuiz && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur">
-					<div className="w-full max-w-4xl max-h-[90vh] overflow-auto bg-zinc-950 border border-zinc-700 rounded-lg p-6 relative shadow-xl">
+					<div className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl max-h-[90vh] overflow-auto bg-zinc-950 border border-zinc-700 rounded-lg p-6 lg:p-8 relative shadow-xl">
 						<button
 							onClick={() => setShowQuiz(false)}
 							className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-200 text-sm"

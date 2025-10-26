@@ -22,7 +22,7 @@ const OriginalSentenceLine: React.FC<Props> = ({ sentence, activeIndex }) => {
 	)
 
 	return (
-		<div className="mt-3 text-2xl sm:text-3xl text-zinc-200 leading-snug text-center flex flex-wrap justify-center">
+		<div className="mt-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-zinc-200 leading-snug text-center flex flex-wrap justify-center">
 			{sentence.data.map((part, i) => {
 				const { base, punct } = splitWordAndPunct(part.phrase)
 				const isActive = i === activeIndex
