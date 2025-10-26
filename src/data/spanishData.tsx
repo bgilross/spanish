@@ -17164,6 +17164,647 @@ const spanishData: { lessons: Lesson[] } = {
 						},
 					],
 				},
+				{
+					id: 7,
+					sentence: "Will you(FORMAL) be OK?",
+					translation: "¿USTED ESTARÁ BIEN?",
+					data: [
+						{
+							phrase: "Will you(FORMAL) be",
+							translation: verb.words.estar.future.estara,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{
+							phrase: "OK",
+							translation: advrb.words.bien,
+						},
+					],
+				},
+				{
+					id: 8,
+					sentence: "He's the one that would be here",
+					translation: "ÉL ES EL QUE ESTARÍA AQUÍ",
+					data: [
+						{
+							phrase: "He's",
+							translation: [pron.subject.words.el, verb.words.ser.present.es],
+						},
+						{
+							phrase: "the one that",
+							translation: [artcl.words.el, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "would be",
+							translation: verb.words.estar.conditional.estaria,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 9,
+					sentence: "She will be here when they(F) are",
+					translation: "ELLA ESTARÁ AQUÍ CUANDO ELLAS LO ESTÉN",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "will be",
+							translation: verb.words.estar.future.estara,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "when", translation: conj.words.cuando },
+						{
+							phrase: "they(F) are",
+							translation: [
+								pron.subject.words.ellas,
+								pron.attribute.words.lo,
+								verb.words.estar.subjunctive.esten,
+							],
+							reference: ref(
+								"estarHowAndWhere",
+								"cuandoSubjunctive",
+								"attributeLo"
+							),
+						},
+					],
+				},
+				{
+					id: 10,
+					sentence: "She will be at the place",
+					translation: "ELLA ESTARÁ EN EL LUGAR",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "will be",
+							translation: verb.words.estar.future.estara,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "the place",
+							translation: [artcl.words.el, noun.words.lugar],
+						},
+					],
+				},
+				{
+					id: 11,
+					sentence: "She would be his friend",
+					translation: "ELLA SERÍA SU AMIGA",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "would be",
+							translation: verb.words.ser.conditional.seria,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "his friend",
+							translation: [adjective.possessive.words.su, noun.words.amiga],
+						},
+					],
+				},
+				{
+					id: 12,
+					sentence: "They(M) would be at the place, but you wouldn't be",
+					translation: "ELLOS ESTARÍAN EN EL LUGAR, PERO TÚ NO LO ESTARÍAS",
+					data: [
+						{ phrase: "They(M)", translation: pron.subject.words.ellos },
+						{
+							phrase: "would be",
+							translation: verb.words.estar.conditional.estarian,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "the place",
+							translation: [artcl.words.el, noun.words.lugar],
+						},
+						{ phrase: "but", translation: conj.words.pero },
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{
+							phrase: "wouldn't be",
+							translation: [
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.estar.conditional.estarias,
+							],
+							reference: ref(
+								"noVerbPosition",
+								"estarHowAndWhere",
+								"attributeLo"
+							),
+						},
+					],
+				},
+				{
+					id: 13,
+					sentence: "I will be at home when you are here",
+					translation: "ESTARÉ EN CASA CUANDO TÚ ESTÉS AQUÍ",
+					data: [
+						{
+							phrase: "I will be",
+							translation: verb.words.estar.future.estara,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "home", translation: noun.words.casa },
+						{ phrase: "when", translation: conj.words.cuando },
+						{ phrase: "you", translation: pron.subject.words.tu },
+						{
+							phrase: "are",
+							translation: verb.words.estar.subjunctive.estes,
+							reference: ref("estarHowAndWhere", "cuandoSubjunctive"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 14,
+					sentence: "We would be at home, but she wouldn't be",
+					translation: "ESTARÍAMOS EN CASA, PERO ELLA NO LO ESTARÍA",
+					data: [
+						{
+							phrase: "We would be",
+							translation: verb.words.estar.conditional.estariamos,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{ phrase: "home", translation: noun.words.casa },
+						{ phrase: "but", translation: conj.words.pero },
+						{ phrase: "she", translation: pron.subject.words.ella },
+						{
+							phrase: "wouldn't be",
+							translation: [
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.estar.conditional.estaria,
+							],
+							reference: ref(
+								"noVerbPosition",
+								"estarHowAndWhere",
+								"attributeLo"
+							),
+						},
+					],
+				},
+				{
+					id: 15,
+					sentence: "The house would be good",
+					translation: "LA CASA SERÍA BUENA",
+					data: [
+						{
+							phrase: "The house",
+							translation: [artcl.words.la, noun.words.casa],
+						},
+						{
+							phrase: "would be",
+							translation: verb.words.ser.conditional.seria,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.buena },
+					],
+				},
+				{
+					id: 16,
+					sentence: "But they would be at your house and we(M) wouldn't",
+					translation: "PERO ESTARÍAN EN TU CASA Y NOSOTROS NO LO ESTARÍAMOS",
+					data: [
+						{ phrase: "But", translation: conj.words.pero },
+						{
+							phrase: "they would be",
+							translation: verb.words.estar.conditional.estarian,
+							reference: ref("estarHowAndWhere"),
+							noPronoun: true,
+						},
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "your house",
+							translation: [adjective.possessive.words.tu, noun.words.casa],
+						},
+						{ phrase: "and", translation: conj.words.y },
+						{ phrase: "we(M)", translation: pron.subject.words.nosotros },
+						{
+							phrase: "wouldn't",
+							translation: [
+								advrb.words.no,
+								pron.attribute.words.lo,
+								verb.words.estar.conditional.estariamos,
+							],
+							reference: ref(
+								"noVerbPosition",
+								"estarHowAndWhere",
+								"attributeLo"
+							),
+						},
+					],
+				},
+				{
+					id: 17,
+					sentence: "It will be a good house",
+					translation: "SERÁ UNA BUENA CASA",
+					data: [
+						{
+							phrase: "It will be",
+							translation: verb.words.ser.future.sera,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "a good house",
+							translation: [
+								artcl.words.una,
+								adjective.descriptive.words.buena,
+								noun.words.casa,
+							],
+						},
+					],
+				},
+				{
+					id: 18,
+					sentence: "I will be your friend(M)",
+					translation: "SERÉ TU AMIGO",
+					data: [
+						{
+							phrase: "I will be",
+							translation: verb.words.ser.future.sere,
+							reference: ref("serIdentity"),
+							noPronoun: true,
+						},
+						{
+							phrase: "your friend(M)",
+							translation: [adjective.possessive.words.tu, noun.words.amigo],
+						},
+					],
+				},
+				{
+					id: 19,
+					sentence: "Their friends(F) are being good",
+					translation: "SUS AMIGAS ESTÁN SIENDO BUENAS",
+					data: [
+						{
+							phrase: "Their friends(F)",
+							translation: [
+								asPlural(adjective.possessive.words.su),
+								asPlural(noun.words.amiga),
+							],
+						},
+						{
+							phrase: "are being",
+							translation: [verb.words.estar.present.estan],
+						},
+						{
+							phrase: "good",
+							translation: asPlural(adjective.descriptive.words.buena),
+						},
+					],
+				},
+				{
+					id: 20,
+					sentence: "I would be in the good place",
+					translation: "YO ESTARÍA EN EL BUEN LUGAR",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "would be",
+							translation: verb.words.estar.conditional.estaria,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "in", translation: prep.words.en },
+						{
+							phrase: "the good place",
+							translation: [
+								artcl.words.el,
+								adjective.descriptive.words.buen,
+								noun.words.lugar,
+							],
+							reference: ref("buenoApocopated"),
+						},
+					],
+				},
+				{
+					id: 21,
+					sentence: "I would not be here",
+					translation: "YO NO ESTARÍA AQUÍ",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "would not be",
+							translation: [
+								advrb.words.no,
+								verb.words.estar.conditional.estaria,
+							],
+							reference: ref("noVerbPosition", "estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 22,
+					sentence: "I will be the one(F) that is good",
+					translation: "YO SERÉ LA QUE ES BUENA",
+					data: [
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "will be",
+							translation: verb.words.ser.future.sere,
+							reference: ref("serIdentity"),
+						},
+						{
+							phrase: "the one(F) that",
+							translation: [artcl.words.la, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+							reference: ref("serIdentity"),
+						},
+						{ phrase: "good", translation: adjective.descriptive.words.buena },
+					],
+				},
+				{
+					id: 23,
+					sentence: "The boy, the one that was here, has been well",
+					translation: "EL CHICO, EL QUE ESTABA AQUÍ, has ESTADO BIEN",
+					data: [
+						{
+							phrase: "The boy",
+							translation: [artcl.words.el, noun.words.chico],
+						},
+						{
+							phrase: "the one that",
+							translation: [artcl.words.el, conj.words.que],
+							reference: ref("theOneThat"),
+						},
+						{
+							phrase: "was here",
+							translation: [
+								verb.words.estar.imperfect.estaba,
+								advrb.words.aqui,
+							],
+							reference: ref("estarHowAndWhere", "imperfectDescription"),
+						},
+						{
+							phrase: "has been",
+							translation: [verb.words.estar.participle.estado],
+						},
+						{ phrase: "well", translation: advrb.words.bien },
+					],
+				},
+				{
+					id: 24,
+					sentence: "She would be here and I wouldn't know what to do",
+					translation: "ELLA ESTARÍA AQUÍ Y YO NO would know QUÉ to do",
+					data: [
+						{ phrase: "She", translation: pron.subject.words.ella },
+						{
+							phrase: "would be",
+							translation: verb.words.estar.conditional.estaria,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "here", translation: advrb.words.aqui },
+						{ phrase: "and", translation: conj.words.y },
+						{ phrase: "I", translation: pron.subject.words.yo },
+						{
+							phrase: "wouldn't know",
+							translation: [advrb.words.no],
+							phraseTranslation: "NO would know",
+							reference: ref("noVerbPosition"),
+						},
+						{ phrase: "what", translation: pron.subject.words.que },
+						{ phrase: "to do" },
+					],
+				},
+				{
+					id: 25,
+					sentence: "We would be fine with what you have",
+					translation: "ESTARÍAMOS BIEN CON LO QUE you have",
+					data: [
+						{
+							phrase: "We would be",
+							translation: verb.words.estar.conditional.estariamos,
+							reference: ref("estarHowAndWhere"),
+						},
+						{ phrase: "fine", translation: advrb.words.bien },
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "what",
+							translation: [artcl.words.lo, conj.words.que],
+							reference: ref("loQue"),
+						},
+						{ phrase: "you have" },
+					],
+				},
+				{
+					id: 26,
+					sentence: "I was OK after we arrived",
+					translation: "ESTUVE BIEN after we arrived",
+					data: [
+						{
+							phrase: "I was",
+							translation: verb.words.estar.preterite.estuve,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+						},
+						{ phrase: "OK", translation: advrb.words.bien },
+						{ phrase: "after" },
+						{ phrase: "we arrived" },
+					],
+				},
+				{
+					id: 27,
+					sentence: "He was home for an hour",
+					translation: "ESTUVO EN CASA POR an hour",
+					data: [
+						{
+							phrase: "He was",
+							translation: verb.words.estar.preterite.estuvo,
+							reference: ref("estarHowAndWhere", "preteriteEvent"),
+							noPronoun: true,
+						},
+						{
+							phrase: "home",
+							translation: [prep.words.en, noun.words.casa],
+						},
+						{
+							phrase: "for",
+							translation: prep.words.por,
+							reference: ref("porFor"),
+						},
+						{ phrase: "an hour" },
+					],
+				},
+				{
+					id: 28,
+					sentence: "He has been with your friends(M)",
+					translation: "He has ESTADO CON TUS AMIGOS",
+					data: [
+						{ phrase: "He has" },
+						{ phrase: "been", translation: verb.words.estar.participle.estado },
+						{ phrase: "with", translation: prep.words.con },
+						{
+							phrase: "your friends(M)",
+							translation: [
+								asPlural(adjective.possessive.words.tu),
+								asPlural(noun.words.amigo),
+							],
+						},
+					],
+				},
+				{
+					id: 29,
+					sentence: "The girls have been our(F) friends",
+					translation: "LAS CHICAS have SIDO NUESTRAS AMIGAS",
+					data: [
+						{
+							phrase: "The girls",
+							translation: [artcl.words.las, asPlural(noun.words.chica)],
+						},
+						{
+							phrase: "have",
+						},
+						{ phrase: "been", translation: verb.words.ser.participle.sido },
+						{
+							phrase: "our(F) friends",
+							translation: [
+								asPlural(adjective.possessive.words.nuestra),
+								asPlural(noun.words.amiga),
+							],
+						},
+					],
+				},
+				{
+					id: 30,
+					sentence: "The strange thing is that he's being weird",
+					translation: "LO strange(thing) ES QUE ÉL ESTÁ SIENDO weird",
+					data: [
+						{
+							phrase: "The strange(thing)",
+							translation: [
+								artcl.words.lo,
+								adjective.descriptive.words.strange,
+							],
+							reference: ref("loAsNoun"),
+						},
+						{
+							phrase: "is",
+							translation: verb.words.ser.present.es,
+						},
+						{
+							phrase: "that",
+							translation: conj.words.que,
+						},
+						{
+							phrase: "he",
+							translation: pron.subject.words.el,
+						},
+						{
+							phrase: "is being",
+							translation: [
+								verb.words.estar.present.esta,
+								verb.words.ser.gerund.siendo,
+							],
+							reference: ref("serGerund"),
+						},
+						{ phrase: "weird" },
+					],
+				},
+				{
+					id: 31,
+					sentence: "My girls have been well",
+					translation: "MIS CHICAS have ESTADO BIEN",
+					data: [
+						{
+							phrase: "My girls",
+							translation: [
+								asPlural(adjective.possessive.words.mi),
+								asPlural(noun.words.chica),
+							],
+						},
+						{
+							phrase: "have",
+						},
+						{ phrase: "been", translation: verb.words.estar.participle.estado },
+						{ phrase: "well", translation: advrb.words.bien },
+					],
+				},
+				{
+					id: 32,
+					sentence: "We haven't been here",
+					translation: "NOSOTROS NO have ESTADO AQUÍ",
+					data: [
+						{ phrase: "We", translation: pron.subject.words.nosotros },
+						{
+							phrase: "haven't",
+							translation: advrb.words.no,
+							phraseTranslation: "NO have",
+							reference: ref("noVerbPosition"),
+						},
+						{ phrase: "been", translation: verb.words.estar.participle.estado },
+						{ phrase: "here", translation: advrb.words.aqui },
+					],
+				},
+				{
+					id: 33,
+					sentence: "Your friends have been good boys",
+					translation: "TUS AMIGOS have SIDO BUENOS CHICOS",
+					data: [
+						{
+							phrase: "Your friends",
+							translation: [
+								asPlural(adjective.possessive.words.tu),
+								asPlural(noun.words.amigo),
+							],
+						},
+						{
+							phrase: "have",
+						},
+						{ phrase: "been", translation: verb.words.ser.participle.sido },
+						{
+							phrase: "good boys",
+							translation: [
+								asPlural(adjective.descriptive.words.bueno),
+								asPlural(noun.words.chico),
+							],
+						},
+					],
+				},
+				{
+					id: 34,
+					sentence: "We have been at their house",
+					translation: "We have ESTADO EN SU CASA",
+					data: [
+						{ phrase: "We have" },
+						{ phrase: "been", translation: verb.words.estar.participle.estado },
+						{ phrase: "at", translation: prep.words.en },
+						{
+							phrase: "their house",
+							translation: [adjective.possessive.words.su, noun.words.casa],
+						},
+					],
+				},
+				{
+					id: 35,
+					sentence: "You have been a good friend(F)",
+					translation: "You have SIDO UNA BUENA AMIGA",
+					data: [
+						{
+							phrase: "You have",
+						},
+						{ phrase: "been", translation: verb.words.ser.participle.sido },
+						{
+							phrase: "a good friend(F)",
+							translation: [
+								artcl.words.una,
+								adjective.descriptive.words.buena,
+								noun.words.amiga,
+							],
+						},
+					],
+				},
 			],
 		},
 	],
